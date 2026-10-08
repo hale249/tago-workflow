@@ -17,8 +17,8 @@ const env = import.meta.env
 
 export const BRANDING: Branding = {
   name: env.VITE_BRAND_NAME ?? "Tago Admin",
-  color: env.VITE_BRAND_COLOR ?? "oklch(0.623 0.214 259.815)",
-  colorDark: env.VITE_BRAND_COLOR_DARK ?? "oklch(0.72 0.13 259.815)",
+  color: env.VITE_BRAND_COLOR ?? "#0060fd",
+  colorDark: env.VITE_BRAND_COLOR_DARK ?? "oklch(0.70 0.15 261.47)",
   radius: env.VITE_BRAND_RADIUS ?? "0.625rem",
 }
 
