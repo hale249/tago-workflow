@@ -14,7 +14,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  /* Primary follows the brand accent (set from apps' branding config). */
+  --primary: var(--brand);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -26,7 +27,7 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --brand: oklch(0.623 0.214 259.815);
+  --brand: #0060fd;
   --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -44,7 +45,8 @@
   --card-foreground: oklch(0.86 0 0);
   --popover: #1c1c1c;
   --popover-foreground: oklch(0.86 0 0);
-  --primary: oklch(0.922 0 0);
+  /* Dark --brand is a light tint, so pair it with dark text. */
+  --primary: var(--brand);
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.86 0 0);
@@ -56,10 +58,10 @@
   --border: oklch(1 0 0 / 7%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
-  --brand: oklch(0.72 0.13 259.815);
+  --brand: oklch(0.70 0.15 261.47);
   --sidebar: #0a0a0a;
   --sidebar-foreground: oklch(0.86 0 0);
-  --sidebar-primary: oklch(0.623 0.214 259.815);
+  --sidebar-primary: #0060fd;
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(1 0 0 / 8%);
   --sidebar-accent-foreground: oklch(0.86 0 0);

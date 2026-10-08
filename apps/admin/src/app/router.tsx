@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router"
 
 import { AppLayout } from "@/app/layouts/app-layout"
+import { LoginPage } from "@/features/auth"
 import { CustomersPage } from "@/features/customers"
 import { HomePage } from "@/features/home"
 import { ComingSoonPage } from "@/pages/coming-soon-page"
@@ -17,6 +18,7 @@ const placeholderRoutes = NAV_SECTIONS.flatMap((s) => s.items)
   }))
 
 export const router = createBrowserRouter([
+  { path: "/login", element: <LoginPage /> },
   {
     path: "/",
     element: <AppLayout />,
