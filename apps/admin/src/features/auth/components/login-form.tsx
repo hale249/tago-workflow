@@ -2,42 +2,18 @@ import { useState, type FormEvent } from "react"
 import { useNavigate } from "react-router"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 
-import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
-import { Input } from "@workspace/ui/components/input"
-import { Separator } from "@workspace/ui/components/separator"
+import { cn } from "@workspace/ui/lib/utils"
 
-type Errors = { email?: string; password?: string }
+type Errors = { username?: string; password?: string }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-function validate(email: string, password: string): Errors {
-  const errors: Errors = {}
-  if (!email.trim()) errors.email = "Email is required"
-  else if (!EMAIL_RE.test(email.trim())) errors.email = "Enter a valid email address"
-  if (!password) errors.password = "Password is required"
-  return errors
-}
-
-function GoogleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1Z" />
-      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23Z" />
-      <path fill="#FBBC05" d="M5.84 14.1A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.44.34-2.1V7.06H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.94l3.66-2.84Z" />
-      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38Z" />
-    </svg>
-  )
-}
-
-function FieldError({ id, message }: { id: string; message?: string }) {
-  return message ? <p id={id} className="text-xs text-destructive">{message}</p> : null
-}
+const field =
+  "h-8 w-full rounded-md border border-slate-600 bg-slate-700/50 px-3 text-sm text-slate-200 outline-none placeholder:text-slate-400 transition-colors focus-visible:border-blue-500 focus-visible:ring-1 focus-visible:ring-blue-500/40 aria-invalid:border-red-400"
 
 /** UI-only: validates locally, fakes a request, then enters the app. No real auth yet. */
 export function LoginForm() {
   const navigate = useNavigate()
-  const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [remember, setRemember] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
@@ -46,86 +22,50 @@ export function LoginForm() {
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    const next = validate(email, password)
+    const next: Errors = {}
+    if (!username.trim()) next.username = "Vui lòng nhập tên đăng nhập"
+    if (!password) next.password = "Vui lòng nhập mật khẩu"
     setErrors(next)
-    if (next.email || next.password) return
+    if (next.username || next.password) return
     setSubmitting(true)
     await new Promise((r) => setTimeout(r, 600))
     navigate("/", { replace: true })
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="email" className="text-sm font-medium">Email</label>
-        <Input
-          id="email"
-          type="email"
-          autoComplete="email"
-          autoFocus
-          placeholder="you@company.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          aria-invalid={!!errors.email}
-          aria-describedby={errors.email ? "email-error" : undefined}
-          disabled={submitting}
-        />
-        <FieldError id="email-error" message={errors.email} />
+        <label htmlFor="username" className="text-xs font-medium text-slate-200">Tên đăng nhập</label>
+        <input id="username" autoComplete="username" autoFocus value={username} placeholder="Nhập tên đăng nhập"
+          aria-invalid={!!errors.username || undefined} aria-describedby={errors.username ? "username-error" : undefined}
+          onChange={(e) => setUsername(e.target.value)} className={field} />
+        {errors.username && <p id="username-error" className="text-xs text-red-400">{errors.username}</p>}
       </div>
-
       <div className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between">
-          <label htmlFor="password" className="text-sm font-medium">Password</label>
-          <a href="#" onClick={(e) => e.preventDefault()} className="text-xs text-brand underline-offset-2 hover:underline">
-            Forgot password?
-          </a>
-        </div>
+        <label htmlFor="password" className="text-xs font-medium text-slate-200">Mật khẩu</label>
         <div className="relative">
-          <Input
-            id="password"
-            type={showPassword ? "text" : "password"}
-            autoComplete="current-password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            aria-invalid={!!errors.password}
-            aria-describedby={errors.password ? "password-error" : undefined}
-            disabled={submitting}
-            className="pr-9"
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            className="absolute top-1/2 right-0.5 size-8 -translate-y-1/2 text-muted-foreground hover:bg-transparent"
-            onClick={() => setShowPassword((v) => !v)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
-            aria-pressed={showPassword}
-          >
-            {showPassword ? <EyeOff /> : <Eye />}
-          </Button>
+          <input id="password" type={showPassword ? "text" : "password"} autoComplete="current-password" value={password} placeholder="••••••••"
+            aria-invalid={!!errors.password || undefined} aria-describedby={errors.password ? "password-error" : undefined}
+            onChange={(e) => setPassword(e.target.value)} className={cn(field, "pr-9")} />
+          <button type="button" onClick={() => setShowPassword((s) => !s)} aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+            className="absolute inset-y-0 right-0 grid w-9 place-items-center text-slate-400 hover:text-slate-200">
+            {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          </button>
         </div>
-        <FieldError id="password-error" message={errors.password} />
+        {errors.password && <p id="password-error" className="text-xs text-red-400">{errors.password}</p>}
       </div>
-
-      <label className="flex w-fit cursor-pointer items-center gap-2 text-sm text-muted-foreground">
-        <Checkbox checked={remember} onCheckedChange={(v) => setRemember(v === true)} />
-        Remember me
-      </label>
-
-      <Button type="submit" className="w-full" disabled={submitting}>
-        {submitting && <Loader2 className="animate-spin" />}
-        {submitting ? "Signing in…" : "Sign in"}
-      </Button>
-
-      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-        <Separator className="flex-1" />or<Separator className="flex-1" />
+      <div className="flex items-center justify-between">
+        <label className="flex cursor-pointer items-center gap-2 text-xs text-slate-300">
+          <Checkbox checked={remember} onCheckedChange={(v) => setRemember(v === true)} className="border-slate-500 data-[state=checked]:border-blue-500 data-[state=checked]:bg-blue-500" />
+          Ghi nhớ đăng nhập
+        </label>
+        <a href="#" onClick={(e) => e.preventDefault()} className="text-xs font-medium text-teal-400 hover:text-teal-300">Quên mật khẩu?</a>
       </div>
-
-      <Button type="button" variant="outline" className="w-full" disabled={submitting}>
-        <GoogleIcon />
-        Continue with Google
-      </Button>
+      <button type="submit" disabled={submitting}
+        className="inline-flex h-8 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b6ef0] to-[#0ea5a5] text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none disabled:opacity-70">
+        {submitting && <Loader2 className="size-4 animate-spin" />}
+        Đăng nhập
+      </button>
     </form>
   )
 }

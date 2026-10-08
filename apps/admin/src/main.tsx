@@ -5,7 +5,7 @@ import { RouterProvider } from "react-router"
 import { AppProviders } from "@/app/providers"
 import { router } from "@/app/router"
 import { applyBranding } from "@/config/branding"
-import "./index.css"
+import "./assets/css/index.css"
 
 applyBranding()
 

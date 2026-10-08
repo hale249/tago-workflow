@@ -1,16 +1,19 @@
 import { Outlet } from "react-router"
 
+import { AppHeader } from "@/components/layout/app-header"
 import { AppSidebar, MobileSidebar } from "@/components/layout/sidebar"
 
 export function AppLayout() {
   return (
-    <div className="flex h-svh w-full overflow-hidden bg-[#f0f2f5] dark:bg-sidebar">
+    <div className="flex h-svh w-full overflow-hidden bg-background">
       <AppSidebar />
       <MobileSidebar />
-      {/* Gray canvas; each page section is its own white card (no border). */}
-      <main className="relative flex min-w-0 flex-1 flex-col gap-3 overflow-hidden p-2 md:p-3">
-        <Outlet />
-      </main>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <AppHeader />
+        <main className="relative flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
+          <Outlet />
+        </main>
+      </div>
     </div>
   )
 }

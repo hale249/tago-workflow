@@ -24,7 +24,7 @@
   "devDependencies": {
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@workspace/typescript-config": "workspace:*",
+    "@tago/ts-config": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:",
     "shadcn": "^4.21.3",

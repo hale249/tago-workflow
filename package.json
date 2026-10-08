@@ -3,14 +3,14 @@
   "private": true,
   "packageManager": "pnpm@12.9.1",
   "scripts": {
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "lint": "turbo lint",
-    "typecheck": "turbo typecheck",
+    "dev": "pnpm -r --parallel --if-present dev",
+    "build": "pnpm -r --if-present build",
+    "lint": "ls-lint && pnpm -r --if-present lint",
+    "typecheck": "pnpm -r --if-present typecheck",
     "dev:admin": "pnpm --filter admin dev",
     "ui:add": "pnpm --filter @workspace/ui exec shadcn add"
   },
   "devDependencies": {
-    "turbo": "catalog:"
+    "@ls-lint/ls-lint": "^2.3.1"
   }
 }

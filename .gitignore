@@ -1,8 +1,8 @@
 node_modules
 dist
-.turbo
 *.log
 .env*.local
 .idea
 .DS_Store
 .env
+.gstack/

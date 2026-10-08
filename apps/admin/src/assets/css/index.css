@@ -1,0 +1,11 @@
+/* Inter, self-hosted (all subsets incl. Vietnamese) — no Google Fonts request. */
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "@workspace/ui/styles/globals.css";
+
+@layer utilities {
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+}

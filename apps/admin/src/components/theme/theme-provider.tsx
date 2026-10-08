@@ -1,35 +1,47 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 
 type Theme = "light" | "dark"
-type ThemeContextValue = { theme: Theme; toggleTheme: () => void }
+/** What the user picked; "system" follows the OS setting. */
+export type ThemePreference = Theme | "system"
+type ThemeContextValue = { theme: Theme; preference: ThemePreference; setPreference: (p: ThemePreference) => void; toggleTheme: () => void }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 const STORAGE_KEY = "tago-theme"
+const media = () => window.matchMedia("(prefers-color-scheme: dark)")
 
-function readTheme(): Theme {
+function readPreference(): ThemePreference {
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved === "light" || saved === "dark") return saved
+    if (saved === "light" || saved === "dark" || saved === "system") return saved
   } catch {
     /* ignore */
   }
-  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"
+  return "system"
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(readTheme)
+  const [preference, setPreference] = useState<ThemePreference>(readPreference)
+  const [systemDark, setSystemDark] = useState(() => media().matches)
+  const theme: Theme = preference === "system" ? (systemDark ? "dark" : "light") : preference
+
+  useEffect(() => {
+    const m = media()
+    const on = () => setSystemDark(m.matches)
+    m.addEventListener("change", on)
+    return () => m.removeEventListener("change", on)
+  }, [])
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark")
     try {
-      localStorage.setItem(STORAGE_KEY, theme)
+      localStorage.setItem(STORAGE_KEY, preference)
     } catch {
       /* ignore */
     }
-  }, [theme])
+  }, [theme, preference])
 
   return (
-    <ThemeContext value={{ theme, toggleTheme: () => setTheme((t) => (t === "dark" ? "light" : "dark")) }}>
+    <ThemeContext value={{ theme, preference, setPreference, toggleTheme: () => setPreference(theme === "dark" ? "light" : "dark") }}>
       {children}
     </ThemeContext>
   )

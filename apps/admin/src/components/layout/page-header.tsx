@@ -1,20 +1,16 @@
 import type { ReactNode } from "react"
-import { Menu } from "lucide-react"
 
-import { Button } from "@workspace/ui/components/button"
-import { useUiStore } from "@/stores/ui.store"
+import { cn } from "@workspace/ui/lib/utils"
 
-export function PageHeader({ title, icon, actions }: { title: string; icon?: ReactNode; actions?: ReactNode }) {
-  const openMobile = useUiStore((s) => s.setMobileSidebarOpen)
-
+export function PageHeader({ title, description, icon, actions }: { title: ReactNode; description?: ReactNode; icon?: ReactNode; actions?: ReactNode }) {
   return (
-    <header className="flex h-11 shrink-0 items-center justify-between gap-4 px-1">
+    <header className={cn("flex shrink-0 items-center justify-between gap-4 px-4", description ? "min-h-14 py-2" : "h-14")}>
       <div className="flex items-center gap-2 text-base font-semibold">
-        <Button variant="ghost" size="icon" className="-ml-2 size-8 md:hidden" onClick={() => openMobile(true)} aria-label="Open menu">
-          <Menu />
-        </Button>
         {icon}
-        <h1>{title}</h1>
+        <div className="min-w-0">
+          <h1 className="truncate">{title}</h1>
+          {description && <p className="truncate text-xs font-normal text-muted-foreground">{description}</p>}
+        </div>
       </div>
       <div className="flex items-center gap-2">{actions}</div>
     </header>

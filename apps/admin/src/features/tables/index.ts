@@ -1,0 +1,13 @@
+// Public API of the tables feature — import from "@/features/tables" only.
+export { TablesPage } from "./pages/tables"
+export { TableRecordsPage } from "./pages/table-records"
+export { TableSettingsPage } from "./pages/table-settings"
+export { RecordDetailPage } from "./pages/record-detail"
+export { RecordFormPage } from "./pages/record-form"
+export { TablesNavTree } from "./components/tables-nav-tree"
+export { TablesQuickSearch } from "./components/tables-quick-search"
+export { tableKeys, tablesListQuery, useCreateWorkGroup, useRecordCounts, useTables, useWorkGroups, useWorkspaceUsers } from "./api/tables.queries"
+export type { ActiveTable, TableField, TableRecord } from "./types/table"
+export { ComboSelect, type ComboOption } from "./components/combo-select"
+export { recordsQuery } from "./api/tables.queries"
+export { recordLabel } from "./api/tables.api"
