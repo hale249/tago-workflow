@@ -1,0 +1,16 @@
+{
+  "name": "tago-workflow",
+  "private": true,
+  "packageManager": "pnpm@12.9.1",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "dev:admin": "pnpm --filter admin dev",
+    "ui:add": "pnpm --filter @workspace/ui exec shadcn add"
+  },
+  "devDependencies": {
+    "turbo": "catalog:"
+  }
+}
