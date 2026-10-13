@@ -1,4 +1,5 @@
-import { Moon, PanelLeft, Sun } from "lucide-react"
+import { DarkModeIcon, LightModeIcon, SidebarToggleIcon } from "@/components/icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip"
@@ -14,18 +15,18 @@ export function AppHeader() {
   const { sidebarCollapsed, toggleSidebar, setMobileSidebarOpen } = useUiStore()
   const { theme, toggleTheme } = useTheme()
   const sidebarLabel = sidebarCollapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"
-  const themeLabel = theme === "dark" ? "Chế độ sáng" : "Chế độ tối"
+  const themeLabel = theme === "dark" ? "Chuyển sang chế độ sáng" : "Chuyển sang chế độ tối"
 
   return (
     <header className="relative z-30 flex h-12 shrink-0 items-center justify-between border-b bg-background px-3 sm:px-4">
       <div className="flex min-w-0 flex-1 items-center gap-1.5">
         <Button variant="ghost" size="icon" className={`${ICON_BTN} md:hidden`} onClick={() => setMobileSidebarOpen(true)} aria-label="Mở sidebar">
-          <PanelLeft strokeWidth={1.5} />
+          <HugeiconsIcon icon={SidebarToggleIcon} />
         </Button>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" className={`${ICON_BTN} max-md:hidden`} onClick={toggleSidebar} aria-label={sidebarLabel}>
-              <PanelLeft strokeWidth={1.5} />
+              <HugeiconsIcon icon={SidebarToggleIcon} />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="flex items-center gap-2">
@@ -37,7 +38,7 @@ export function AppHeader() {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" className={ICON_BTN} onClick={toggleTheme} aria-label={themeLabel}>
-              {theme === "dark" ? <Sun strokeWidth={1.5} /> : <Moon strokeWidth={1.5} />}
+              {theme === "dark" ? <HugeiconsIcon icon={DarkModeIcon} /> : <HugeiconsIcon icon={LightModeIcon} />}
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom">{themeLabel}</TooltipContent>

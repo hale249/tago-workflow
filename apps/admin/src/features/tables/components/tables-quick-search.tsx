@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { useNavigate } from "react-router"
-import { Search } from "lucide-react"
 
 import { cn } from "@workspace/ui/lib/utils"
+import { SearchIcon } from "@/components/icons"
 import { useTables, useWorkGroups } from "../api/tables.queries"
 import { TableIcon } from "./table-icon"
 
@@ -47,7 +48,7 @@ export function TablesQuickSearch({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <div className="group relative">
-      <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-sidebar-foreground/45 transition-colors group-focus-within:text-sidebar-foreground/70" />
+      <HugeiconsIcon icon={SearchIcon} className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-sidebar-foreground/45 transition-colors group-focus-within:text-sidebar-foreground/70" />
       <input
         ref={inputRef}
         value={q}

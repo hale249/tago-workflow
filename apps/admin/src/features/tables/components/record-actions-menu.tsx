@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { MoreVertical, Pencil, Play, Trash2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Delete02Icon, MoreVerticalIcon, PencilEdit01Icon, PlayIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
@@ -40,7 +41,7 @@ function ActionRunDialog({ action, onOpenChange, onRun }: { action: TableAction 
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Huỷ</Button>
-          <Button onClick={submit}><Play />Chạy</Button>
+          <Button onClick={submit}><HugeiconsIcon icon={PlayIcon} />Chạy</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -65,14 +66,14 @@ export function RecordActionsMenu({ table, onEdit, onDelete, onRun, withCustom =
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-          <Button size="icon-sm" variant="ghost" aria-label="Record actions" className={className}><MoreVertical /></Button>
+          <Button size="icon-sm" variant="ghost" aria-label="Record actions" className={className}><HugeiconsIcon icon={MoreVerticalIcon} /></Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-          <DropdownMenuItem onSelect={onEdit}><Pencil />Cập nhật bản ghi</DropdownMenuItem>
-          <DropdownMenuItem variant="destructive" onSelect={onDelete}><Trash2 />Xoá bản ghi</DropdownMenuItem>
+          <DropdownMenuItem onSelect={onEdit}><HugeiconsIcon icon={PencilEdit01Icon} />Cập nhật bản ghi</DropdownMenuItem>
+          <DropdownMenuItem variant="destructive" onSelect={onDelete}><HugeiconsIcon icon={Delete02Icon} />Xoá bản ghi</DropdownMenuItem>
           {custom.length > 0 && <DropdownMenuSeparator />}
           {custom.map((a) => (
-            <DropdownMenuItem key={a.actionId} onSelect={() => (a.inputFields.length ? setRunning(a) : onRun(a, {}))}><Play />{a.name}</DropdownMenuItem>
+            <DropdownMenuItem key={a.actionId} onSelect={() => (a.inputFields.length ? setRunning(a) : onRun(a, {}))}><HugeiconsIcon icon={PlayIcon} />{a.name}</DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>

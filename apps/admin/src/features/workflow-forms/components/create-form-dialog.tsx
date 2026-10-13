@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
-import { ChevronLeft } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
@@ -33,7 +34,7 @@ export function CreateFormDialog({ open, onOpenChange }: { open: boolean; onOpen
             {FORM_TYPES.map((t) => (
               <button key={t.type} type="button" onClick={() => setType(t.type)} onDoubleClick={() => { setType(t.type); setStep(2) }}
                 className={cn("grid gap-2 rounded-lg border p-3 text-left hover:bg-muted/50", type === t.type && "border-brand ring-1 ring-brand")}>
-                <span className="grid size-9 place-items-center rounded-lg bg-brand/10 text-brand"><t.icon className="size-5" /></span>
+                <span className="grid size-9 place-items-center rounded-lg bg-brand/10 text-brand"><HugeiconsIcon icon={t.icon} className="size-5" /></span>
                 <span className="text-sm font-medium">{t.name}</span>
                 <span className="text-xs text-muted-foreground">{t.description}</span>
               </button>
@@ -49,7 +50,7 @@ export function CreateFormDialog({ open, onOpenChange }: { open: boolean; onOpen
           </div>
         )}
         <DialogFooter>
-          {step === 2 && <Button variant="ghost" className="mr-auto" onClick={() => setStep(1)}><ChevronLeft />Quay lại</Button>}
+          {step === 2 && <Button variant="ghost" className="mr-auto" onClick={() => setStep(1)}><HugeiconsIcon icon={ArrowLeft01Icon} />Quay lại</Button>}
           <Button variant="outline" onClick={() => onOpenChange(false)}>Huỷ</Button>
           {step === 1 ? (
             <Button disabled={!type} onClick={() => setStep(2)}>Tiếp tục</Button>

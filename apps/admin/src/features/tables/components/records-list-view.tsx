@@ -1,4 +1,5 @@
-import { ArrowUpRight, Sigma } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowUpRight01Icon, CalculatorIcon } from "@hugeicons/core-free-icons"
 
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -25,8 +26,11 @@ type Props = {
 }
 
 // Reference widths: first column 220px, people 200px, everything else 150px.
-const columnWidth = (f: TableField, first: boolean) =>
-  f.columnWidth ? `${f.columnWidth}px` : first ? "220px" : f.type.includes("WORKSPACE_USER") ? "200px" : f.type === "RICH_TEXT" ? "260px" : "150px"
+/** Minimum width per column type; a width set in the field config is kept exact. */
+const minWidth = (f: TableField, first: boolean) =>
+  first ? 220 : f.type.includes("WORKSPACE_USER") ? 200 : f.type === "RICH_TEXT" ? 260 : f.type === "DATETIME" ? 170 : f.type === "DATE" ? 130 : 150
+// Data columns share any spare width (like the reference's table-fixed at 100%), so the ⋮ column stays a narrow 48px at the edge.
+const columnWidth = (f: TableField, first: boolean) => (f.columnWidth ? `${f.columnWidth}px` : `minmax(${minWidth(f, first)}px, 1fr)`)
 
 /** Totals use two decimals like the reference ("1.000,00"). */
 const fmtTotal = (v: number) => formatNumber(v, 2)
@@ -35,6 +39,8 @@ export function RecordsListView({ table, records, users, isLoading, activeId, se
   const fieldMap = new Map(table.config.fields.map((f) => [f.name, f]))
   const columns = table.config.recordList.displayFields.map((n) => fieldMap.get(n)).filter((f): f is TableField => !!f)
   const gridTemplateColumns = ["40px", ...columns.map((c, i) => columnWidth(c, i === 0)), "48px"].join(" ")
+  // Fill the container; scroll horizontally only when the minimum widths don't fit.
+  const minTotal = 40 + 48 + columns.reduce((n, c, i) => n + (c.columnWidth ?? minWidth(c, i === 0)), 0)
   const allSelected = records.length > 0 && records.every((r) => selectedIds.includes(r.id))
   const someSelected = !allSelected && records.some((r) => selectedIds.includes(r.id))
   const summaries = table.config.recordList.totalSumFields
@@ -42,10 +48,10 @@ export function RecordsListView({ table, records, users, isLoading, activeId, se
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="min-h-0 overflow-auto rounded-lg border bg-background">
-        <div role="table" className="min-w-full text-sm" style={{ width: "max-content" }}>
+        <div role="table" className="text-sm" style={{ width: `max(100%, ${minTotal}px)` }}>
           <div role="row" className="sticky top-0 z-20 grid h-9 border-b bg-background" style={{ gridTemplateColumns }}>
             <div className="sticky left-0 z-10 flex items-center justify-center border-r border-border/70 bg-background">
-              <Checkbox aria-label="Chọn tất cả" checked={allSelected ? true : someSelected ? "indeterminate" : false} onCheckedChange={(v) => onSelectionChange(v ? records.map((r) => r.id) : [])} />
+              <Checkbox className="border-muted-foreground/45" aria-label="Chọn tất cả" checked={allSelected ? true : someSelected ? "indeterminate" : false} onCheckedChange={(v) => onSelectionChange(v ? records.map((r) => r.id) : [])} />
             </div>
             {columns.map((c) => (
               <div key={c.name} role="columnheader" className="flex min-w-0 items-center gap-1.5 border-r border-border/70 px-3 text-[13px] font-medium text-muted-foreground">
@@ -63,7 +69,7 @@ export function RecordsListView({ table, records, users, isLoading, activeId, se
                 return (
                   <div key={r.id} role="row" onClick={(e) => onOpen(r, e)} onAuxClick={(e) => e.button === 1 && onOpen(r, { metaKey: true })} className={cn("group grid h-9 cursor-pointer border-b border-border/70 transition-colors last:border-b-0 hover:bg-muted/60", (selected || r.id === activeId) && "bg-brand/6")} style={{ gridTemplateColumns }}>
                     <div className="sticky left-0 z-10 flex items-center justify-center border-r border-border/70 bg-background" onClick={(e) => e.stopPropagation()}>
-                      <Checkbox aria-label="Chọn bản ghi" checked={selected} onCheckedChange={(v) => onSelectionChange(v ? [...selectedIds, r.id] : selectedIds.filter((x) => x !== r.id))} />
+                      <Checkbox className="border-muted-foreground/45" aria-label="Chọn bản ghi" checked={selected} onCheckedChange={(v) => onSelectionChange(v ? [...selectedIds, r.id] : selectedIds.filter((x) => x !== r.id))} />
                     </div>
                     {columns.map((c, i) => (
                       <div key={c.name} role="cell" className={cn("flex min-w-0 items-center gap-1.5 overflow-hidden border-r border-border/70 px-3 whitespace-nowrap", i === 0 && "font-medium")}>
@@ -79,7 +85,7 @@ export function RecordsListView({ table, records, users, isLoading, activeId, se
                             }}
                             className="inline-flex h-6 shrink-0 items-center gap-1 rounded-md border bg-background px-1.5 text-xs font-medium text-muted-foreground opacity-0 shadow-xs transition-opacity group-hover:opacity-100 hover:bg-accent hover:text-foreground focus-visible:opacity-100"
                           >
-                            <ArrowUpRight className="size-3" />Mở
+                            <HugeiconsIcon icon={ArrowUpRight01Icon} className="size-3" />Mở
                           </button>
                         )}
                       </div>
@@ -97,7 +103,7 @@ export function RecordsListView({ table, records, users, isLoading, activeId, se
 
       {summaries.length > 0 && (
         <div className="flex h-10 shrink-0 items-center border-t bg-background/95 px-4">
-          <span className="mr-4 flex shrink-0 items-center gap-2 border-r pr-4 text-muted-foreground"><Sigma className="size-3.5" /><span className="text-xs font-medium">Tổng hợp</span></span>
+          <span className="mr-4 flex shrink-0 items-center gap-2 border-r pr-4 text-muted-foreground"><HugeiconsIcon icon={CalculatorIcon} className="size-3.5" /><span className="text-xs font-medium">Tổng hợp</span></span>
           <div className="no-scrollbar flex min-w-0 flex-1 items-center gap-6 overflow-x-auto whitespace-nowrap">
             {summaries.map((s, i) => {
               const v = evaluateSummary(s.formula, records)

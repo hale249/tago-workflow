@@ -1,5 +1,6 @@
 import { useQueries } from "@tanstack/react-query"
-import { ArrowRight, Settings } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowRight02Icon, Settings02Icon } from "@hugeicons/core-free-icons"
 import { Link } from "react-router"
 
 import { Button } from "@workspace/ui/components/button"
@@ -66,7 +67,7 @@ export function RecordsConversionView({ table, config, records, filters }: Props
       <div className="p-6">
         <EmptyBox title="Chưa có cột nào trong báo cáo chuyển đổi" hint="Vui lòng cấu hình báo cáo trong trang Cài đặt." />
         <div className="mt-3 text-center">
-          <Button asChild size="sm" variant="outline"><Link to={`/tables/${table.id}/settings`}><Settings />Mở cài đặt</Link></Button>
+          <Button asChild size="sm" variant="outline"><Link to={`/tables/${table.id}/settings`}><HugeiconsIcon icon={Settings02Icon} />Mở cài đặt</Link></Button>
         </div>
       </div>
     )
@@ -99,7 +100,7 @@ export function RecordsConversionView({ table, config, records, filters }: Props
           const cur = values[i + 1]
           return (
             <div key={i} className="flex items-stretch gap-2">
-              <ArrowRight className="size-4 shrink-0 self-center text-muted-foreground" />
+              <HugeiconsIcon icon={ArrowRight02Icon} className="size-4 shrink-0 self-center text-muted-foreground" />
               <Column
                 title={c.label}
                 subtitle={t?.name}

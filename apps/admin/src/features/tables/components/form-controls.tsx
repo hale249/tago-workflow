@@ -1,30 +1,19 @@
-import type { ComponentProps, ReactNode } from "react"
+import type { ComponentProps } from "react"
 
 import { cn } from "@workspace/ui/lib/utils"
+import { Select } from "@/components/select"
 
 const control =
   "w-full min-w-0 rounded-md border border-input bg-background px-3 text-sm outline-none transition-[color,box-shadow] focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset disabled:opacity-50 aria-invalid:border-destructive dark:bg-input/30"
 
-export function NativeSelect({ className, ...props }: ComponentProps<"select">) {
-  return <select className={cn(control, "h-8 pr-8", className)} {...props} />
-}
+/** Popover select in the reference style; same props as `<select>` (kept as NativeSelect for existing call sites). */
+export const NativeSelect = Select
 
 export function Textarea({ className, ...props }: ComponentProps<"textarea">) {
   return <textarea className={cn(control, "min-h-20 py-2", className)} {...props} />
 }
 
-export function FormRow({ label, required, error, hint, children, className }: { label: string; required?: boolean; error?: string; hint?: string; children: ReactNode; className?: string }) {
-  return (
-    <label className={cn("grid content-start gap-1 text-sm", className)}>
-      <span className="block font-medium">
-        {label}
-        {required && <span className="ml-1 text-destructive" aria-label="bắt buộc">*</span>}
-      </span>
-      {children}
-      {error ? <span className="text-xs text-destructive">{error}</span> : hint && <span className="text-xs text-muted-foreground">{hint}</span>}
-    </label>
-  )
-}
+export { FormRow } from "@/components/form-row"
 
 export function Switch({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label?: string }) {
   return (

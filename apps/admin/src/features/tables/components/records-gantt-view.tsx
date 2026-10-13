@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
@@ -67,8 +68,8 @@ export function RecordsGanttView({ table, config, records, onOpen }: { table: Ac
         ))}
         <span className="ml-auto flex items-center gap-1">
           <Button size="sm" variant="outline" className="h-8" onClick={scrollToToday}>Hôm nay</Button>
-          <Button size="icon-sm" variant="ghost" aria-label="Lùi" onClick={() => page(-1)}><ChevronLeft /></Button>
-          <Button size="icon-sm" variant="ghost" aria-label="Tới" onClick={() => page(1)}><ChevronRight /></Button>
+          <Button size="icon-sm" variant="ghost" aria-label="Lùi" onClick={() => page(-1)}><HugeiconsIcon icon={ArrowLeft01Icon} /></Button>
+          <Button size="icon-sm" variant="ghost" aria-label="Tới" onClick={() => page(1)}><HugeiconsIcon icon={ArrowRight01Icon} /></Button>
         </span>
       </div>
 

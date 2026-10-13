@@ -1,9 +1,7 @@
 import { useDeferredValue, useEffect, useRef, useState } from "react"
 import { Link, useNavigate, useParams, useSearchParams } from "react-router"
-import {
-  ArrowDownWideNarrow, ArrowLeftRight, ArrowUpNarrowWide, ChartGantt, CheckCircle2, ChevronLeft, Download, Kanban, LayoutGrid, List, Plus,
-  Search, Settings, Target, Trash2, X,
-} from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, ArrowDataTransferHorizontalIcon, ArrowLeft01Icon, Cancel01Icon, ChartGanttIcon, CheckmarkCircle02Icon, Delete02Icon, Download01Icon, FlashIcon, KanbanIcon, ListViewIcon, Search01Icon, Settings02Icon, SortByDown01Icon, SortByUp01Icon, Target01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
@@ -23,6 +21,7 @@ import { RecordsKanbanView } from "../components/records-kanban-view"
 import { RecordsListView } from "../components/records-list-view"
 import { RecordsObjectiveView } from "../components/records-objective-view"
 import { RecordsPivotView } from "../components/records-pivot-view"
+import { PivotIcon } from "@/components/icons"
 import { TableIcon } from "../components/table-icon"
 import { useTableViewStore } from "../store/table-view.store"
 import type { ActiveTable, RecordData, TableAction, TableField, TableRecord, WorkspaceUser } from "../types/table"
@@ -49,6 +48,8 @@ function useFlash() {
   }, [msg])
   return [msg, setMsg] as const
 }
+
+const BTN7 = "h-7 gap-1.5 px-2.5 has-[>svg]:px-2"
 
 export function TableRecordsPage() {
   const { tableId = "" } = useParams()
@@ -90,7 +91,8 @@ export function TableRecordsPage() {
   const objective = c.objectiveCards.find((k) => k.id === screen)
   const conversion = c.conversions.find((k) => k.id === screen)
   const special = kanban ?? gantt ?? pivot ?? objective ?? conversion
-  const activeSort = sort ?? c.defaultSort
+  const sortField = c.fields.find((f) => f.name === c.recordList.sortField)
+  const activeSort = sort ?? (sortField ? c.recordList.sortOrder ?? "asc" : c.defaultSort)
   const hasPeopleRoles = c.fields.some((f) => f.isAssignedUser || f.isRelatedUser)
   const quickFields = c.quickFilters.map((n) => c.fields.find((f) => f.name === n)).filter((f): f is TableField => !!f)
   const activeCount = Object.values(filters).filter(Boolean).length + conditions.length + (createdAt ? 1 : 0) + (createdBy ? 1 : 0) + (mine ? 1 : 0)
@@ -106,16 +108,17 @@ export function TableRecordsPage() {
   const editRecord = (r: TableRecord) => navigate(`/tables/${table.id}/records/${r.id}/edit`)
   const createRecord = (initial?: RecordData) => navigate(`/tables/${table.id}/records/new${initial ? `?init=${encodeURIComponent(JSON.stringify(initial))}` : ""}`)
   const runAction = (r: TableRecord, a: TableAction) => setFlash(`Đã gửi yêu cầu chạy “${a.name}” cho bản ghi ${recordLabel(table.id, r.id)}`)
+  const runBulk = (a: TableAction) => setFlash(`Đã gửi yêu cầu chạy “${a.name}” cho ${selectedIds.length} bản ghi`)
   const rowHandlers = { onEdit: editRecord, onDelete: (r: TableRecord) => setToDelete([r.id]), onRun: runAction }
 
   // Screens are grouped by kind like the reference: one tab per kind, then a picker for the concrete screen.
   const kinds = [
-    { id: "list", name: "Danh sách", icon: List, items: [{ id: "list", name: "Danh sách" }] },
-    { id: "kanban", name: "Kanban", icon: Kanban, items: c.kanbanConfigs },
-    { id: "gantt", name: "Gantt", icon: ChartGantt, items: c.ganttCharts },
-    { id: "pivot", name: "Ma trận", icon: LayoutGrid, items: c.pivotConfigs },
-    { id: "objective", name: "Mục tiêu", icon: Target, items: c.objectiveCards },
-    { id: "conversion", name: "Chuyển đổi", icon: ArrowLeftRight, items: c.conversions },
+    { id: "list", name: "Danh sách", icon: ListViewIcon, items: [{ id: "list", name: "Danh sách" }] },
+    { id: "kanban", name: "Kanban", icon: KanbanIcon, items: c.kanbanConfigs },
+    { id: "gantt", name: "Gantt", icon: ChartGanttIcon, items: c.ganttCharts },
+    { id: "pivot", name: "Ma trận", icon: PivotIcon, items: c.pivotConfigs },
+    { id: "objective", name: "Mục tiêu", icon: Target01Icon, items: c.objectiveCards },
+    { id: "conversion", name: "Chuyển đổi", icon: ArrowDataTransferHorizontalIcon, items: c.conversions },
   ].filter((k) => k.items.length > 0)
   const activeKind = kinds.find((k) => k.items.some((i) => i.id === special?.id)) ?? kinds[0]!
 
@@ -125,7 +128,7 @@ export function TableRecordsPage() {
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-6">
       <header className="flex shrink-0 items-center gap-2">
-        <Button asChild size="icon-sm" variant="ghost" className="text-muted-foreground" aria-label="Quay lại"><Link to="/tables"><ChevronLeft /></Link></Button>
+        <Button asChild size="icon-sm" variant="ghost" className="text-muted-foreground" aria-label="Quay lại"><Link to="/tables"><HugeiconsIcon icon={ArrowLeft01Icon} /></Link></Button>
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-center gap-2">
             <TableIcon icon={table.icon} color={table.iconColor} className="size-7 rounded-md [&_svg]:size-4" />
@@ -135,10 +138,10 @@ export function TableRecordsPage() {
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <Button asChild variant="outline" className="h-7 gap-1.5 px-2.5 has-[>svg]:px-2 max-sm:size-7 max-sm:px-0" aria-label="Cài đặt">
-            <Link to={`/tables/${table.id}/settings`}><Settings className="size-3.5" /><span className="max-sm:sr-only">Cài đặt</span></Link>
+            <Link to={`/tables/${table.id}/settings`}><HugeiconsIcon icon={Settings02Icon} className="size-3.5" /><span className="max-sm:sr-only">Cài đặt</span></Link>
           </Button>
           <Button className="h-7 gap-1.5 px-2.5 has-[>svg]:px-2 max-sm:size-7 max-sm:px-0" onClick={() => createRecord()} aria-label="Tạo mới">
-            <Plus className="size-3.5" /><span className="max-sm:sr-only">Tạo mới</span>
+            <HugeiconsIcon icon={Add01Icon} className="size-3.5" /><span className="max-sm:sr-only">Tạo mới</span>
           </Button>
         </div>
       </header>
@@ -149,7 +152,7 @@ export function TableRecordsPage() {
             <div role="tablist" className="no-scrollbar flex min-w-0 gap-0.5 overflow-x-auto">
               {kinds.map((k) => (
                 <button key={k.id} type="button" role="tab" aria-selected={k === activeKind} onClick={() => k !== activeKind && view.setScreen(table.id, k.items[0]!.id)} className={tab(k === activeKind)}>
-                  <k.icon className="size-4" />{k.name}
+                  <HugeiconsIcon icon={k.icon} className="size-4" />{k.name}
                 </button>
               ))}
             </div>
@@ -162,13 +165,13 @@ export function TableRecordsPage() {
               </>
             )}
           </div>
-          <Button size="sm" variant="outline" className="h-8 gap-1.5 px-2.5" onClick={() => exportCsv(table, records, users)}><Download /><span className="max-sm:sr-only">Tải xuống</span></Button>
+          <Button size="sm" variant="outline" className="h-8 gap-1.5 px-2.5" onClick={() => exportCsv(table, records, users)}><HugeiconsIcon icon={Download01Icon} /><span className="max-sm:sr-only">Tải xuống</span></Button>
         </div>
 
         <div className="flex shrink-0 flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <div className="relative min-w-0 flex-1 sm:w-56 sm:flex-none">
-              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+            <div className="relative w-full sm:w-56">
+              <HugeiconsIcon icon={Search01Icon} className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Tìm kiếm" className="h-8 pl-8" />
             </div>
             <AdvancedFilterButton fields={c.fields} users={users} value={conditions} onApply={(v) => view.setConditions(table.id, v)} />
@@ -182,26 +185,23 @@ export function TableRecordsPage() {
               </NativeSelect>
             )}
             <div className="ml-auto flex items-center gap-1">
-              {selectedIds.length > 0 && !special && (
-                <Button size="sm" variant="ghost" className="h-8 text-destructive" onClick={() => setToDelete(selectedIds)}><Trash2 />Xoá {selectedIds.length}</Button>
-              )}
-              <Button size="sm" variant="ghost" className="h-8 font-normal text-muted-foreground" onClick={() => setSort(activeSort === "desc" ? "asc" : "desc")} title="Sắp xếp theo ngày tạo">
-                {activeSort === "desc" ? <ArrowDownWideNarrow /> : <ArrowUpNarrowWide />}
-                <span className="max-sm:sr-only">{activeSort === "desc" ? "Mới nhất" : "Cũ nhất"}</span>
+              <Button size="sm" variant="ghost" className="h-8 font-normal text-muted-foreground" onClick={() => setSort(activeSort === "desc" ? "asc" : "desc")} title={sortField ? `Sắp xếp theo ${sortField.label}` : "Sắp xếp theo ngày tạo"}>
+                {activeSort === "desc" ? <HugeiconsIcon icon={SortByDown01Icon} /> : <HugeiconsIcon icon={SortByUp01Icon} />}
+                <span className="max-sm:sr-only">{sortField ? (activeSort === "desc" ? "Giảm dần" : "Tăng dần") : activeSort === "desc" ? "Mới nhất" : "Cũ nhất"}</span>
               </Button>
             </div>
           </div>
           {(quickFields.length > 0 || activeCount > 0) && (
             <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Bộ lọc nhanh">
               <QuickFilters fields={quickFields} values={filters} users={users} onChange={(f, v) => view.setFilter(table.id, f, v)} />
-              {activeCount > 0 && <Button size="sm" variant="ghost" className="h-8 text-muted-foreground" onClick={() => view.clearFilters(table.id)}><X />Xoá lọc ({activeCount})</Button>}
+              {activeCount > 0 && <Button size="sm" variant="ghost" className="h-8 text-muted-foreground" onClick={() => view.clearFilters(table.id)}><HugeiconsIcon icon={Cancel01Icon} />Xoá lọc ({activeCount})</Button>}
             </div>
           )}
         </div>
 
         {flash && (
           <p className="flex shrink-0 items-center gap-2 rounded-md bg-emerald-50 px-4 py-2 text-sm text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
-            <CheckCircle2 className="size-4" />{flash}
+            <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4" />{flash}
           </p>
         )}
 
@@ -217,7 +217,27 @@ export function TableRecordsPage() {
           ) : kanban ? (
             <RecordsKanbanView table={table} config={kanban} records={records} users={users} onOpen={openRecord} onCreate={createRecord} {...rowHandlers} />
           ) : (
-            <RecordsListView table={table} records={records} activeId={previewId} users={users} isLoading={isLoading} selectedIds={selectedIds} onSelectionChange={setSelectedIds} onOpen={openRecord} {...rowHandlers} />
+            <>
+              {selectedIds.length > 0 && (
+                // Bulk bar (reference): count · delete · one button per custom action · clear on the right.
+                <div className="mb-3">
+                  <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card px-4 py-2.5 shadow-sm duration-200 animate-in slide-in-from-bottom-2">
+                    <span className="min-w-0 text-sm font-medium text-foreground">Đã chọn {selectedIds.length} bản ghi</span>
+                    <div className="hidden h-4 w-px bg-border sm:block" />
+                    <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+                      <Button size="sm" variant="destructive" className={cn(BTN7, "w-full sm:w-auto")} onClick={() => setToDelete(selectedIds)}><HugeiconsIcon icon={Delete02Icon} className="size-4" />Xóa hàng loạt</Button>
+                      {c.actions.filter((a) => a.type === "custom").map((a) => (
+                        <Button key={a.actionId} size="sm" variant="outline" className={cn(BTN7, "w-full sm:w-auto")} onClick={() => runBulk(a)}><HugeiconsIcon icon={FlashIcon} className="size-4" />{a.name}</Button>
+                      ))}
+                    </div>
+                    <div className="w-full sm:ml-auto sm:w-auto">
+                      <Button size="sm" variant="ghost" className={cn(BTN7, "w-full sm:w-auto")} onClick={() => setSelectedIds([])}><HugeiconsIcon icon={Cancel01Icon} className="size-4" />Bỏ chọn</Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <RecordsListView table={table} records={records} activeId={previewId} users={users} isLoading={isLoading} selectedIds={selectedIds} onSelectionChange={setSelectedIds} onOpen={openRecord} {...rowHandlers} />
+            </>
           )}
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
-import { Copy, LayoutGrid, Maximize, Minus, Pencil, Play, Plus, Trash2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, Copy01Icon, Delete02Icon, LayoutGridIcon, Maximize01Icon, MinusSignIcon, PencilEdit01Icon, PlayIcon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@workspace/ui/lib/utils"
 import { GROUP_CHIP, GROUP_SUBTLE, NODE_TYPES, nodeType, OUTPUT_COLOR, START_EDGE, TRIGGERS } from "../data/node-types"
@@ -190,10 +191,10 @@ export function WorkflowCanvas({ event, triggerLabel, selected, onSelect, onMove
         {id !== START && (
           <div className="pointer-events-none absolute -top-10 left-4 z-10 flex -translate-y-2 gap-1 rounded-lg border bg-background/95 p-1 opacity-0 shadow-lg backdrop-blur-sm transition-all duration-200 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
             <button type="button" aria-label="Chỉnh sửa node" title="Chỉnh sửa node" onPointerDown={(e) => { e.stopPropagation(); onSelect(id) }} className="grid size-7 place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-              <Pencil className="size-3.5" />
+              <HugeiconsIcon icon={PencilEdit01Icon} className="size-3.5" />
             </button>
             <button type="button" aria-label="Xóa node" title="Xóa node" onPointerDown={(e) => { e.stopPropagation(); onDelete(id) }} className="grid size-7 place-items-center rounded-md text-destructive hover:bg-destructive/10">
-              <Trash2 className="size-3.5" />
+              <HugeiconsIcon icon={Delete02Icon} className="size-3.5" />
             </button>
           </div>
         )}
@@ -257,11 +258,11 @@ export function WorkflowCanvas({ event, triggerLabel, selected, onSelect, onMove
 
             {card(START, <>
               <div className="flex items-center gap-2 border-b border-border/50 px-4 py-2">
-                <Play className="size-3.5 fill-current text-blue-500" />
+                <HugeiconsIcon icon={PlayIcon} className="size-3.5 fill-current text-blue-500" />
                 <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Bắt đầu</p>
               </div>
               <div className="flex items-start gap-3 p-4">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400"><T.icon className="size-5" /></span>
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400"><HugeiconsIcon icon={T.icon} className="size-5" /></span>
                 <div className="min-w-0 flex-1 space-y-1">
                   <p className="text-sm font-semibold tracking-wide uppercase">{T.label}</p>
                   <p className="rounded-md bg-muted/50 px-2.5 py-1.5 font-mono text-xs break-words text-muted-foreground">{triggerLabel}</p>
@@ -276,7 +277,7 @@ export function WorkflowCanvas({ event, triggerLabel, selected, onSelect, onMove
                 card(s.id, <>
                   <div className={cn("flex flex-col gap-3 p-3", N.outputs && "pb-2")}>
                     <div className="flex items-center gap-2">
-                      <span className="rounded-md p-1.5" style={{ backgroundColor: GROUP_SUBTLE[N.group], color: N.color }}><N.icon className="size-4" /></span>
+                      <span className="rounded-md p-1.5" style={{ backgroundColor: GROUP_SUBTLE[N.group], color: N.color }}><HugeiconsIcon icon={N.icon} className="size-4" /></span>
                       <p className="line-clamp-1 text-xs font-semibold">{N.label}</p>
                     </div>
                     {unconfigured && <p className="line-clamp-2 font-mono text-xs text-muted-foreground">Chưa cấu hình</p>}
@@ -290,7 +291,7 @@ export function WorkflowCanvas({ event, triggerLabel, selected, onSelect, onMove
                           onPointerDown={(e) => { e.stopPropagation(); navigator.clipboard?.writeText(s.id) }}
                           className="grid size-5 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
                         >
-                          <Copy className="size-3" />
+                          <HugeiconsIcon icon={Copy01Icon} className="size-3" />
                         </button>
                       </div>
                     )}
@@ -351,7 +352,7 @@ export function WorkflowCanvas({ event, triggerLabel, selected, onSelect, onMove
                         }}
                         className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
                       >
-                        <span className={cn("flex size-6 shrink-0 items-center justify-center rounded-md", GROUP_CHIP[n.group])}><n.icon className="size-3.5" /></span>
+                        <span className={cn("flex size-6 shrink-0 items-center justify-center rounded-md", GROUP_CHIP[n.group])}><HugeiconsIcon icon={n.icon} className="size-3.5" /></span>
                         <span className="truncate">{n.label}</span>
                       </button>
                     ))}
@@ -370,13 +371,13 @@ export function WorkflowCanvas({ event, triggerLabel, selected, onSelect, onMove
         title="Tự động sắp xếp node"
         className="absolute top-4 right-4 z-10 grid size-8 place-items-center rounded-md border bg-background shadow-xs hover:bg-accent"
       >
-        <LayoutGrid className="size-4" />
+        <HugeiconsIcon icon={LayoutGridIcon} className="size-4" />
       </button>
 
       <div className="absolute right-4 bottom-4 z-10 flex flex-col overflow-hidden rounded-md border bg-background shadow-xs [&>button]:grid [&>button]:size-7 [&>button]:place-items-center [&>button]:border-b [&>button:last-child]:border-b-0 [&>button:hover]:bg-accent">
-        <button type="button" aria-label="Phóng to" title="Phóng to" onClick={() => zoomTo(zoom * 1.2)}><Plus className="size-3.5" /></button>
-        <button type="button" aria-label="Thu nhỏ" title="Thu nhỏ" onClick={() => zoomTo(zoom / 1.2)}><Minus className="size-3.5" /></button>
-        <button type="button" aria-label="Vừa màn hình" title="Vừa màn hình" onClick={fitView}><Maximize className="size-3.5" /></button>
+        <button type="button" aria-label="Phóng to" title="Phóng to" onClick={() => zoomTo(zoom * 1.2)}><HugeiconsIcon icon={Add01Icon} className="size-3.5" /></button>
+        <button type="button" aria-label="Thu nhỏ" title="Thu nhỏ" onClick={() => zoomTo(zoom / 1.2)}><HugeiconsIcon icon={MinusSignIcon} className="size-3.5" /></button>
+        <button type="button" aria-label="Vừa màn hình" title="Vừa màn hình" onClick={fitView}><HugeiconsIcon icon={Maximize01Icon} className="size-3.5" /></button>
       </div>
 
       <svg

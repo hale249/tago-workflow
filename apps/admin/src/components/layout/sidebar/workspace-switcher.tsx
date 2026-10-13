@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Check, ChevronDown } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
 
 import {
   DropdownMenu,
@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { cn } from "@workspace/ui/lib/utils"
+import { CheckIcon, SectionChevronIcon } from "@/components/icons"
 import { WORKSPACES } from "@/config/navigation"
 
 /** "Motor Anh Quốc" -> "MA" */
@@ -44,7 +45,7 @@ export function WorkspaceSwitcher({ collapsed }: { collapsed: boolean }) {
         {!collapsed && (
           <>
             <span className="flex-1 truncate text-sm font-semibold">{active.name}</span>
-            <ChevronDown className="size-3.5 shrink-0 text-sidebar-foreground/50" />
+            <HugeiconsIcon icon={SectionChevronIcon} className="size-3.5 shrink-0 text-sidebar-foreground/50" />
           </>
         )}
       </DropdownMenuTrigger>
@@ -53,7 +54,7 @@ export function WorkspaceSwitcher({ collapsed }: { collapsed: boolean }) {
           <DropdownMenuItem key={ws.id} onSelect={() => setActiveId(ws.id)}>
             <WorkspaceLogo name={ws.name} color={ws.color} />
             <span className={cn("flex-1 truncate", ws.id === activeId && "font-medium")}>{ws.name}</span>
-            {ws.id === activeId && <Check className="size-4 text-brand" />}
+            {ws.id === activeId && <HugeiconsIcon icon={CheckIcon} className="size-4 text-brand" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

@@ -1,6 +1,7 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from "react"
+import { useState, type FormEvent, type ReactNode } from "react"
 import { Link, useSearchParams } from "react-router"
-import { CheckCircle2, Globe, Keyboard, Monitor, Moon, Sun } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { CheckmarkCircle02Icon, ComputerIcon, Globe02Icon, KeyboardIcon, Moon02Icon, Sun01Icon } from "@hugeicons/core-free-icons"
 
 import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar"
 import { Button } from "@workspace/ui/components/button"
@@ -33,7 +34,7 @@ function Field({ id, label, required, hint, error, children }: { id: string; lab
 }
 
 function Saved({ show, text }: { show: boolean; text: string }) {
-  return show ? <span className="flex items-center gap-1.5 text-sm text-emerald-600"><CheckCircle2 className="size-4" />{text}</span> : null
+  return show ? <span className="flex items-center gap-1.5 text-sm text-emerald-600"><HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4" />{text}</span> : null
 }
 
 function ProfileTab() {
@@ -126,7 +127,7 @@ function SettingsTab() {
   const { preference, setPreference } = useTheme()
   const { language, update } = useProfile()
   const [shortcuts, setShortcuts] = useState(false)
-  const themes: [ThemePreference, string, typeof Sun][] = [["light", "Sáng", Sun], ["dark", "Tối", Moon], ["system", "Hệ thống", Monitor]]
+  const themes: [ThemePreference, string, typeof Sun01Icon][] = [["light", "Sáng", Sun01Icon], ["dark", "Tối", Moon02Icon], ["system", "Hệ thống", ComputerIcon]]
   return (
     <div className="space-y-6">
       <Card title="Giao diện" description="Tùy chỉnh giao diện ứng dụng">
@@ -134,7 +135,7 @@ function SettingsTab() {
         <div role="radiogroup" aria-label="Giao diện" className="grid grid-cols-3 gap-4">
           {themes.map(([id, label, Icon]) => (
             <Choice key={id} active={preference === id} onClick={() => setPreference(id)} className="flex h-[88px] flex-col items-center justify-center gap-2">
-              <Icon className="size-5" strokeWidth={1.5} />
+              <HugeiconsIcon icon={Icon} className="size-5" strokeWidth={1.5} />
               <span className="text-xs font-medium">{label}</span>
             </Choice>
           ))}
@@ -144,14 +145,14 @@ function SettingsTab() {
         <div role="radiogroup" aria-label="Ngôn ngữ" className="grid grid-cols-2 gap-4">
           {([["vi", "Tiếng Việt"], ["en", "English"]] as const).map(([id, label]) => (
             <Choice key={id} active={language === id} onClick={() => update({ language: id })} className="flex h-14 items-center gap-3 px-4 text-sm font-medium">
-              <Globe className="size-5" strokeWidth={1.5} />{label}
+              <HugeiconsIcon icon={Globe02Icon} className="size-5" strokeWidth={1.5} />{label}
             </Choice>
           ))}
         </div>
         {language === "en" && <p className="mt-2 text-xs text-muted-foreground">Giao diện tiếng Anh chưa có — lựa chọn đã được lưu.</p>}
       </Card>
       <Card title="Phím tắt" description="Xem tất cả phím tắt có sẵn">
-        <Button variant="outline" size="sm" onClick={() => setShortcuts(true)}><Keyboard />Xem phím tắt</Button>
+        <Button variant="outline" size="sm" onClick={() => setShortcuts(true)}><HugeiconsIcon icon={KeyboardIcon} />Xem phím tắt</Button>
       </Card>
       <ShortcutsDialog open={shortcuts} onOpenChange={setShortcuts} />
     </div>
@@ -163,7 +164,6 @@ export function ProfilePage() {
   const profile = useProfile()
   const [params, setParams] = useSearchParams()
   const tab = params.get("tab") === "settings" ? "settings" : "profile"
-  useEffect(() => { document.title = "Hồ sơ người dùng" }, [])
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto">

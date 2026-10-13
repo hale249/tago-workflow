@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { Calendar, ChevronDown, User, X } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowDown01Icon, Calendar01Icon, Cancel01Icon, UserIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
@@ -17,11 +18,11 @@ export function DateRangeFilter({ value, onChange, label = "Ngày tạo", compac
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         {compact ? (
-          <Button size="icon-xs" variant="ghost" className={cn(value && "text-brand")} aria-label={`Lọc theo thời gian: ${value ? rangeLabel(value) : "tất cả"}`}><Calendar /></Button>
+          <Button size="icon-xs" variant="ghost" className={cn(value && "text-brand")} aria-label={`Lọc theo thời gian: ${value ? rangeLabel(value) : "tất cả"}`}><HugeiconsIcon icon={Calendar01Icon} /></Button>
         ) : (
           <button type="button" className={cn("flex h-8 min-w-[140px] items-center gap-1.5 rounded-md border border-input bg-background px-2.5 text-left text-sm shadow-xs", value ? "border-brand bg-brand/5 text-brand" : "text-muted-foreground")}>
-            <Calendar className="size-4 opacity-60" /><span className="flex-1 truncate">{value ? rangeLabel(value) : label}</span>
-            {value ? <X className="size-4" onClick={(e) => { e.stopPropagation(); onChange(null) }} /> : <ChevronDown className="size-4 opacity-40" />}
+            <HugeiconsIcon icon={Calendar01Icon} className="size-4 opacity-60" /><span className="flex-1 truncate">{value ? rangeLabel(value) : label}</span>
+            {value ? <HugeiconsIcon icon={Cancel01Icon} className="size-4" onClick={(e) => { e.stopPropagation(); onChange(null) }} /> : <HugeiconsIcon icon={ArrowDown01Icon} className="size-4 opacity-40" />}
           </button>
         )}
       </PopoverTrigger>
@@ -46,7 +47,7 @@ export function DateRangeFilter({ value, onChange, label = "Ngày tạo", compac
 export function CreatorFilter({ users, value, onChange }: { users: WorkspaceUser[]; value: string; onChange: (v: string) => void }) {
   return (
     <div className="relative">
-      <User className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground opacity-60" />
+      <HugeiconsIcon icon={UserIcon} className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground opacity-60" />
       <NativeSelect className={cn("h-8 w-[150px] bg-background pl-8 text-sm text-muted-foreground", value && "border-brand bg-brand/5 text-foreground")} value={value} onChange={(e) => onChange(e.target.value)} aria-label="Người tạo">
         <option value="">Người tạo</option>
         {users.map((u) => <option key={u.id} value={u.id}>{u.fullName}</option>)}

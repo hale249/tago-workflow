@@ -1,8 +1,6 @@
 import { useCallback, useState, type ReactNode } from "react"
-import {
-  AtSign, Building2, Calendar, ChevronRight, FileText, Globe, Link2, Mail, MapPin, MessageSquare,
-  MoreHorizontal, RefreshCw, StickyNote, UserCircle, Users, X,
-} from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowRight01Icon, AtIcon, Building03Icon, Calendar01Icon, Cancel01Icon, File02Icon, Globe02Icon, Link01Icon, Location01Icon, Mail01Icon, Message01Icon, MoreHorizontalIcon, RefreshIcon, StickyNote01Icon, UserCircleIcon, UserMultipleIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
@@ -15,10 +13,10 @@ import { CompanyLogo, PersonAvatar, TagBadge } from "./cells"
 
 const MIN_WIDTH = 360
 
-function Field({ icon: Icon, label, children }: { icon: typeof Mail; label: string; children: ReactNode }) {
+function Field({ icon: Icon, label, children }: { icon: typeof Mail01Icon; label: string; children: ReactNode }) {
   return (
     <div className="grid grid-cols-[140px_1fr] items-center gap-3 py-2 text-sm">
-      <span className="flex items-center gap-2 text-muted-foreground"><Icon className="size-4" />{label}</span>
+      <span className="flex items-center gap-2 text-muted-foreground"><HugeiconsIcon icon={Icon} className="size-4" />{label}</span>
       <span className="min-w-0 truncate">{children}</span>
     </div>
   )
@@ -42,20 +40,20 @@ function DetailsTab({ c }: { c: Customer }) {
   return (
     <div className="space-y-6">
       <div className="divide-y">
-        <Field icon={Building2} label="Legal Name">{c.legalName}</Field>
-        <Field icon={AtSign} label="Email">{c.email}</Field>
-        <Field icon={Globe} label="Website"><span className="text-brand">{c.website}</span></Field>
-        <Field icon={MapPin} label="Location">{c.location}</Field>
-        <Field icon={Calendar} label="Founded">{c.founded}</Field>
-        <Field icon={UserCircle} label="Founders">
+        <Field icon={Building03Icon} label="Legal Name">{c.legalName}</Field>
+        <Field icon={AtIcon} label="Email">{c.email}</Field>
+        <Field icon={Globe02Icon} label="Website"><span className="text-brand">{c.website}</span></Field>
+        <Field icon={Location01Icon} label="Location">{c.location}</Field>
+        <Field icon={Calendar01Icon} label="Founded">{c.founded}</Field>
+        <Field icon={UserCircleIcon} label="Founders">
           <span className="flex items-center gap-2">
             {c.founders.map((f, i) => <span key={i} className="flex items-center gap-1.5"><PersonAvatar person={f} className="size-5" />{f.name}</span>)}
           </span>
         </Field>
-        <Field icon={Link2} label="LinkedIn">{c.onlinePresence.linkedin}</Field>
-        <Field icon={Users} label="Employees">{c.employees}</Field>
-        <Field icon={FileText} label="Contract">{formatCurrency(c.amount)}</Field>
-        <Field icon={StickyNote} label="Categories">
+        <Field icon={Link01Icon} label="LinkedIn">{c.onlinePresence.linkedin}</Field>
+        <Field icon={UserMultipleIcon} label="Employees">{c.employees}</Field>
+        <Field icon={File02Icon} label="Contract">{formatCurrency(c.amount)}</Field>
+        <Field icon={StickyNote01Icon} label="Categories">
           <span className="flex gap-1">{c.categories.map((t) => <TagBadge key={t} tag={t} />)}</span>
         </Field>
       </div>
@@ -65,7 +63,7 @@ function DetailsTab({ c }: { c: Customer }) {
           <h3 className="text-sm font-medium">Overview</h3>
           <div className="flex gap-1">
             <Button variant="ghost" size="sm" className="h-7 text-xs">Change Card</Button>
-            <Button variant="ghost" size="sm" className="h-7 text-xs"><RefreshCw /> Refresh</Button>
+            <Button variant="ghost" size="sm" className="h-7 text-xs"><HugeiconsIcon icon={RefreshIcon} /> Refresh</Button>
           </div>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -105,13 +103,13 @@ export function CustomerDrawer({ customer }: { customer: Customer | undefined })
           <header className="flex h-14 shrink-0 items-center justify-between border-b px-4">
             <div className="flex min-w-0 items-center gap-1.5 text-sm">
               <span className="text-muted-foreground">Customers</span>
-              <ChevronRight className="size-3.5 text-muted-foreground" />
+              <HugeiconsIcon icon={ArrowRight01Icon} className="size-3.5 text-muted-foreground" />
               <span className="truncate font-medium">{customer.account}</span>
             </div>
             <div className="flex items-center gap-1">
-              <Button variant="outline" size="sm" className="h-8"><FileText /> Contract</Button>
-              <Button variant="ghost" size="icon" className="size-8"><MoreHorizontal /></Button>
-              <Button variant="ghost" size="icon" className="size-8" onClick={() => openCustomer(null)}><X /></Button>
+              <Button variant="outline" size="sm" className="h-8"><HugeiconsIcon icon={File02Icon} /> Contract</Button>
+              <Button variant="ghost" size="icon" className="size-8"><HugeiconsIcon icon={MoreHorizontalIcon} /></Button>
+              <Button variant="ghost" size="icon" className="size-8" onClick={() => openCustomer(null)}><HugeiconsIcon icon={Cancel01Icon} /></Button>
             </div>
           </header>
 
@@ -123,9 +121,9 @@ export function CustomerDrawer({ customer }: { customer: Customer | undefined })
                 <p className="text-sm text-muted-foreground">{customer.website}</p>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline"><MessageSquare /> Message</Button>
-                <Button size="sm" variant="outline"><Mail /> Email</Button>
-                <Button size="sm" variant="outline"><StickyNote /> Add Note</Button>
+                <Button size="sm" variant="outline"><HugeiconsIcon icon={Message01Icon} /> Message</Button>
+                <Button size="sm" variant="outline"><HugeiconsIcon icon={Mail01Icon} /> Email</Button>
+                <Button size="sm" variant="outline"><HugeiconsIcon icon={StickyNote01Icon} /> Add Note</Button>
               </div>
             </div>
 

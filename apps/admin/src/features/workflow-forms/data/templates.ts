@@ -1,11 +1,12 @@
-import { ClipboardList, FileText, Mail, type LucideIcon } from "lucide-react"
+import { type IconSvgElement } from "@hugeicons/react"
+import { File02Icon, Mail01Icon, Task01Icon } from "@hugeicons/core-free-icons"
 
 import type { FormConfig, FormFieldType, FormType } from "../types/form"
 
-export const FORM_TYPES: { type: FormType; name: string; label: string; description: string; icon: LucideIcon }[] = [
-  { type: "BASIC", name: "Form cơ bản", label: "Cơ bản", description: "Thu thập tên và email liên hệ", icon: FileText },
-  { type: "SUBSCRIPTION", name: "Form đăng ký", label: "Đăng ký", description: "Cho khách đăng ký nhận tin / ưu đãi", icon: Mail },
-  { type: "SURVEY", name: "Form khảo sát", label: "Khảo sát", description: "Câu hỏi lựa chọn để lấy ý kiến", icon: ClipboardList },
+export const FORM_TYPES: { type: FormType; name: string; label: string; description: string; icon: IconSvgElement }[] = [
+  { type: "BASIC", name: "Form cơ bản", label: "Cơ bản", description: "Thu thập tên và email liên hệ", icon: File02Icon },
+  { type: "SUBSCRIPTION", name: "Form đăng ký", label: "Đăng ký", description: "Cho khách đăng ký nhận tin / ưu đãi", icon: Mail01Icon },
+  { type: "SURVEY", name: "Form khảo sát", label: "Khảo sát", description: "Câu hỏi lựa chọn để lấy ý kiến", icon: Task01Icon },
 ]
 
 export const FIELD_TYPES: { type: FormFieldType; label: string }[] = [

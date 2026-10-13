@@ -1,7 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react"
-import {
-  ArrowDown, ArrowUp, Check, Copy, Eye, Pencil, Play, Plus, SquarePen, Target, Trash2, X, type LucideIcon,
-} from "lucide-react"
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react"
+import { Add01Icon, ArrowDown02Icon, ArrowUp02Icon, Cancel01Icon, Copy01Icon, Delete02Icon, PencilEdit01Icon, PencilEdit02Icon, PlayIcon, Target01Icon, Tick02Icon, ViewIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
@@ -66,8 +65,8 @@ function ConfigRow({ title, badge, onEdit, onDelete, children }: { title: string
         <p className="font-medium">{title}</p>
         <span className="rounded border px-1.5 text-xs text-muted-foreground">{badge}</span>
         <span className="ml-auto flex">
-          <Button size="icon-sm" variant="ghost" aria-label={`Sửa ${title}`} onClick={onEdit}><Pencil /></Button>
-          <Button size="icon-sm" variant="ghost" className="text-destructive" aria-label={`Xoá ${title}`} onClick={onDelete}><Trash2 /></Button>
+          <Button size="icon-sm" variant="ghost" aria-label={`Sửa ${title}`} onClick={onEdit}><HugeiconsIcon icon={PencilEdit01Icon} /></Button>
+          <Button size="icon-sm" variant="ghost" className="text-destructive" aria-label={`Xoá ${title}`} onClick={onDelete}><HugeiconsIcon icon={Delete02Icon} /></Button>
         </span>
       </div>
       {children}
@@ -193,13 +192,13 @@ export function ItemsSection(p: TabProps) {
                 <div key={f.name} className="flex items-center gap-3 px-3 py-2 text-sm">
                   <FieldTypeIcon type={f.type} className="size-4 text-muted-foreground" />
                   <span className="flex-1"><b className="font-medium">{f.label}</b> <span className="font-mono text-xs text-muted-foreground">{f.name}</span></span>
-                  <Button size="icon-xs" variant="ghost" disabled={i === 0} aria-label="Lên" onClick={() => { const n = [...items.fields]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; setItems({ fields: n }) }}><ArrowUp /></Button>
-                  <Button size="icon-xs" variant="ghost" aria-label={`Sửa ${f.label}`} onClick={() => setEditor({ open: true, field: f })}><Pencil /></Button>
-                  <Button size="icon-xs" variant="ghost" aria-label={`Xoá ${f.label}`} onClick={() => setItems({ fields: items.fields.filter((x) => x.name !== f.name) })}><Trash2 /></Button>
+                  <Button size="icon-xs" variant="ghost" disabled={i === 0} aria-label="Lên" onClick={() => { const n = [...items.fields]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; setItems({ fields: n }) }}><HugeiconsIcon icon={ArrowUp02Icon} /></Button>
+                  <Button size="icon-xs" variant="ghost" aria-label={`Sửa ${f.label}`} onClick={() => setEditor({ open: true, field: f })}><HugeiconsIcon icon={PencilEdit01Icon} /></Button>
+                  <Button size="icon-xs" variant="ghost" aria-label={`Xoá ${f.label}`} onClick={() => setItems({ fields: items.fields.filter((x) => x.name !== f.name) })}><HugeiconsIcon icon={Delete02Icon} /></Button>
                 </div>
               ))}
             </div>
-            <Button size="sm" variant="outline" onClick={() => setEditor({ open: true })}><Plus />Thêm trường chi tiết</Button>
+            <Button size="sm" variant="outline" onClick={() => setEditor({ open: true })}><HugeiconsIcon icon={Add01Icon} />Thêm trường chi tiết</Button>
           </SubCard>
           <SubCard tag="Dòng tổng" hint="Tính từ các dòng con, lưu vào một trường số của bản ghi">
             {items.sums.map((s, i) => {
@@ -210,7 +209,7 @@ export function ItemsSection(p: TabProps) {
                 <div key={i} className="grid gap-2 rounded-md border p-3 sm:grid-cols-[1fr_1fr_auto]">
                   <Input value={s.label} placeholder="Nhãn" onChange={(e) => set({ label: e.target.value })} />
                   <FieldSelect fields={numericParent} value={s.sumField} onChange={(sumField) => set({ sumField })} placeholder="Ghi vào trường…" />
-                  <Button size="icon-sm" variant="ghost" aria-label="Xoá dòng tổng" onClick={() => setItems({ sums: items.sums.filter((_, j) => j !== i) })}><X /></Button>
+                  <Button size="icon-sm" variant="ghost" aria-label="Xoá dòng tổng" onClick={() => setItems({ sums: items.sums.filter((_, j) => j !== i) })}><HugeiconsIcon icon={Cancel01Icon} /></Button>
                   <div className="sm:col-span-3">
                     <Input value={s.formula} className="font-mono text-xs" placeholder="SUM(qty * price)" onChange={(e) => set({ formula: e.target.value })} aria-invalid={!!err || undefined} />
                     <p className={cn("mt-1 text-xs", err || unknown.length ? "text-destructive" : "text-muted-foreground")}>
@@ -220,7 +219,7 @@ export function ItemsSection(p: TabProps) {
                 </div>
               )
             })}
-            <Button size="sm" variant="outline" onClick={() => setItems({ sums: [...items.sums, { sumField: "", label: "Tổng", formula: "SUM()" }] })}><Plus />Thêm dòng tổng</Button>
+            <Button size="sm" variant="outline" onClick={() => setItems({ sums: [...items.sums, { sumField: "", label: "Tổng", formula: "SUM()" }] })}><HugeiconsIcon icon={Add01Icon} />Thêm dòng tổng</Button>
             <p className="text-xs text-muted-foreground">Công thức hỗ trợ SUM, AVG, MIN, MAX, COUNT và phép + − × ÷ giữa các trường chi tiết.</p>
           </SubCard>
           <ItemAutoInitPanel {...p} />
@@ -239,7 +238,7 @@ export function ItemsSection(p: TabProps) {
 
 // ── Hành động ────────────────────────────────────────────────────────────────
 
-const ACTION_ICON: Record<string, LucideIcon> = { create: Plus, access: Eye, update: SquarePen, delete: Trash2 }
+const ACTION_ICON: Record<string, IconSvgElement> = { create: Add01Icon, access: ViewIcon, update: PencilEdit02Icon, delete: Delete02Icon }
 const CUSTOM_ICONS = ["play", "workflow", "package", "send", "user-cog", "database"]
 
 function ActionDialog({ open, onOpenChange, value, table, onSave }: { open: boolean; onOpenChange: (o: boolean) => void; value?: TableAction; table: TabProps["table"]; onSave: (a: TableAction) => void }) {
@@ -263,12 +262,12 @@ function ActionDialog({ open, onOpenChange, value, table, onSave }: { open: bool
           <div key={f.name} className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm">
             <FieldTypeIcon type={f.type} className="size-4 text-muted-foreground" />
             <span className="flex-1">{f.label} <span className="font-mono text-xs text-muted-foreground">{f.name}</span></span>
-            <Button size="icon-xs" variant="ghost" aria-label={`Sửa ${f.label}`} onClick={() => setFieldEditor({ open: true, field: f })}><Pencil /></Button>
-            <Button size="icon-xs" variant="ghost" aria-label={`Xoá ${f.label}`} onClick={() => setA({ ...a, inputFields: a.inputFields.filter((x) => x.name !== f.name) })}><Trash2 /></Button>
+            <Button size="icon-xs" variant="ghost" aria-label={`Sửa ${f.label}`} onClick={() => setFieldEditor({ open: true, field: f })}><HugeiconsIcon icon={PencilEdit01Icon} /></Button>
+            <Button size="icon-xs" variant="ghost" aria-label={`Xoá ${f.label}`} onClick={() => setA({ ...a, inputFields: a.inputFields.filter((x) => x.name !== f.name) })}><HugeiconsIcon icon={Delete02Icon} /></Button>
           </div>
         ))}
         {!a.inputFields.length && <EmptyBox title="Chưa có trường nào" hint="Hành động sẽ chạy ngay khi bấm." />}
-        <Button size="sm" variant="outline" onClick={() => setFieldEditor({ open: true })}><Plus />Thêm trường</Button>
+        <Button size="sm" variant="outline" onClick={() => setFieldEditor({ open: true })}><HugeiconsIcon icon={Add01Icon} />Thêm trường</Button>
       </div>
       <FieldEditorDialog
         open={fieldEditor.open}
@@ -290,22 +289,22 @@ export function ActionsTab(p: TabProps) {
   const copy = (id: string) => navigator.clipboard?.writeText(id).then(() => setCopied(id))
 
   const row = (a: TableAction, extra?: ReactNode) => {
-    const Icon = ACTION_ICON[a.icon] ?? Play
+    const Icon = ACTION_ICON[a.icon] ?? PlayIcon
     return (
       <div key={a.actionId} className="flex items-center gap-3 rounded-md border bg-background px-3 py-2.5">
-        <span className="grid size-8 place-items-center rounded-md border text-muted-foreground"><Icon className="size-4" /></span>
+        <span className="grid size-8 place-items-center rounded-md border text-muted-foreground"><HugeiconsIcon icon={Icon} className="size-4" /></span>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium">{a.name} <span className="ml-1 rounded border px-1.5 py-0.5 text-xs font-normal text-muted-foreground">{a.type === "custom" ? "Tuỳ chỉnh" : "Hệ thống"}</span></p>
           <p className="truncate font-mono text-xs text-muted-foreground">{a.type === "custom" ? a.actionId : a.type} · biểu tượng: {a.icon}{a.inputFields.length > 0 && ` · ${a.inputFields.length} trường nhập`}</p>
         </div>
-        <Button size="icon-sm" variant="ghost" aria-label="Sao chép mã hành động" onClick={() => copy(a.actionId)}>{copied === a.actionId ? <Check className="text-emerald-600" /> : <Copy />}</Button>
+        <Button size="icon-sm" variant="ghost" aria-label="Sao chép mã hành động" onClick={() => copy(a.actionId)}>{copied === a.actionId ? <HugeiconsIcon icon={Tick02Icon} className="text-emerald-600" /> : <HugeiconsIcon icon={Copy01Icon} />}</Button>
         {extra}
       </div>
     )
   }
 
   return (
-    <SettingsCard title="Cấu hình hành động" description="Hành động hệ thống có sẵn cho mọi bảng; hành động tuỳ chỉnh dùng để kích hoạt workflow." action={<Button size="sm" onClick={() => setDialog({ open: true })}><Plus />Thêm hành động tuỳ chỉnh</Button>}>
+    <SettingsCard title="Cấu hình hành động" description="Hành động hệ thống có sẵn cho mọi bảng; hành động tuỳ chỉnh dùng để kích hoạt workflow." action={<Button size="sm" onClick={() => setDialog({ open: true })}><HugeiconsIcon icon={Add01Icon} />Thêm hành động tuỳ chỉnh</Button>}>
       <div className="space-y-2">
         <h3 className="text-sm font-semibold">Hành động hệ thống (chỉ đọc)</h3>
         <div className="space-y-2 rounded-lg border p-2">{system.map((a) => row(a))}</div>
@@ -317,8 +316,8 @@ export function ActionsTab(p: TabProps) {
             {custom.map((a) =>
               row(a, (
                 <>
-                  <Button size="icon-sm" variant="ghost" aria-label={`Sửa ${a.name}`} onClick={() => setDialog({ open: true, value: a })}><Pencil /></Button>
-                  <Button size="icon-sm" variant="ghost" className="text-destructive" aria-label={`Xoá ${a.name}`} onClick={() => patchConfig(p, { actions: actions.filter((x) => x.actionId !== a.actionId) })}><Trash2 /></Button>
+                  <Button size="icon-sm" variant="ghost" aria-label={`Sửa ${a.name}`} onClick={() => setDialog({ open: true, value: a })}><HugeiconsIcon icon={PencilEdit01Icon} /></Button>
+                  <Button size="icon-sm" variant="ghost" className="text-destructive" aria-label={`Xoá ${a.name}`} onClick={() => patchConfig(p, { actions: actions.filter((x) => x.actionId !== a.actionId) })}><HugeiconsIcon icon={Delete02Icon} /></Button>
                 </>
               )),
             )}
@@ -445,7 +444,7 @@ export function GanttTab(p: TabProps) {
   const label = (n: string | null) => (n ? c.fields.find((f) => f.name === n)?.label ?? n : "—")
   const statusOpt = (g: GanttConfig) => c.fields.find((f) => f.name === g.statusField)?.options?.find((o) => o.value === g.statusCompleteValue)?.text ?? "—"
   return (
-    <SettingsCard title="Cấu hình biểu đồ Gantt" description="Lập kế hoạch và theo dõi tiến độ trên trục thời gian" action={<Button size="sm" onClick={ed.openNew}><Plus />Thêm biểu đồ Gantt</Button>}>
+    <SettingsCard title="Cấu hình biểu đồ Gantt" description="Lập kế hoạch và theo dõi tiến độ trên trục thời gian" action={<Button size="sm" onClick={ed.openNew}><HugeiconsIcon icon={Add01Icon} />Thêm biểu đồ Gantt</Button>}>
       {c.ganttCharts.length ? (
         <div className="divide-y rounded-lg border">
           {c.ganttCharts.map((g, i) => (
@@ -498,15 +497,15 @@ function PivotDialog({ open, onOpenChange, value, fields, onSave }: { open: bool
         </FormRow>
       </div>
       <div className="space-y-2">
-        <div className="flex items-center justify-between"><p className="text-sm font-medium">Measures</p><Button size="xs" variant="outline" onClick={() => setV({ ...v, measures: [...v.measures, { label: "", formula: "", unit: null, decimalPlaces: null }] })}><Plus />Thêm</Button></div>
+        <div className="flex items-center justify-between"><p className="text-sm font-medium">Measures</p><Button size="xs" variant="outline" onClick={() => setV({ ...v, measures: [...v.measures, { label: "", formula: "", unit: null, decimalPlaces: null }] })}><HugeiconsIcon icon={Add01Icon} />Thêm</Button></div>
         {v.measures.map((m, i) => (
           <div key={i} className="space-y-2 rounded-md border p-3">
             <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
               Measure {i + 1}
               <span className="ml-auto flex">
-                <Button size="icon-xs" variant="ghost" disabled={i === 0} aria-label="Lên" onClick={() => move(i, -1)}><ArrowUp /></Button>
-                <Button size="icon-xs" variant="ghost" disabled={i === v.measures.length - 1} aria-label="Xuống" onClick={() => move(i, 1)}><ArrowDown /></Button>
-                <Button size="icon-xs" variant="ghost" aria-label="Xoá measure" onClick={() => setV({ ...v, measures: v.measures.filter((_, j) => j !== i) })}><Trash2 /></Button>
+                <Button size="icon-xs" variant="ghost" disabled={i === 0} aria-label="Lên" onClick={() => move(i, -1)}><HugeiconsIcon icon={ArrowUp02Icon} /></Button>
+                <Button size="icon-xs" variant="ghost" disabled={i === v.measures.length - 1} aria-label="Xuống" onClick={() => move(i, 1)}><HugeiconsIcon icon={ArrowDown02Icon} /></Button>
+                <Button size="icon-xs" variant="ghost" aria-label="Xoá measure" onClick={() => setV({ ...v, measures: v.measures.filter((_, j) => j !== i) })}><HugeiconsIcon icon={Delete02Icon} /></Button>
               </span>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
@@ -540,7 +539,7 @@ export function PivotTab(p: TabProps) {
   const ed = useEditor<PivotConfig>()
   const label = (n: string) => (n ? c.fields.find((f) => f.name === n)?.label ?? n : "Ngày tạo")
   return (
-    <SettingsCard title="Pivot / Matrix" description="Bảng chéo với các chỉ số được nhóm theo dòng và thời gian" action={<Button size="sm" onClick={ed.openNew}><Plus />Thêm Pivot</Button>}>
+    <SettingsCard title="Pivot / Matrix" description="Bảng chéo với các chỉ số được nhóm theo dòng và thời gian" action={<Button size="sm" onClick={ed.openNew}><HugeiconsIcon icon={Add01Icon} />Thêm Pivot</Button>}>
       {c.pivotConfigs.length ? (
         <div className="divide-y rounded-lg border">
           {c.pivotConfigs.map((v, i) => (
@@ -591,7 +590,7 @@ function ObjectiveDialog({ open, onOpenChange, value, table, onSave }: { open: b
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium">Các mục liên quan</p>
-          <Button size="xs" variant="outline" onClick={() => setV({ ...v, lists: [...v.lists, blankList()] })}><Plus />Thêm mục liên quan</Button>
+          <Button size="xs" variant="outline" onClick={() => setV({ ...v, lists: [...v.lists, blankList()] })}><HugeiconsIcon icon={Add01Icon} />Thêm mục liên quan</Button>
         </div>
         {!v.lists.length && <p className="text-xs text-destructive">Cần ít nhất một mục liên quan.</p>}
         {v.lists.map((l, i) => {
@@ -601,7 +600,7 @@ function ObjectiveDialog({ open, onOpenChange, value, table, onSave }: { open: b
             <div key={l.id} className="space-y-3 rounded-md border p-3">
               <div className="flex items-center text-xs font-medium text-muted-foreground">
                 Mục liên quan {i + 1}{l.name && ` · ${l.name}`}
-                <Button size="icon-xs" variant="ghost" className="ml-auto" aria-label="Xoá mục" onClick={() => setV({ ...v, lists: v.lists.filter((x) => x.id !== l.id) })}><Trash2 /></Button>
+                <Button size="icon-xs" variant="ghost" className="ml-auto" aria-label="Xoá mục" onClick={() => setV({ ...v, lists: v.lists.filter((x) => x.id !== l.id) })}><HugeiconsIcon icon={Delete02Icon} /></Button>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <FormRow label="Tên danh sách" required><Input value={l.name} onChange={(e) => setL(i, { name: e.target.value })} /></FormRow>
@@ -637,7 +636,7 @@ export function ObjectiveTab(p: TabProps) {
   const ed = useEditor<ObjectiveCardConfig>()
   const { data: tables = [] } = useTables()
   return (
-    <SettingsCard title="Objective Card" description="Màn hình mục tiêu kèm danh sách kết quả từ các bảng liên quan" action={<Button size="sm" onClick={ed.openNew}><Plus />Thêm Objective Card</Button>}>
+    <SettingsCard title="Objective Card" description="Màn hình mục tiêu kèm danh sách kết quả từ các bảng liên quan" action={<Button size="sm" onClick={ed.openNew}><HugeiconsIcon icon={Add01Icon} />Thêm Objective Card</Button>}>
       {c.objectiveCards.length ? (
         <div className="divide-y rounded-lg border">
           {c.objectiveCards.map((v, i) => (
@@ -649,7 +648,7 @@ export function ObjectiveTab(p: TabProps) {
           ))}
         </div>
       ) : (
-        <EmptyBox icon={<Target className="size-8" />} title="Chưa có cấu hình Objective Card." hint="Thêm một màn hình để theo dõi mục tiêu và Key Results." />
+        <EmptyBox icon={<HugeiconsIcon icon={Target01Icon} className="size-8" />} title="Chưa có cấu hình Objective Card." hint="Thêm một màn hình để theo dõi mục tiêu và Key Results." />
       )}
       <ObjectiveDialog open={ed.open} value={ed.value} table={{ ...p.table, config: c }} onOpenChange={ed.setOpen} onSave={(v) => patchConfig(p, { objectiveCards: upsert(c.objectiveCards, v) })} />
     </SettingsCard>
@@ -673,7 +672,7 @@ function ConversionDialog({ open, onOpenChange, value, table, onSave }: { open: 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium">Danh sách cột báo cáo <span className="text-destructive">*</span></p>
-          <Button size="xs" variant="outline" onClick={() => setV({ ...v, columns: [...v.columns, { label: "", tableId: "", formula: "COUNT(*)", filterMappings: [] }] })}><Plus />Thêm cột</Button>
+          <Button size="xs" variant="outline" onClick={() => setV({ ...v, columns: [...v.columns, { label: "", tableId: "", formula: "COUNT(*)", filterMappings: [] }] })}><HugeiconsIcon icon={Add01Icon} />Thêm cột</Button>
         </div>
         {!v.columns.length && <EmptyBox title="Chưa có cột nào" />}
         {v.columns.map((col, i) => {
@@ -686,7 +685,7 @@ function ConversionDialog({ open, onOpenChange, value, table, onSave }: { open: 
                   <option value="">Chọn bảng…</option>
                   {tables.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
                 </NativeSelect>
-                <Button size="icon-sm" variant="ghost" aria-label="Xoá cột" onClick={() => setV({ ...v, columns: v.columns.filter((_, j) => j !== i) })}><X /></Button>
+                <Button size="icon-sm" variant="ghost" aria-label="Xoá cột" onClick={() => setV({ ...v, columns: v.columns.filter((_, j) => j !== i) })}><HugeiconsIcon icon={Cancel01Icon} /></Button>
               </div>
               {t && (
                 <>
@@ -726,7 +725,7 @@ export function ConversionTab(p: TabProps) {
   const ed = useEditor<ConversionConfig>()
   const { data: tables = [] } = useTables()
   return (
-    <SettingsCard title="Báo cáo chuyển đổi" description="Tổng hợp chỉ số từ nhiều bảng, đồng bộ theo bộ lọc nhanh của bảng này" action={<Button size="sm" onClick={ed.openNew}><Plus />Thêm báo cáo</Button>}>
+    <SettingsCard title="Báo cáo chuyển đổi" description="Tổng hợp chỉ số từ nhiều bảng, đồng bộ theo bộ lọc nhanh của bảng này" action={<Button size="sm" onClick={ed.openNew}><HugeiconsIcon icon={Add01Icon} />Thêm báo cáo</Button>}>
       {c.conversions.length ? (
         <div className="divide-y rounded-lg border">
           {c.conversions.map((v, i) => (

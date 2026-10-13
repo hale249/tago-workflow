@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react"
-import { Plus, Trash2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, Delete02Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -80,14 +81,14 @@ export function SettingsView() {
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <p className="text-xs font-semibold tracking-wide text-muted-foreground">NHÓM</p>
-                <Button size="sm" variant="outline" className="h-7" onClick={() => set({ templateGroups: [...draft.templateGroups, { id: uid("tg"), name: "" }] })}><Plus />Thêm nhóm</Button>
+                <Button size="sm" variant="outline" className="h-7" onClick={() => set({ templateGroups: [...draft.templateGroups, { id: uid("tg"), name: "" }] })}><HugeiconsIcon icon={Add01Icon} />Thêm nhóm</Button>
               </div>
               {!draft.templateGroups.length && <p className="text-xs text-muted-foreground italic">Chưa có nhóm.</p>}
               <div className="space-y-2">
                 {draft.templateGroups.map((g, i) => (
                   <div key={g.id} className="flex gap-2">
                     <Input value={g.name} placeholder="Tên nhóm" aria-label="Tên nhóm" onChange={(e) => set({ templateGroups: draft.templateGroups.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)) })} />
-                    <Button size="icon-sm" variant="ghost" aria-label="Xoá nhóm" onClick={() => set({ templateGroups: draft.templateGroups.filter((x) => x.id !== g.id), templates: draft.templates.map((t) => (t.groupId === g.id ? { ...t, groupId: undefined } : t)) })}><Trash2 /></Button>
+                    <Button size="icon-sm" variant="ghost" aria-label="Xoá nhóm" onClick={() => set({ templateGroups: draft.templateGroups.filter((x) => x.id !== g.id), templates: draft.templates.map((t) => (t.groupId === g.id ? { ...t, groupId: undefined } : t)) })}><HugeiconsIcon icon={Delete02Icon} /></Button>
                   </div>
                 ))}
               </div>
@@ -95,7 +96,7 @@ export function SettingsView() {
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <p className="text-xs font-semibold tracking-wide text-muted-foreground">MẪU</p>
-                <Button size="sm" variant="outline" className="h-7" onClick={() => set({ templates: [...draft.templates, { id: uid("tp"), name: "", content: "" }] })}><Plus />Thêm mẫu</Button>
+                <Button size="sm" variant="outline" className="h-7" onClick={() => set({ templates: [...draft.templates, { id: uid("tp"), name: "", content: "" }] })}><HugeiconsIcon icon={Add01Icon} />Thêm mẫu</Button>
               </div>
               {!draft.templates.length && <p className="text-xs text-muted-foreground italic">Chưa có mẫu.</p>}
               <div className="space-y-3">
@@ -109,7 +110,7 @@ export function SettingsView() {
                           <ComboSelect value={t.groupId ?? ""} onChange={(v) => put({ groupId: v || undefined })} clearable placeholder="Không nhóm" aria-label="Nhóm"
                             options={draft.templateGroups.map((g) => ({ value: g.id, text: g.name || "(chưa đặt tên)" }))} />
                         </div>
-                        <Button size="icon-sm" variant="ghost" aria-label="Gỡ mẫu" onClick={() => set({ templates: draft.templates.filter((x) => x.id !== t.id) })}><Trash2 /></Button>
+                        <Button size="icon-sm" variant="ghost" aria-label="Gỡ mẫu" onClick={() => set({ templates: draft.templates.filter((x) => x.id !== t.id) })}><HugeiconsIcon icon={Delete02Icon} /></Button>
                       </div>
                       <textarea value={t.content} rows={3} placeholder="Nội dung mẫu" aria-label="Nội dung mẫu" onChange={(e) => put({ content: e.target.value })}
                         className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset" />
@@ -122,7 +123,7 @@ export function SettingsView() {
         </SettingsCard>
 
         <SettingsCard title="Nhãn" {...card("labels")}
-          action={<Button size="sm" variant="outline" className="h-7" onClick={() => set({ labels: [...draft.labels, { id: uid("lb"), name: "", color: LABEL_COLORS[draft.labels.length % LABEL_COLORS.length]! }] })}><Plus />Thêm nhãn</Button>}>
+          action={<Button size="sm" variant="outline" className="h-7" onClick={() => set({ labels: [...draft.labels, { id: uid("lb"), name: "", color: LABEL_COLORS[draft.labels.length % LABEL_COLORS.length]! }] })}><HugeiconsIcon icon={Add01Icon} />Thêm nhãn</Button>}>
           {!draft.labels.length && <p className="text-xs text-muted-foreground italic">Chưa định nghĩa nhãn nào.</p>}
           <div className="space-y-2">
             {draft.labels.map((l, i) => (
@@ -130,7 +131,7 @@ export function SettingsView() {
                 <input type="color" value={l.color} aria-label="Màu nhãn" onChange={(e) => set({ labels: draft.labels.map((x, j) => (j === i ? { ...x, color: e.target.value } : x)) })}
                   className="size-8 shrink-0 cursor-pointer rounded-md border bg-background p-1" />
                 <Input value={l.name} placeholder="Tên nhãn" aria-label="Tên nhãn" onChange={(e) => set({ labels: draft.labels.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)) })} />
-                <Button size="icon-sm" variant="ghost" aria-label="Xoá nhãn" onClick={() => set({ labels: draft.labels.filter((x) => x.id !== l.id) })}><Trash2 /></Button>
+                <Button size="icon-sm" variant="ghost" aria-label="Xoá nhãn" onClick={() => set({ labels: draft.labels.filter((x) => x.id !== l.id) })}><HugeiconsIcon icon={Delete02Icon} /></Button>
               </div>
             ))}
           </div>

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Link, useParams } from "react-router"
-import { ChevronLeft, Download, Play, Trash2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowLeft01Icon, Delete02Icon, Download01Icon, PlayIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
@@ -34,14 +35,14 @@ export function EventConsolePage() {
   return (
     <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg bg-background">
       <div className="flex flex-wrap items-center gap-2 border-b px-3 py-2 text-sm">
-        <Button asChild size="icon-sm" variant="ghost" aria-label="Quay lại"><Link to={`/workflow-units/${unitId}/events/${eventId}/edit`}><ChevronLeft /></Link></Button>
+        <Button asChild size="icon-sm" variant="ghost" aria-label="Quay lại"><Link to={`/workflow-units/${unitId}/events/${eventId}/edit`}><HugeiconsIcon icon={ArrowLeft01Icon} /></Link></Button>
         <span className="font-medium">{event?.name}</span>
         <span className="flex items-center gap-1.5 text-xs text-emerald-600"><span className="size-2 rounded-full bg-emerald-500" />Connected</span>
         <span className="text-xs text-muted-foreground">{logs.length} total • {shown.length} shown</span>
         <span className="ml-auto flex flex-wrap items-center gap-1">
-          <Button size="sm" className="h-8" disabled={run.isPending} onClick={() => run.mutate(eventId)}><Play />{run.isPending ? "Đang chạy…" : "Chạy thử"}</Button>
-          <Button size="sm" variant="outline" className="h-8" disabled={!shown.length} onClick={download}><Download />Export</Button>
-          <Button size="sm" variant="outline" className="h-8" disabled={!logs.length} onClick={() => clear.mutate(eventId)}><Trash2 />Clear</Button>
+          <Button size="sm" className="h-8" disabled={run.isPending} onClick={() => run.mutate(eventId)}><HugeiconsIcon icon={PlayIcon} />{run.isPending ? "Đang chạy…" : "Chạy thử"}</Button>
+          <Button size="sm" variant="outline" className="h-8" disabled={!shown.length} onClick={download}><HugeiconsIcon icon={Download01Icon} />Export</Button>
+          <Button size="sm" variant="outline" className="h-8" disabled={!logs.length} onClick={() => clear.mutate(eventId)}><HugeiconsIcon icon={Delete02Icon} />Clear</Button>
         </span>
       </div>
       <div className="flex flex-wrap items-center gap-2 border-b px-3 py-1.5 text-xs">

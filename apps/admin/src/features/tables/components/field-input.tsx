@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query"
 import { Link } from "react-router"
-import { Calendar, ChevronDown, Plus, X } from "lucide-react"
-import { useRef } from "react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, ArrowDown01Icon, Calendar01Icon, Cancel01Icon } from "@hugeicons/core-free-icons"
+import { useRef, useState } from "react"
 
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Input } from "@workspace/ui/components/input"
 import { cn } from "@workspace/ui/lib/utils"
-import { recordLabel } from "../api/tables.api"
+import { lookupLabel } from "../api/tables.api"
 import { recordsQuery } from "../api/tables.queries"
 import type { RecordValue, TableField, WorkspaceUser } from "../types/table"
 import { formatDateValue } from "../utils/fields"
@@ -23,6 +24,9 @@ type Props = {
   disabled?: boolean
   /** Show the "+" button beside record pickers (main form only, not inside line items). */
   allowCreate?: boolean
+  /** Set by FormRow so its <label> / hint point at the control. */
+  id?: string
+  "aria-describedby"?: string
 }
 
 function MultiPicker({ items, value, onChange }: { items: { value: string; node: React.ReactNode }[]; value: string[]; onChange: (v: string[]) => void }) {
@@ -42,12 +46,24 @@ function MultiPicker({ items, value, onChange }: { items: { value: string; node:
   )
 }
 
-function RecordPicker({ field, value, onChange, invalid, allowCreate }: Omit<Props, "users">) {
+function RecordPicker({ field, value, onChange, invalid, allowCreate, id, "aria-describedby": describedBy }: Omit<Props, "users">) {
   const { data = [] } = useQuery({ ...recordsQuery(field.referenceTableId ?? ""), enabled: !!field.referenceTableId })
-  const options = data.map((r) => ({ value: r.id, text: field.referenceLabelField ? String(r.record[field.referenceLabelField] ?? r.id) : recordLabel(r.tableId, r.id) }))
+  const options = data.map((r) => {
+    const { primary, secondary } = lookupLabel(r.tableId, r.id, field.referenceLabelField)
+    return {
+      value: r.id,
+      text: [primary, ...secondary].join(" "),
+      node: (
+        <span className="flex min-w-0 flex-col leading-tight">
+          <span className="truncate">{primary}</span>
+          {secondary.length > 0 && <span className="truncate text-xs text-muted-foreground">{secondary.join(" · ")}</span>}
+        </span>
+      ),
+    }
+  })
   return (
     <div className="flex w-full items-center gap-2">
-      <ComboSelect size="lg" value={String(value ?? "")} onChange={onChange} options={options} placeholder={field.placeholder || "Chọn bản ghi"} invalid={invalid} clearable={!field.required} aria-label={field.label} />
+      <ComboSelect size="lg" value={String(value ?? "")} onChange={onChange} options={options} placeholder={field.placeholder || "Chọn bản ghi"} invalid={invalid} clearable={!field.required} id={id} aria-label={field.label} aria-describedby={describedBy} />
       {allowCreate && field.referenceTableId && (
         <Link
           to={`/tables/${field.referenceTableId}/records/new`}
@@ -56,7 +72,7 @@ function RecordPicker({ field, value, onChange, invalid, allowCreate }: Omit<Pro
           title="Tạo mới"
           className="inline-flex size-10 shrink-0 items-center justify-center rounded-md border border-input bg-background transition-colors hover:bg-accent"
         >
-          <Plus className="size-4" />
+          <HugeiconsIcon icon={Add01Icon} className="size-4" />
         </Link>
       )}
     </div>
@@ -84,7 +100,7 @@ function DateButton({ value, onChange, invalid, label }: { value: string; onChan
         aria-label={label}
         className="flex h-8 w-full items-center gap-2 rounded-md border border-input bg-background px-3 text-left text-sm outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset aria-invalid:border-destructive"
       >
-        <Calendar className="size-4 shrink-0 text-muted-foreground" />
+        <HugeiconsIcon icon={Calendar01Icon} className="size-4 shrink-0 text-muted-foreground" />
         <span className="flex-1 truncate">{value ? formatDateValue(value) : "Chọn ngày"}</span>
         {value ? (
           <span
@@ -97,10 +113,10 @@ function DateButton({ value, onChange, invalid, label }: { value: string; onChan
             }}
             className="inline-flex size-5 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
           >
-            <X className="size-4" />
+            <HugeiconsIcon icon={Cancel01Icon} className="size-4" />
           </span>
         ) : (
-          <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+          <HugeiconsIcon icon={ArrowDown01Icon} className="size-4 shrink-0 text-muted-foreground" />
         )}
       </button>
       <input ref={ref} type="date" tabIndex={-1} aria-hidden value={value} onChange={(e) => onChange(e.target.value)} className="pointer-events-none absolute inset-x-0 bottom-0 h-0 opacity-0" />
@@ -125,22 +141,57 @@ export function FieldInput(props: Props) {
   )
 }
 
-function FieldControl({ field, value, onChange, users, invalid, allowCreate }: Props) {
+const nf = (d: number | null | undefined) => new Intl.NumberFormat("vi-VN", { minimumFractionDigits: d ?? 0, maximumFractionDigits: d ?? 10 })
+/** "57.900.000,5" / "57900000.5" → 57900000.5 (vi-VN: dots group thousands, comma is the decimal mark). */
+function parseViNumber(s: string): number | null {
+  const t = s.trim().replace(/\s/g, "")
+  if (!t) return null
+  const n = Number(t.includes(",") ? t.replace(/\./g, "").replace(",", ".") : /^-?\d{1,3}(\.\d{3})+$/.test(t) ? t.replace(/\./g, "") : t)
+  return Number.isFinite(n) ? n : null
+}
+
+/** Numeric field like the reference: grouped "57.900.000,00" at rest, plain digits while typing, unit suffix. */
+function NumberInput({ field, value, onChange, className, ...rest }: Omit<React.ComponentProps<typeof Input>, "value" | "onChange"> & { field: TableField; value: RecordValue | undefined; onChange: (v: RecordValue) => void }) {
+  const [draft, setDraft] = useState<string | null>(null) // non-null while focused
+  const num = value == null || value === "" ? null : Number(value)
+  const shown = draft ?? (num == null || Number.isNaN(num) ? "" : nf(field.decimalPlaces).format(num))
+  return (
+    <div className="relative">
+      <Input
+        {...rest}
+        type="text"
+        inputMode="decimal"
+        value={shown}
+        onFocus={() => setDraft(num == null || Number.isNaN(num) ? "" : String(num).replace(".", ","))}
+        onChange={(e) => {
+          setDraft(e.target.value)
+          onChange(parseViNumber(e.target.value))
+        }}
+        onBlur={() => {
+          setDraft(null)
+          // Store what is shown: round to the field's decimal places.
+          if (num != null && !Number.isNaN(num) && field.decimalPlaces != null) {
+            const r = Number(num.toFixed(field.decimalPlaces))
+            if (r !== num) onChange(r)
+          }
+        }}
+        className={cn("tabular-nums", field.unit && "pr-10", className)}
+      />
+      {field.unit && <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">{field.unit}</span>}
+    </div>
+  )
+}
+
+function FieldControl({ field, value, onChange, users, invalid, allowCreate, id, "aria-describedby": describedBy }: Props) {
   const str = value == null ? "" : String(value)
-  const common = { placeholder: field.placeholder, "aria-invalid": invalid || undefined }
+  // aria-label keeps controls named where there is no visible label (line-item cells).
+  const common = { id, placeholder: field.placeholder, "aria-invalid": invalid || undefined, "aria-label": field.label, "aria-describedby": describedBy }
 
   switch (field.type) {
     case "RICH_TEXT":
       return <Textarea {...common} value={str} onChange={(e) => onChange(e.target.value)} rows={4} />
     case "NUMERIC":
-      return (
-        <div className="relative">
-          <Input {...common} type="number" inputMode="decimal" min={field.min ?? undefined} max={field.max ?? undefined}
-            step={field.decimalPlaces ? 1 / 10 ** field.decimalPlaces : "any"}
-            value={str} onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))} className={cn(field.unit && "pr-10")} />
-          {field.unit && <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">{field.unit}</span>}
-        </div>
-      )
+      return <NumberInput {...common} field={field} value={value} onChange={onChange} />
     case "DATE":
       return <DateButton value={str.slice(0, 10)} onChange={onChange} invalid={invalid} label={field.label} />
     case "DATETIME":
@@ -152,7 +203,12 @@ function FieldControl({ field, value, onChange, users, invalid, allowCreate }: P
     case "URL":
       return <Input {...common} type="url" value={str} onChange={(e) => onChange(e.target.value)} placeholder={field.placeholder || "https://"} />
     case "CHECKBOX_YES_NO":
-      return <div className="flex h-9 items-center"><Switch checked={Boolean(value)} onChange={onChange} label={field.label} /></div>
+      return (
+        <div className="flex h-8 items-center gap-2.5">
+          <Switch checked={Boolean(value)} onChange={onChange} label={field.label} />
+          <button type="button" tabIndex={-1} onClick={() => onChange(!value)} className="text-sm text-muted-foreground select-none">{value ? "Có" : "Không"}</button>
+        </div>
+      )
     case "SELECT_ONE":
       return (
         <ComboSelect
@@ -160,7 +216,7 @@ function FieldControl({ field, value, onChange, users, invalid, allowCreate }: P
           onChange={onChange}
           invalid={invalid}
           clearable
-          aria-label={field.label}
+          id={id} aria-label={field.label} aria-describedby={describedBy}
           placeholder={field.placeholder || `Chọn ${field.label.toLowerCase()}`}
           options={(field.options ?? []).map((o) => ({ value: o.value, text: o.text, color: o.backgroundColor }))}
         />
@@ -181,7 +237,7 @@ function FieldControl({ field, value, onChange, users, invalid, allowCreate }: P
           onChange={onChange}
           invalid={invalid}
           clearable={!field.required}
-          aria-label={field.label}
+          id={id} aria-label={field.label} aria-describedby={describedBy}
           placeholder={field.placeholder || `Chọn ${field.label.toLowerCase()}`}
           options={users.map((u) => ({ value: u.id, text: u.fullName, node: <UserChip user={u} /> }))}
         />
@@ -195,9 +251,9 @@ function FieldControl({ field, value, onChange, users, invalid, allowCreate }: P
         />
       )
     case "SELECT_ONE_RECORD":
-      return <RecordPicker field={field} value={value} onChange={onChange} invalid={invalid} allowCreate={allowCreate} />
+      return <RecordPicker field={field} value={value} onChange={onChange} invalid={invalid} allowCreate={allowCreate} id={id} aria-describedby={describedBy} />
     case "AUTO_GENERATED_CODE":
-      return <Input value={str} placeholder="Mã tự động sinh ra" disabled readOnly className="cursor-not-allowed bg-muted" />
+      return <Input id={id} aria-label={field.label} value={str} placeholder="Mã tự động sinh ra" disabled readOnly className="cursor-not-allowed bg-muted" />
     default:
       return <Input {...common} value={str} onChange={(e) => onChange(e.target.value)} />
   }

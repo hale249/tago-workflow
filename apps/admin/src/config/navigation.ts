@@ -1,25 +1,27 @@
 import type { ComponentType } from "react"
 import {
-  Bell,
-  Cable,
-  CircleHelp,
-  FileText,
-  Grid2x2,
-  House,
-  type LucideIcon,
-  MessagesSquare,
-  Settings,
-  Workflow,
-} from "lucide-react"
-
+  type AppIcon,
+  AppsNavIcon,
+  ConnectorNavIcon,
+  FacebookNavIcon,
+  FormNavIcon,
+  HelpNavIcon,
+  HomeNavIcon,
+  InstagramNavIcon,
+  NotificationNavIcon,
+  SettingsNavIcon,
+  WhatsAppNavIcon,
+  WorkflowNavIcon,
+  ZaloNavIcon,
+} from "@/components/icons"
 import { useUnreadNotifications } from "@/features/dashboard"
-import { useUnreadChats } from "@/features/social-chat"
+import { useUnreadChatsIn } from "@/features/social-chat"
 import { TablesNavTree } from "@/features/tables"
 
 export type NavItem = {
   title: string
   to: string
-  icon: LucideIcon
+  icon: AppIcon
   /** Hook returning the badge count (0 hides it). Called once per rendered item. */
   useBadge?: () => number
   /** No page yet — the router serves a "coming soon" placeholder at `to`. */
@@ -35,25 +37,34 @@ export type NavSection = { label?: string; items: NavItem[] }
 export const NAV_SECTIONS: NavSection[] = [
   {
     items: [
-      { title: "Bảng điều khiển", to: "/", icon: House },
-      { title: "Thông báo", to: "/notifications", icon: Bell, useBadge: useUnreadNotifications },
+      { title: "Bảng điều khiển", to: "/", icon: HomeNavIcon },
+      { title: "Thông báo", to: "/notifications", icon: NotificationNavIcon, useBadge: useUnreadNotifications },
     ],
   },
   {
     label: "Tính năng Workspace",
     items: [
-      { title: "Apps", to: "/tables", icon: Grid2x2, tree: TablesNavTree },
-      { title: "Cloud Logic (Workflow)", to: "/workflow-units", icon: Workflow },
-      { title: "Biểu mẫu", to: "/workflow-forms", icon: FileText },
-      { title: "Kết nối", to: "/workflow-connectors", icon: Cable },
-      { title: "Hộp thư", to: "/social-chat", icon: MessagesSquare, useBadge: useUnreadChats },
+      { title: "Apps", to: "/tables", icon: AppsNavIcon, tree: TablesNavTree },
+      { title: "Cloud Logic (Workflow)", to: "/workflow-units", icon: WorkflowNavIcon },
+      { title: "Biểu mẫu", to: "/workflow-forms", icon: FormNavIcon },
+      { title: "Kết nối", to: "/workflow-connectors", icon: ConnectorNavIcon },
+    ],
+  },
+  {
+    // One inbox per channel, like the reference; all open the unified inbox pre-filtered.
+    label: "Social",
+    items: [
+      { title: "Facebook Page Inbox", to: "/social-chat/facebook", icon: FacebookNavIcon, useBadge: () => useUnreadChatsIn("facebook") },
+      { title: "Instagram Inbox", to: "/social-chat/instagram", icon: InstagramNavIcon, useBadge: () => useUnreadChatsIn("instagram") },
+      { title: "WhatsApp Inbox", to: "/social-chat/whatsapp", icon: WhatsAppNavIcon, useBadge: () => useUnreadChatsIn("whatsapp") },
+      { title: "Zalo OA Inbox", to: "/social-chat/zalo", icon: ZaloNavIcon, useBadge: () => useUnreadChatsIn("zalo") },
     ],
   },
   {
     label: "Hệ thống",
     items: [
-      { title: "Cài đặt", to: "/settings", icon: Settings },
-      { title: "Trợ giúp & Hỗ trợ", to: "/help", icon: CircleHelp, comingSoon: true },
+      { title: "Cài đặt", to: "/settings", icon: SettingsNavIcon },
+      { title: "Trợ giúp & Hỗ trợ", to: "/help", icon: HelpNavIcon, comingSoon: true },
     ],
   },
 ]

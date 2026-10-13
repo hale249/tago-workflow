@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router"
 import { useQuery } from "@tanstack/react-query"
-import { ChevronDown, ChevronLeft, ChevronRight, Code2, Copy, Download, GripVertical, Pause, PencilLine, Play, Redo2, Save, Search, Terminal, Undo2, Wand2, X } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowDown01Icon, ArrowLeft01Icon, ArrowRight01Icon, Cancel01Icon, ComputerTerminal01Icon, Copy01Icon, Download01Icon, DragDropVerticalIcon, FloppyDiskIcon, MagicWand01Icon, PauseIcon, PencilEdit02Icon, PlayIcon, Redo02Icon, Search01Icon, SourceCodeIcon, Undo02Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
@@ -37,12 +38,12 @@ function NodePanel({ step, steps, edges, onChange, onClose }: { step: WorkflowSt
   return (
     <aside className="flex w-[clamp(360px,32vw,500px)] shrink-0 flex-col border-l bg-background duration-200 animate-in slide-in-from-right-5">
       <div className="flex shrink-0 items-center gap-3 border-b p-4">
-        <span className="rounded-lg p-2" style={{ backgroundColor: GROUP_SUBTLE[N.group], color: N.color }} aria-hidden><N.icon className="size-5" /></span>
+        <span className="rounded-lg p-2" style={{ backgroundColor: GROUP_SUBTLE[N.group], color: N.color }} aria-hidden><HugeiconsIcon icon={N.icon} className="size-5" /></span>
         <div className="min-w-0 flex-1">
           <h3 className="truncate font-semibold">{N.label}</h3>
           <span className="mt-1 inline-flex h-[22px] items-center rounded-md border bg-background px-1.5 text-xs font-medium">{N.group === "Logic" ? "logic" : "action"}</span>
         </div>
-        <Button size="icon-sm" variant="ghost" aria-label="Đóng bảng" onClick={onClose}><X /></Button>
+        <Button size="icon-sm" variant="ghost" aria-label="Đóng bảng" onClick={onClose}><HugeiconsIcon icon={Cancel01Icon} /></Button>
       </div>
       <div className="no-scrollbar min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
         {N.description && <p className="text-xs text-muted-foreground">{N.description}</p>}
@@ -57,8 +58,8 @@ function NodePanel({ step, steps, edges, onChange, onClose }: { step: WorkflowSt
           ) : (
             <div className="flex items-center gap-2">
               <p className="flex-1 font-mono text-xs break-all text-muted-foreground">{step.id}</p>
-              <Button size="icon-sm" variant="ghost" className="size-7 text-muted-foreground" title="Đổi ID" aria-label="Đổi ID" onClick={() => setRenaming(true)}><PencilLine /></Button>
-              <Button size="icon-sm" variant="ghost" className="size-7 text-muted-foreground" title="Sao chép ID" aria-label="Sao chép ID" onClick={() => navigator.clipboard?.writeText(step.id)}><Copy /></Button>
+              <Button size="icon-sm" variant="ghost" className="size-7 text-muted-foreground" title="Đổi ID" aria-label="Đổi ID" onClick={() => setRenaming(true)}><HugeiconsIcon icon={PencilEdit02Icon} /></Button>
+              <Button size="icon-sm" variant="ghost" className="size-7 text-muted-foreground" title="Sao chép ID" aria-label="Sao chép ID" onClick={() => navigator.clipboard?.writeText(step.id)}><HugeiconsIcon icon={Copy01Icon} /></Button>
             </div>
           )}
         </div>
@@ -72,7 +73,7 @@ function NodePanel({ step, steps, edges, onChange, onClose }: { step: WorkflowSt
         </div>
         <details className="group rounded-md border" open={!hasForm}>
           <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm font-medium">
-            <ChevronRight className="size-4 text-muted-foreground transition-transform group-open:rotate-90" />{hasForm ? "Nâng cao" : "Cấu hình (JSON)"}
+            <HugeiconsIcon icon={ArrowRight01Icon} className="size-4 text-muted-foreground transition-transform group-open:rotate-90" />{hasForm ? "Nâng cao" : "Cấu hình (JSON)"}
           </summary>
           <div className="space-y-4 border-t p-3">
             <div className="space-y-2">
@@ -81,7 +82,7 @@ function NodePanel({ step, steps, edges, onChange, onClose }: { step: WorkflowSt
                 {step.depends_on.map((d) => (
                   <span key={d} className="inline-flex h-[22px] items-center gap-1 rounded-md border px-1.5 font-mono text-[11px]">
                     {d}{branchLabel(d) && <span className="font-sans text-muted-foreground">· {branchLabel(d)}</span>}
-                    <button type="button" aria-label={`Bỏ liên kết ${d}`} onClick={() => onChange({ ...step, depends_on: step.depends_on.filter((x) => x !== d) })}><X className="size-3" /></button>
+                    <button type="button" aria-label={`Bỏ liên kết ${d}`} onClick={() => onChange({ ...step, depends_on: step.depends_on.filter((x) => x !== d) })}><HugeiconsIcon icon={Cancel01Icon} className="size-3" /></button>
                   </span>
                 ))}
                 {!step.depends_on.length && <span className="text-xs text-muted-foreground">Chưa nối — kéo từ chấm bên phải của node khác vào node này.</span>}
@@ -179,13 +180,13 @@ export function EventEditorPage() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="h-10 max-w-60 gap-2 px-3">
-                <T.icon className="size-4 shrink-0" /><span className="truncate">{draft.name}</span>
+                <HugeiconsIcon icon={T.icon} className="size-4 shrink-0" /><span className="truncate">{draft.name}</span>
                 <span className="inline-flex h-[22px] items-center rounded-md border bg-muted px-1.5 text-xs text-muted-foreground" aria-hidden>{siblings.length}</span>
-                <ChevronDown className="size-4 text-muted-foreground" />
+                <HugeiconsIcon icon={ArrowDown01Icon} className="size-4 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuItem asChild><Link to={`/workflow-units/${unitId}`}><ChevronLeft />Về danh sách sự kiện</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link to={`/workflow-units/${unitId}`}><HugeiconsIcon icon={ArrowLeft01Icon} />Về danh sách sự kiện</Link></DropdownMenuItem>
               <DropdownMenuSeparator />
               {siblings.map((s) => <DropdownMenuItem key={s.id} onSelect={() => navigate(`/workflow-units/${unitId}/events/${s.id}/edit`)}>{s.name}</DropdownMenuItem>)}
             </DropdownMenuContent>
@@ -194,27 +195,27 @@ export function EventEditorPage() {
             title={draft.active ? "Đang chạy" : "Tạm dừng"}
             className={cn("inline-flex h-[22px] items-center rounded-md border px-1.5", draft.active ? "border-emerald-600/20 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10" : "border-amber-500/20 bg-amber-50 text-amber-600 dark:bg-amber-500/10")}
           >
-            {draft.active ? <Play className="size-3.5 fill-current" /> : <Pause className="size-3.5" />}
+            {draft.active ? <HugeiconsIcon icon={PlayIcon} className="size-3.5 fill-current" /> : <HugeiconsIcon icon={PauseIcon} className="size-3.5" />}
           </span>
           <span className="h-6 w-px shrink-0 bg-border/80" aria-hidden />
           <div role="tablist" aria-label="Chế độ soạn thảo" className="grid h-10 w-[200px] grid-cols-2 items-center rounded-md bg-muted p-1 text-muted-foreground">
-            {([["visual", "Trực quan", null], ["yaml", "YAML", Code2]] as const).map(([m, label, Icon]) => (
-              <button key={m} type="button" role="tab" aria-selected={mode === m} onClick={() => { if (m === "yaml") { setYamlText(toYaml(draft)); setYamlErr("") } setMode(m) }} className={cn("inline-flex items-center justify-center gap-1.5 rounded-sm px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-all", mode === m ? "bg-background text-brand shadow-sm" : "hover:text-foreground")}>{Icon && <Icon className="size-3.5" />}{label}</button>
+            {([["visual", "Trực quan", null], ["yaml", "YAML", SourceCodeIcon]] as const).map(([m, label, Icon]) => (
+              <button key={m} type="button" role="tab" aria-selected={mode === m} onClick={() => { if (m === "yaml") { setYamlText(toYaml(draft)); setYamlErr("") } setMode(m) }} className={cn("inline-flex items-center justify-center gap-1.5 rounded-sm px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-all", mode === m ? "bg-background text-brand shadow-sm" : "hover:text-foreground")}>{Icon && <HugeiconsIcon icon={Icon} className="size-3.5" />}{label}</button>
             ))}
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <div className="flex items-center gap-1" role="group" aria-label="Điều khiển lịch sử">
-            <Button size="icon-sm" variant="ghost" aria-label="Hoàn tác" disabled={!past.length} onClick={undo}><Undo2 /></Button>
-            <Button size="icon-sm" variant="ghost" aria-label="Làm lại" disabled={!future.length} onClick={redo}><Redo2 /></Button>
+            <Button size="icon-sm" variant="ghost" aria-label="Hoàn tác" disabled={!past.length} onClick={undo}><HugeiconsIcon icon={Undo02Icon} /></Button>
+            <Button size="icon-sm" variant="ghost" aria-label="Làm lại" disabled={!future.length} onClick={redo}><HugeiconsIcon icon={Redo02Icon} /></Button>
           </div>
           <span className="h-6 w-px shrink-0 bg-border/80" aria-hidden />
-          <Button size="sm" variant="outline" className="h-8" onClick={() => apply(autoLayout(draft))}><Wand2 />Tự động sắp xếp</Button>
-          <Button size="sm" variant="outline" className="h-8" onClick={() => exportWorkflowPng(draft, triggerLabel)}><Download />Xuất PNG</Button>
-          <Button asChild size="icon-sm" variant="ghost" title="Console" aria-label="Console"><Link to={`/workflow-units/${unitId}/events/${eventId}/console`}><Terminal /></Link></Button>
+          <Button size="sm" variant="outline" className="h-8" onClick={() => apply(autoLayout(draft))}><HugeiconsIcon icon={MagicWand01Icon} />Tự động sắp xếp</Button>
+          <Button size="sm" variant="outline" className="h-8" onClick={() => exportWorkflowPng(draft, triggerLabel)}><HugeiconsIcon icon={Download01Icon} />Xuất PNG</Button>
+          <Button asChild size="icon-sm" variant="ghost" title="Console" aria-label="Console"><Link to={`/workflow-units/${unitId}/events/${eventId}/console`}><HugeiconsIcon icon={ComputerTerminal01Icon} /></Link></Button>
           <span className="h-6 w-px shrink-0 bg-border/80" aria-hidden />
           <span role="status" aria-live="polite" className={cn("max-w-[6.5rem] text-sm leading-tight", dirty ? "text-amber-600" : "text-muted-foreground")}>{save.isPending ? "Đang lưu…" : dirty ? "Có thay đổi chưa lưu" : "Đã lưu"}</span>
-          <Button size="sm" className="h-8" disabled={!dirty || save.isPending} onClick={() => save.mutate(draft)}><Save />Lưu Workflow</Button>
+          <Button size="sm" className="h-8" disabled={!dirty || save.isPending} onClick={() => save.mutate(draft)}><HugeiconsIcon icon={FloppyDiskIcon} />Lưu Workflow</Button>
         </div>
       </div>
 
@@ -223,7 +224,7 @@ export function EventEditorPage() {
           <div className="space-y-3 p-4 pb-2">
             <p className="px-1 text-sm font-semibold">Bảng Node</p>
             <div className="relative">
-              <Search className="pointer-events-none absolute top-2.5 left-2.5 size-4 text-muted-foreground" />
+              <HugeiconsIcon icon={Search01Icon} className="pointer-events-none absolute top-2.5 left-2.5 size-4 text-muted-foreground" />
               <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm kiếm" className="h-9 border-0 bg-muted/50 pl-9" />
             </div>
           </div>
@@ -238,12 +239,12 @@ export function EventEditorPage() {
                     {list.map((n) => (
                       <button key={n.type} type="button" draggable onDragStart={(e) => e.dataTransfer.setData("application/x-node-type", n.type)} onClick={() => addStep(n.type)}
                         className="group flex w-full cursor-grab items-center gap-2.5 rounded-md border border-transparent px-3 py-2 text-left transition-all hover:border-border/40 hover:bg-accent active:cursor-grabbing" title="Bấm để thêm sau node đang chọn, hoặc kéo thả vào canvas">
-                        <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-md", GROUP_CHIP[n.group])}><n.icon className="size-4" /></span>
+                        <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-md", GROUP_CHIP[n.group])}><HugeiconsIcon icon={n.icon} className="size-4" /></span>
                         <span className="flex min-w-0 flex-1 flex-col items-start">
                           <span className="text-sm leading-tight font-medium">{n.label}</span>
                           <span className="line-clamp-1 w-full text-[11px] text-muted-foreground/80">{n.description}</span>
                         </span>
-                        <GripVertical className="size-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                        <HugeiconsIcon icon={DragDropVerticalIcon} className="size-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
                       </button>
                     ))}
                   </div>

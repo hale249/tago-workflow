@@ -1,6 +1,6 @@
-import { ChevronDown } from "lucide-react"
-
 import { cn } from "@workspace/ui/lib/utils"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { SectionChevronIcon } from "@/components/icons"
 import type { NavSection as NavSectionType } from "@/config/navigation"
 import { useUiStore } from "@/stores/ui.store"
 import { NavLinkItem } from "./nav-link-item"
@@ -22,7 +22,7 @@ export function NavSection({ section, collapsed, onNavigate }: Props) {
           aria-expanded={open}
           className="flex h-7 w-full items-center gap-1.5 px-2 text-xs font-medium text-sidebar-foreground/55 transition-colors hover:text-sidebar-foreground/80"
         >
-          <ChevronDown className={cn("size-3 shrink-0 transition-transform duration-200", !open && "-rotate-90")} />
+          <HugeiconsIcon icon={SectionChevronIcon} className={cn("size-3 shrink-0 transition-transform duration-200", !open && "-rotate-90")} />
           <span className="truncate">{label}</span>
         </button>
       )}

@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react"
 import { Link, useNavigate } from "react-router"
 import { useQueryClient } from "@tanstack/react-query"
-import { ArrowUpDown, ChevronDown, ChevronUp, LayoutGrid, List, MoreHorizontal, Plus, RefreshCw, Rows3, Search, Settings, Trash2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, ArrowDown01Icon, ArrowUp01Icon, ArrowUpDownIcon, Delete02Icon, LayoutGridIcon, ListViewIcon, MoreHorizontalIcon, RefreshIcon, Search01Icon, Settings02Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
@@ -18,10 +19,10 @@ import type { ActiveTable, TableTemplate, WorkspaceUser } from "../types/table"
 
 type ViewMode = "list" | "table" | "grid"
 const VIEW_KEY = "tago-apps-view"
-const VIEWS: { id: ViewMode; label: string; icon: typeof List }[] = [
-  { id: "list", label: "Danh sách", icon: List },
-  { id: "table", label: "Bảng", icon: Rows3 },
-  { id: "grid", label: "Lưới", icon: LayoutGrid },
+const VIEWS: { id: ViewMode; label: string; icon: typeof ListViewIcon }[] = [
+  { id: "list", label: "Danh sách", icon: ListViewIcon },
+  { id: "table", label: "Bảng", icon: ListViewIcon },
+  { id: "grid", label: "Lưới", icon: LayoutGridIcon },
 ]
 /** Template label shown under each app, as on the reference. */
 const TEMPLATE_LABEL: Record<TableTemplate, string> = {
@@ -51,13 +52,13 @@ function TableMenu({ table, onDelete }: { table: ActiveTable; onDelete: () => vo
     <DropdownMenu>
       <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
         <Button size="icon-sm" variant="ghost" className="size-7 text-muted-foreground opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100 max-md:opacity-100" aria-label="Tuỳ chọn">
-          <MoreHorizontal />
+          <HugeiconsIcon icon={MoreHorizontalIcon} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-        <DropdownMenuItem onSelect={() => navigate(`/tables/${table.id}/settings`)}><Settings />Cài đặt bảng</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => navigate(`/tables/${table.id}/settings`)}><HugeiconsIcon icon={Settings02Icon} />Cài đặt bảng</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" onSelect={onDelete}><Trash2 />Xoá bảng</DropdownMenuItem>
+        <DropdownMenuItem variant="destructive" onSelect={onDelete}><HugeiconsIcon icon={Delete02Icon} />Xoá bảng</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
@@ -113,7 +114,7 @@ export function TablesPage() {
     }
   }
   const SortIcon = ({ k }: { k: "name" | "fields" }) =>
-    sort !== k ? <ArrowUpDown className="size-3.5 opacity-60" /> : asc ? <ChevronUp className="size-3.5 text-foreground" /> : <ChevronDown className="size-3.5 text-foreground" />
+    sort !== k ? <HugeiconsIcon icon={ArrowUpDownIcon} className="size-3.5 opacity-60" /> : asc ? <HugeiconsIcon icon={ArrowUp01Icon} className="size-3.5 text-foreground" /> : <HugeiconsIcon icon={ArrowDown01Icon} className="size-3.5 text-foreground" />
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-6">
@@ -124,14 +125,14 @@ export function TablesPage() {
         </div>
         <div className="flex items-center gap-2">
           <div className="relative min-w-0 flex-1 sm:w-64 sm:flex-none">
-            <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+            <HugeiconsIcon icon={Search01Icon} className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Tìm kiếm apps..." className="h-8 pl-8" />
           </div>
           <Button size="icon-sm" variant="outline" aria-label="Làm mới" onClick={() => qc.invalidateQueries({ queryKey: tableKeys.all })}>
-            <RefreshCw className={cn(isFetching && "animate-spin")} />
+            <HugeiconsIcon icon={RefreshIcon} className={cn(isFetching && "animate-spin")} />
           </Button>
           <Button className="h-7 gap-1.5 px-2.5 has-[>svg]:px-2 [&_svg:not([class*='size-'])]:size-3.5" onClick={() => setCreateOpen(true)}>
-            <Plus />Tạo mới
+            <HugeiconsIcon icon={Add01Icon} />Tạo mới
           </Button>
         </div>
       </header>
@@ -148,7 +149,7 @@ export function TablesPage() {
         <div role="tablist" aria-label="Kiểu hiển thị" className="inline-flex shrink-0 items-center gap-0.5 self-start lg:self-auto">
           {VIEWS.map((v) => (
             <button key={v.id} type="button" role="tab" aria-selected={view === v.id} title={v.label} onClick={() => changeView(v.id)} className={tab(view === v.id)}>
-              <v.icon className="size-3.5" />
+              <HugeiconsIcon icon={v.icon} className="size-3.5" />
               <span className="max-sm:sr-only">{v.label}</span>
             </button>
           ))}

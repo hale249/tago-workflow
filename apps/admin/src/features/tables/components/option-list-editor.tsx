@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { ChevronDown, GripVertical, Plus, Trash2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, ArrowDown01Icon, Delete02Icon, DragDropVerticalIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
@@ -48,7 +49,7 @@ export function OptionListEditor({ value, onChange, error }: Props) {
           placeholder="Gõ tên tuỳ chọn rồi Enter…"
           aria-invalid={!!error || undefined}
         />
-        <Button type="button" onClick={add} disabled={!draft.trim()}><Plus />Thêm</Button>
+        <Button type="button" onClick={add} disabled={!draft.trim()}><HugeiconsIcon icon={Add01Icon} />Thêm</Button>
       </div>
 
       {value.length > 0 && (
@@ -62,14 +63,14 @@ export function OptionListEditor({ value, onChange, error }: Props) {
             >
               <div className="flex items-center gap-2 px-2 py-2">
                 <span draggable onDragStart={() => setDragIdx(i)} onDragEnd={() => setDragIdx(null)} className="cursor-grab p-1 text-muted-foreground" aria-label="Kéo để sắp xếp">
-                  <GripVertical className="size-4" />
+                  <HugeiconsIcon icon={DragDropVerticalIcon} className="size-4" />
                 </span>
                 <OptionBadge option={o} className="px-2.5 py-1 text-sm" />
                 <Button type="button" size="icon-xs" variant="ghost" aria-label="Tuỳ chỉnh" aria-expanded={expanded === i} onClick={() => setExpanded(expanded === i ? null : i)}>
-                  <ChevronDown className={cn("transition-transform", expanded === i && "rotate-180")} />
+                  <HugeiconsIcon icon={ArrowDown01Icon} className={cn("transition-transform", expanded === i && "rotate-180")} />
                 </Button>
                 <Button type="button" size="icon-xs" variant="ghost" className="text-destructive hover:text-destructive" aria-label={`Xoá ${o.text}`} onClick={() => onChange(value.filter((_, j) => j !== i))}>
-                  <Trash2 />
+                  <HugeiconsIcon icon={Delete02Icon} />
                 </Button>
               </div>
               {expanded === i && (

@@ -1,4 +1,5 @@
-import { Check } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Tick02Icon } from "@hugeicons/core-free-icons"
 
 import { BRANDING } from "@/config/branding"
 import { LoginForm } from "../components/login-form"
@@ -35,7 +36,7 @@ export function LoginPage() {
           <ul className="mt-8 space-y-4">
             {HIGHLIGHTS.map((h) => (
               <li key={h.title} className="flex items-start gap-3">
-                <span className={`mt-0.5 grid size-6 shrink-0 place-items-center rounded-full ${h.tone}`}><Check className="size-3.5" /></span>
+                <span className={`mt-0.5 grid size-6 shrink-0 place-items-center rounded-full ${h.tone}`}><HugeiconsIcon icon={Tick02Icon} className="size-3.5" /></span>
                 <span>
                   <span className="block font-semibold">{h.title}</span>
                   <span className="block text-xs text-slate-400">{h.text}</span>

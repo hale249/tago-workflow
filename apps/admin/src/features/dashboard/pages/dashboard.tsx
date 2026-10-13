@@ -1,35 +1,56 @@
 import { useState } from "react"
 import { Link } from "react-router"
-import { Bell, Building2, Check, CheckCheck, Crown } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Notification01Icon, Tick02Icon, TickDouble02Icon } from "@hugeicons/core-free-icons"
+import { CalendarSmallIcon, OwnerIcon, PeopleIcon, StarOutlineIcon } from "@/components/icons"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-const day = new Intl.DateTimeFormat("vi-VN")
+const day = new Intl.DateTimeFormat("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" })
 const WORKSPACES = [
   { id: "evergreen", name: "Evergreen", handle: "evergreen", owner: "Louis Cooper", mine: true, createdAt: "2026-03-09", color: "from-emerald-400 to-teal-600" },
   { id: "crestview", name: "Crestview", handle: "crestview", owner: "Louis Cooper", mine: false, createdAt: "2026-03-15", color: "from-sky-400 to-blue-600" },
 ]
 
-/** Workspace dashboard: one row per workspace the user belongs to. */
+/** Workspace dashboard: one card per workspace the user belongs to (reference card grid). */
 export function DashboardPage() {
+  const [starred, setStarred] = useState<string[]>([])
   return (
-    <section className="flex min-h-0 flex-1 flex-col overflow-y-auto rounded-lg bg-background p-5">
-      <h1 className="text-2xl font-semibold">Bảng điều khiển Workspace</h1>
-      <p className="text-sm text-muted-foreground">{WORKSPACES.length} workspace đang hoạt động</p>
-      <div className="mt-5 divide-y rounded-lg border">
-        {WORKSPACES.map((w) => (
-          <Link key={w.id} to="/tables" className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/60">
-            <span className={cn("grid size-10 place-items-center rounded-lg bg-gradient-to-br text-sm font-semibold text-white", w.color)}>{w.name.slice(0, 2).toUpperCase()}</span>
-            <div className="min-w-0 flex-1">
-              <p className="flex items-center gap-2 font-medium">{w.name}{w.mine && <span className="inline-flex items-center gap-1 rounded bg-amber-100 px-1.5 text-xs text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"><Crown className="size-3" />Chủ sở hữu</span>}</p>
-              <p className="text-xs text-muted-foreground">@{w.handle}</p>
+    <section className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-background p-8">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-semibold">Bảng điều khiển Workspace</h1>
+        <p className="text-muted-foreground">{WORKSPACES.length} workspace đang hoạt động</p>
+      </div>
+      <div className="mt-10 grid grid-cols-12 gap-6">
+        {WORKSPACES.map((w) => {
+          const on = starred.includes(w.id)
+          return (
+            <div key={w.id} className="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+              <Link to="/tables" className="group relative flex h-full flex-col rounded-lg border bg-card py-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                <button type="button" aria-label={on ? "Bỏ yêu thích" : "Thêm vào yêu thích"} aria-pressed={on}
+                  onClick={(e) => { e.preventDefault(); setStarred(on ? starred.filter((x) => x !== w.id) : [...starred, w.id]) }}
+                  className={cn("absolute top-3 right-3 z-10 rounded-md p-1.5 transition-opacity duration-200 hover:bg-muted focus-visible:opacity-100", on ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
+                  <HugeiconsIcon icon={StarOutlineIcon} className={cn("size-3.5", on ? "fill-amber-400 text-amber-500" : "text-muted-foreground")} />
+                </button>
+                <div className="flex items-start gap-3 px-5 pt-4 pr-10 pb-3">
+                  <span className={cn("grid size-11 shrink-0 place-items-center rounded-lg bg-gradient-to-br text-base font-semibold text-white ring-1 ring-border", w.color)}>{w.name.slice(0, 2).toUpperCase()}</span>
+                  <div className="min-w-0 grow space-y-1">
+                    <p className="truncate text-base font-semibold">{w.name}</p>
+                    <p className="truncate text-xs text-muted-foreground">@{w.handle}</p>
+                    {w.mine && <span className="inline-flex items-center gap-1 rounded-md border bg-muted/50 px-1.5 py-0.5 text-[11px] text-muted-foreground"><HugeiconsIcon icon={OwnerIcon} className="size-3" />Chủ sở hữu</span>}
+                  </div>
+                </div>
+                <div className="flex-1 space-y-1.5 px-5 pb-4 text-xs">
+                  <p className="flex min-w-0 items-center gap-2 text-muted-foreground"><HugeiconsIcon icon={PeopleIcon} className="size-3.5 shrink-0" /><span className="truncate text-foreground">{w.owner}</span></p>
+                  <p className="flex items-center gap-2 text-muted-foreground"><HugeiconsIcon icon={CalendarSmallIcon} className="size-3.5 shrink-0" />Tạo lúc {day.format(new Date(w.createdAt))}</p>
+                </div>
+              </Link>
             </div>
-            <div className="text-right text-xs text-muted-foreground max-sm:hidden"><p className="flex items-center justify-end gap-1"><Building2 className="size-3" />{w.owner}</p><p>Tạo lúc {day.format(new Date(w.createdAt))}</p></div>
-          </Link>
-        ))}
+          )
+        })}
       </div>
     </section>
   )
@@ -59,7 +80,7 @@ export function NotificationsPage() {
     <section className="flex min-h-0 flex-1 flex-col overflow-y-auto rounded-lg bg-background p-5">
       <div className="flex items-center gap-3">
         <h1 className="flex-1 text-2xl font-semibold">Thông báo</h1>
-        <Button size="sm" variant="outline" disabled={!unread} onClick={() => useNotices.setState((s) => ({ items: s.items.map((n) => ({ ...n, read: true })) }))}><CheckCheck />Đánh dấu đã đọc tất cả</Button>
+        <Button size="sm" variant="outline" disabled={!unread} onClick={() => useNotices.setState((s) => ({ items: s.items.map((n) => ({ ...n, read: true })) }))}><HugeiconsIcon icon={TickDouble02Icon} />Đánh dấu đã đọc tất cả</Button>
       </div>
       <div className="mt-4 flex gap-1 border-b">
         {([["all", "Tất cả"], ["unread", `Chưa đọc${unread ? ` (${unread})` : ""}`], ["read", "Đã đọc"]] as const).map(([k, l]) => (
@@ -67,7 +88,7 @@ export function NotificationsPage() {
         ))}
       </div>
       {!list.length ? (
-        <div className="grid place-items-center gap-2 py-20 text-center text-sm text-muted-foreground"><Bell className="size-8" /><p className="font-medium text-foreground">Không có thông báo nào</p>Các thông báo mới sẽ xuất hiện tại đây</div>
+        <div className="grid place-items-center gap-2 py-20 text-center text-sm text-muted-foreground"><HugeiconsIcon icon={Notification01Icon} className="size-8" /><p className="font-medium text-foreground">Không có thông báo nào</p>Các thông báo mới sẽ xuất hiện tại đây</div>
       ) : (
         <ul className="mt-2 divide-y">
           {list.map((n) => (
@@ -78,7 +99,7 @@ export function NotificationsPage() {
                 <p className="truncate text-sm text-muted-foreground">{n.body}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">{ago2(n.at)}</p>
               </Link>
-              {!n.read && <Button size="icon-sm" variant="ghost" className="opacity-0 group-hover:opacity-100" aria-label="Đánh dấu đã đọc" onClick={() => mark(n.id)}><Check /></Button>}
+              {!n.read && <Button size="icon-sm" variant="ghost" className="opacity-0 group-hover:opacity-100" aria-label="Đánh dấu đã đọc" onClick={() => mark(n.id)}><HugeiconsIcon icon={Tick02Icon} /></Button>}
             </li>
           ))}
         </ul>

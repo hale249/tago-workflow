@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react"
 import { useNavigate } from "react-router"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Loading03Icon, ViewIcon, ViewOffIcon } from "@hugeicons/core-free-icons"
 
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { cn } from "@workspace/ui/lib/utils"
@@ -49,7 +50,7 @@ export function LoginForm() {
             onChange={(e) => setPassword(e.target.value)} className={cn(field, "pr-9")} />
           <button type="button" onClick={() => setShowPassword((s) => !s)} aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
             className="absolute inset-y-0 right-0 grid w-9 place-items-center text-slate-400 hover:text-slate-200">
-            {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            {showPassword ? <HugeiconsIcon icon={ViewOffIcon} className="size-4" /> : <HugeiconsIcon icon={ViewIcon} className="size-4" />}
           </button>
         </div>
         {errors.password && <p id="password-error" className="text-xs text-red-400">{errors.password}</p>}
@@ -63,7 +64,7 @@ export function LoginForm() {
       </div>
       <button type="submit" disabled={submitting}
         className="inline-flex h-8 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b6ef0] to-[#0ea5a5] text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none disabled:opacity-70">
-        {submitting && <Loader2 className="size-4 animate-spin" />}
+        {submitting && <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />}
         Đăng nhập
       </button>
     </form>

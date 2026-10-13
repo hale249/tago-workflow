@@ -1,4 +1,5 @@
-import { Plus, Trash2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, Delete02Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
@@ -38,21 +39,21 @@ export function ItemsEditor({ config, items, users, onChange, parent, pinnedSums
           <div>
             <h3 className="flex items-center gap-2 text-lg font-semibold">
               {config.label || "Danh sách chi tiết"}
-              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand/10 px-1.5 text-xs font-medium text-brand">{items.length}</span>
+              <span className={cn("inline-flex h-5 min-w-5 items-center justify-center px-1.5 text-xs font-medium", editable ? "rounded-full bg-brand/10 text-brand" : "rounded-md border bg-muted text-muted-foreground")}>{items.length}</span>
             </h3>
-            <p className="mt-0.5 text-sm text-muted-foreground">Danh sách các mục chi tiết của bản ghi này</p>
+            {editable && <p className="mt-0.5 text-sm text-muted-foreground">Danh sách các mục chi tiết của bản ghi này</p>}
           </div>
-          {editable && <Button type="button" size="sm" variant="outline" className="h-7 gap-1.5 px-2.5" onClick={() => onChange([...items, blankRow()])}><Plus className="size-3.5" />Thêm dòng</Button>}
+          {editable && <Button type="button" size="sm" variant="outline" className="h-7 gap-1.5 px-2.5" onClick={() => onChange([...items, blankRow()])}><HugeiconsIcon icon={Add01Icon} className="size-3.5" />Thêm dòng</Button>}
         </div>
 
-        <div className="rounded-lg border bg-card">
+        <div className="overflow-hidden rounded-lg border bg-background">
           <div className="relative w-full overflow-x-auto">
-            <table className="w-full min-w-max text-sm">
+            <table className={cn("w-full border-collapse text-sm", editable && "min-w-max")}>
               <thead>
-                <tr className="border-b border-border/70 bg-muted/50">
-                  <th className="h-9 w-12 px-3 text-center text-[13px] font-medium whitespace-nowrap text-muted-foreground">#</th>
+                <tr className={cn("border-b", editable ? "bg-muted/50" : "bg-background")}>
+                  <th className={cn("h-9 w-12 px-3 text-center text-[13px] font-medium whitespace-nowrap text-muted-foreground", !editable && "border-r border-border/70")}>#</th>
                   {config.fields.map((f) => (
-                    <th key={f.name} className={cn("h-9 px-3 text-left text-[13px] font-medium whitespace-nowrap text-muted-foreground", f.type === "SELECT_ONE_RECORD" ? "w-[220px] min-w-[220px]" : "w-[160px] min-w-[160px]")}>{f.label}</th>
+                    <th key={f.name} className={cn("h-9 px-3 text-left text-[13px] font-medium whitespace-nowrap text-muted-foreground", !editable && "border-r border-border/70 last:border-r-0", !editable && f.type === "NUMERIC" && "text-right", editable && (f.type === "SELECT_ONE_RECORD" ? "w-[220px] min-w-[220px]" : "w-[160px] min-w-[160px]"))}>{f.label}</th>
                   ))}
                   {editable && <th className="h-9 w-16 px-3 text-center text-[13px] font-medium whitespace-nowrap text-muted-foreground">Thao tác</th>}
                 </tr>
@@ -60,25 +61,25 @@ export function ItemsEditor({ config, items, users, onChange, parent, pinnedSums
               <tbody className="[&_tr:last-child]:border-0">
                 {items.map((it, i) => (
                   <tr key={it.id} className="group border-b border-border/70 transition-colors hover:bg-muted/60">
-                    <td className="h-9 px-3 py-1.5 text-center font-medium text-muted-foreground tabular-nums">{i + 1}</td>
+                    <td className={cn("h-9 px-3 py-1 text-center font-medium text-muted-foreground tabular-nums", !editable && "border-r border-border/70")}>{i + 1}</td>
                     {config.fields.map((f) =>
                       editable ? (
                         <td key={f.name} className={cn("p-2 align-top", f.type === "SELECT_ONE_RECORD" ? "w-[220px] min-w-[220px]" : "w-[160px] min-w-[160px]")}>
                           <FieldInput field={f} value={it[f.name]} users={users} onChange={(v) => onChange(items.map((x, j) => (j === i ? { ...x, [f.name]: v } : x)))} />
                         </td>
                       ) : (
-                        <td key={f.name} className="h-9 px-3 py-1.5">
+                        <td key={f.name} className={cn("h-9 border-r border-border/70 px-3 py-1 last:border-r-0", f.type === "NUMERIC" && "text-right")}>
                           {f.type === "NUMERIC" && it[f.name] != null && it[f.name] !== "" ? (
                             <span className="tabular-nums">{formatNumber(Number(it[f.name]), 2, f.unit === "%" ? "%" : null)}</span>
                           ) : (
-                            <FieldValue field={f} value={it[f.name]} users={users} />
+                            <FieldValue size="md" field={f} value={it[f.name]} users={users} />
                           )}
                         </td>
                       ),
                     )}
                     {editable && (
                       <td className="h-9 px-3 py-1.5 text-center">
-                        <Button type="button" size="icon-sm" variant="ghost" className="text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive focus-visible:opacity-100 max-md:opacity-100" aria-label={`Xoá dòng ${i + 1}`} onClick={() => onChange(items.filter((_, j) => j !== i))}><Trash2 /></Button>
+                        <Button type="button" size="icon-sm" variant="ghost" className="text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive focus-visible:opacity-100 max-md:opacity-100" aria-label={`Xoá dòng ${i + 1}`} onClick={() => onChange(items.filter((_, j) => j !== i))}><HugeiconsIcon icon={Delete02Icon} /></Button>
                       </td>
                     )}
                   </tr>
@@ -89,17 +90,18 @@ export function ItemsEditor({ config, items, users, onChange, parent, pinnedSums
               </tbody>
             </table>
           </div>
-          <div className="border-t bg-muted/30 px-4 py-2 text-sm text-muted-foreground">Tổng cộng: {items.length} dòng</div>
+          <div className={cn("border-t px-3 py-2 text-muted-foreground tabular-nums", editable ? "bg-muted/30 px-4 text-sm" : "bg-background text-xs")}>Tổng cộng: {items.length} dòng</div>
         </div>
       </div>
 
       {config.sums.length > 0 && (
-        <div className="mt-6 rounded-lg border bg-muted/20 p-4">
-          <div className="grid gap-4 sm:grid-cols-2">
+        <div className={cn("rounded-lg border bg-muted/20 p-4", editable ? "mt-6" : "mt-4")}>
+          <div className={cn("grid sm:grid-cols-2", editable ? "gap-4" : "gap-3")}>
             {config.sums.map((s) => (
-              <div key={s.label} className="space-y-1.5">
-                <label className="text-sm font-medium">{s.label}</label>
-                <Input disabled value={sumValue(s)} aria-label={s.label} />
+              // Form: disabled inputs; detail view: label + bold value (as in the reference).
+              <div key={s.label} className={editable ? "space-y-1.5" : "space-y-1"}>
+                {editable ? <label className="text-sm font-medium">{s.label}</label> : <p className="text-xs font-medium text-muted-foreground">{s.label}</p>}
+                {editable ? <Input disabled value={sumValue(s)} aria-label={s.label} /> : <p className="text-sm font-semibold tabular-nums">{sumValue(s)}</p>}
                 {pinnedSums.includes(s.sumField) && <p className="text-[11px] text-muted-foreground">Chép từ bản ghi kích hoạt</p>}
               </div>
             ))}

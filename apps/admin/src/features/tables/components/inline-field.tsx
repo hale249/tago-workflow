@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { Check, Pencil, Plus, X } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, Cancel01Icon, PencilEdit01Icon, Tick02Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
@@ -30,7 +31,7 @@ function UserChips({ tableId, record, field, users, readOnly }: Props) {
           <UserChip user={users.find((u) => u.id === id)} />
           {!readOnly && (
             <button type="button" aria-label="Gỡ" disabled={field.required && ids.length === 1} onClick={() => save(ids.filter((x) => x !== id))} className="rounded-full p-0.5 text-muted-foreground hover:bg-muted disabled:opacity-30">
-              <X className="size-3" />
+              <HugeiconsIcon icon={Cancel01Icon} className="size-3" />
             </button>
           )}
         </span>
@@ -39,7 +40,7 @@ function UserChips({ tableId, record, field, users, readOnly }: Props) {
       {!readOnly && (
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button size="icon-xs" variant="ghost" aria-label={`Thêm ${field.label}`}><Plus /></Button>
+            <Button size="icon-xs" variant="ghost" aria-label={`Thêm ${field.label}`}><HugeiconsIcon icon={Add01Icon} /></Button>
           </PopoverTrigger>
           <PopoverContent align="start" className="w-56 p-1">
             {available.map((u) => (
@@ -90,8 +91,8 @@ export function InlineField(props: Props) {
         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), start())}
         className={cn("group/inline -mx-2 flex min-h-5 w-full items-center gap-2 rounded px-2 text-left leading-5", !readOnly && "cursor-pointer hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none")}
       >
-        <span className="min-w-0 flex-1"><FieldValue field={field} value={record.record[field.name]} users={users} className="whitespace-pre-line" /></span>
-        {!readOnly && <Pencil className="size-3.5 shrink-0 text-muted-foreground opacity-0 group-hover/inline:opacity-100" />}
+        <span className="min-w-0 flex-1"><FieldValue size="md" field={field} value={record.record[field.name]} users={users} className="whitespace-pre-line" /></span>
+        {!readOnly && <HugeiconsIcon icon={PencilEdit01Icon} className="size-3.5 shrink-0 text-muted-foreground opacity-0 group-hover/inline:opacity-100" />}
       </div>
     )
 
@@ -108,8 +109,8 @@ export function InlineField(props: Props) {
     >
       <div className="flex items-start gap-1">
         <div className="min-w-0 flex-1"><FieldInput field={field} value={draft} users={users} invalid={!!error} onChange={setDraft} /></div>
-        <Button size="icon-sm" aria-label="Lưu" disabled={update.isPending} onClick={save}><Check /></Button>
-        <Button size="icon-sm" variant="ghost" aria-label="Huỷ" onClick={() => setEditing(false)}><X /></Button>
+        <Button size="icon-sm" aria-label="Lưu" disabled={update.isPending} onClick={save}><HugeiconsIcon icon={Tick02Icon} /></Button>
+        <Button size="icon-sm" variant="ghost" aria-label="Huỷ" onClick={() => setEditing(false)}><HugeiconsIcon icon={Cancel01Icon} /></Button>
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>

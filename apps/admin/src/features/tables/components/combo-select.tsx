@@ -1,8 +1,10 @@
 import { useMemo, useState, type ReactNode } from "react"
-import { Check, ChevronDown, Search, X } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Cancel01Icon, Search01Icon } from "@hugeicons/core-free-icons"
 
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
+import { SelectChevron } from "@/components/select"
 
 export type ComboOption = {
   value: string
@@ -27,6 +29,7 @@ type Props = {
   id?: string
   className?: string
   "aria-label"?: string
+  "aria-describedby"?: string
 }
 
 const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/gi, "d").toLowerCase()
@@ -63,6 +66,7 @@ export function ComboSelect({ value, onChange, options, placeholder = "Chọn", 
           aria-expanded={open}
           aria-invalid={invalid || undefined}
           aria-label={rest["aria-label"]}
+          aria-describedby={rest["aria-describedby"]}
           className={cn(
             "flex w-full min-w-0 items-center justify-between rounded-md border border-input bg-background px-3 text-left text-sm font-normal transition-colors outline-none",
             "focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive",
@@ -91,21 +95,21 @@ export function ComboSelect({ value, onChange, options, placeholder = "Chọn", 
                 }}
                 className="inline-flex size-5 items-center justify-center rounded-sm transition-colors hover:text-foreground"
               >
-                <X className="size-4" />
+                <HugeiconsIcon icon={Cancel01Icon} className="size-4" />
               </span>
             )}
-            <ChevronDown className="size-4" />
+            <SelectChevron className="ml-0" />
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-(--radix-popover-trigger-width) min-w-48 p-1">
+      <PopoverContent align="start" className="z-[60] w-max max-w-[min(90vw,400px)] min-w-(--radix-popover-trigger-width) p-1 shadow-md">
         {searchable && (
           <div className="relative mb-1">
-            <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+            <HugeiconsIcon icon={Search01Icon} className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
             <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm kiếm..." className="h-8 w-full rounded-md border-0 bg-muted/50 pr-2 pl-8 text-sm outline-none" />
           </div>
         )}
-        <div role="listbox" className="max-h-64 overflow-y-auto">
+        <div role="listbox" className="max-h-[300px] overflow-y-auto">
           {shown.map((o) => (
             <button
               key={o.value}
@@ -116,10 +120,14 @@ export function ComboSelect({ value, onChange, options, placeholder = "Chọn", 
                 onChange(o.value)
                 setOpen(false)
               }}
-              className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
+              className={cn("relative flex w-full items-center rounded-sm py-1.5 pr-2 pl-8 text-left text-sm select-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:outline-none", o.value === value && "bg-accent text-accent-foreground")}
             >
+              {o.value === value && (
+                <span className="absolute left-2 flex size-3.5 items-center justify-center">
+                  <svg aria-hidden className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                </span>
+              )}
               <span className="min-w-0 flex-1">{label(o)}</span>
-              {o.value === value && <Check className="size-4 shrink-0 text-brand" />}
             </button>
           ))}
           {!shown.length && <p className="px-2 py-3 text-center text-xs text-muted-foreground">Không có kết quả</p>}

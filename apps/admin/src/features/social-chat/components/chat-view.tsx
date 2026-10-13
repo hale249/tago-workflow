@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Link } from "react-router"
 import { useQuery } from "@tanstack/react-query"
-import { AlertCircle, FileText, Inbox, MessagesSquare, Plus, Search, SendHorizontal, Tag, X } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, AlertCircleIcon, Cancel01Icon, File02Icon, InboxIcon, MessageMultiple02Icon, Search01Icon, SentIcon, Tag01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
@@ -60,7 +61,7 @@ function DetailsPanel({ channel, conv }: { channel: Channel; conv: Conversation 
                 <button key={l.id} type="button" onClick={() => toggleLabel(l.id)} aria-pressed={on}
                   className={cn("inline-flex h-6 items-center gap-1 rounded-full border px-2 text-xs transition-colors", on ? "border-transparent text-white" : "text-muted-foreground hover:bg-accent")}
                   style={on ? { backgroundColor: l.color } : undefined}>
-                  <Tag className="size-3" />{l.name}
+                  <HugeiconsIcon icon={Tag01Icon} className="size-3" />{l.name}
                 </button>
               )
             })}
@@ -79,7 +80,7 @@ function DetailsPanel({ channel, conv }: { channel: Channel; conv: Conversation 
                 <Link to={`/tables/${table.id}?preview=${conv.linkedRecordId}`} className="text-xs text-brand hover:underline">Xem bản ghi</Link>
               ) : (
                 <Button asChild variant="outline" size="sm" className="h-auto w-full justify-start py-1.5 text-left whitespace-normal">
-                  <Link to={`/tables/${table.id}/records/new`}><Plus />Tạo bản ghi mới và liên kết với cuộc trò chuyện</Link>
+                  <Link to={`/tables/${table.id}/records/new`}><HugeiconsIcon icon={Add01Icon} />Tạo bản ghi mới và liên kết với cuộc trò chuyện</Link>
                 </Button>
               )}
             </>
@@ -129,13 +130,13 @@ export function ChatView({ channel, onChannelChange }: { channel: Channel | ""; 
         <div className="space-y-2 border-b p-3">
           <div role="tablist" aria-label="Kênh" className="no-scrollbar flex gap-1 overflow-x-auto">
             {(["", ...CHANNEL_IDS] as const).map((ch) => {
-              const Icon = ch ? CHANNELS[ch].icon : Inbox
+              const Icon = ch ? CHANNELS[ch].icon : InboxIcon
               const n = unreadBy(ch)
               return (
                 <button key={ch || "all"} type="button" role="tab" aria-selected={channel === ch} title={ch ? CHANNELS[ch].name : "Tất cả kênh"}
                   onClick={() => { onChannelChange(ch); setPageId("") }}
                   className={cn("inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md px-2 text-xs transition-colors", channel === ch ? "bg-brand/8 font-medium text-brand" : "text-muted-foreground hover:bg-accent")}>
-                  <Icon className="size-3.5" style={ch && channel !== ch ? { color: CHANNELS[ch].color } : undefined} />
+                  <HugeiconsIcon icon={Icon} className="size-3.5" style={ch && channel !== ch ? { color: CHANNELS[ch].color } : undefined} />
                   {ch ? CHANNELS[ch].name : "Tất cả"}
                   {n > 0 && <span className="rounded-full bg-brand px-1.5 text-[10px] leading-4 font-semibold text-white">{n}</span>}
                 </button>
@@ -149,7 +150,7 @@ export function ChatView({ channel, onChannelChange }: { channel: Channel | ""; 
           <>
             <div className="space-y-2 border-b p-3">
               <div className="relative">
-                <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+                <HugeiconsIcon icon={Search01Icon} className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
                 <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm kiếm" aria-label="Tìm cuộc trò chuyện"
                   className="h-8 w-full rounded-md border border-input bg-background pr-3 pl-8 text-sm outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset" />
               </div>
@@ -174,7 +175,7 @@ export function ChatView({ channel, onChannelChange }: { channel: Channel | ""; 
                       <span className="relative shrink-0">
                         <Avatar name={c.customer.name} color={c.customer.color} />
                         {(() => { const ch = chOf(c.pageId); if (!ch) return null; const I = CHANNELS[ch].icon
-                          return <span title={CHANNELS[ch].name} className="absolute -right-1 -bottom-1 grid size-4 place-items-center rounded-full text-white ring-2 ring-background" style={{ backgroundColor: CHANNELS[ch].color }}><I className="size-2.5" /></span> })()}
+                          return <span title={CHANNELS[ch].name} className="absolute -right-1 -bottom-1 grid size-4 place-items-center rounded-full text-white ring-2 ring-background" style={{ backgroundColor: CHANNELS[ch].color }}><HugeiconsIcon icon={I} className="size-2.5" /></span> })()}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="flex items-center gap-2">
@@ -206,14 +207,14 @@ export function ChatView({ channel, onChannelChange }: { channel: Channel | ""; 
       <div data-open={!!conv} className="flex min-w-0 flex-1 max-md:data-[open=false]:hidden">
         {!conv ? (
           <div className="m-auto flex flex-col items-center gap-3 text-muted-foreground">
-            <MessagesSquare className="size-9" strokeWidth={1.5} />
+            <HugeiconsIcon icon={MessageMultiple02Icon} className="size-9" strokeWidth={1.5} />
             <p className="text-sm">Chọn một cuộc trò chuyện để bắt đầu</p>
           </div>
         ) : (
           <>
             <div className="flex min-w-0 flex-1 flex-col">
               <header className="flex h-12 shrink-0 items-center gap-3 border-b px-4">
-                <Button size="icon-sm" variant="ghost" className="md:hidden" onClick={() => setActiveId(null)} aria-label="Quay lại danh sách"><X /></Button>
+                <Button size="icon-sm" variant="ghost" className="md:hidden" onClick={() => setActiveId(null)} aria-label="Quay lại danh sách"><HugeiconsIcon icon={Cancel01Icon} /></Button>
                 <Avatar name={conv.customer.name} color={conv.customer.color} className="size-8" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold">{conv.customer.name}</p>
@@ -231,7 +232,7 @@ export function ChatView({ channel, onChannelChange }: { channel: Channel | ""; 
                       <div className={cn("flex", mine ? "justify-end" : "justify-start")}>
                         <div className={cn("max-w-[70%] rounded-2xl px-3 py-2 text-sm whitespace-pre-line", mine ? "rounded-br-md bg-brand text-white" : "rounded-bl-md border bg-background")}>
                           {m.text}
-                          {m.failed && <span className="mt-1 flex items-center gap-1 text-[11px] text-red-200"><AlertCircle className="size-3" />Gửi lỗi</span>}
+                          {m.failed && <span className="mt-1 flex items-center gap-1 text-[11px] text-red-200"><HugeiconsIcon icon={AlertCircleIcon} className="size-3" />Gửi lỗi</span>}
                         </div>
                       </div>
                     </div>
@@ -247,7 +248,7 @@ export function ChatView({ channel, onChannelChange }: { channel: Channel | ""; 
                   <div className="flex items-center justify-between border-t px-2 py-1.5">
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button size="sm" variant="ghost" className="h-7 text-muted-foreground"><FileText />Mẫu tin nhắn</Button>
+                        <Button size="sm" variant="ghost" className="h-7 text-muted-foreground"><HugeiconsIcon icon={File02Icon} />Mẫu tin nhắn</Button>
                       </PopoverTrigger>
                       <PopoverContent align="start" side="top" className="max-h-72 w-80 overflow-y-auto p-1">
                         {[...cfg.templateGroups, { id: "", name: "Khác" }].map((g) => {
@@ -271,7 +272,7 @@ export function ChatView({ channel, onChannelChange }: { channel: Channel | ""; 
                     </Popover>
                     <span className="flex items-center gap-2">
                       <span className="text-[11px] text-muted-foreground max-sm:hidden">Enter để gửi · Shift+Enter xuống dòng</span>
-                      <Button size="icon-sm" className="size-7 rounded-full" disabled={!draft.trim()} onClick={submit} aria-label="Gửi tin nhắn"><SendHorizontal /></Button>
+                      <Button size="icon-sm" className="size-7 rounded-full" disabled={!draft.trim()} onClick={submit} aria-label="Gửi tin nhắn"><HugeiconsIcon icon={SentIcon} /></Button>
                     </span>
                   </div>
                 </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router"
-import { ArrowUpRight, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Home, Plus, X } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, ArrowDown01Icon, ArrowLeft01Icon, ArrowRight01Icon, ArrowUp01Icon, ArrowUpRight01Icon, Cancel01Icon, CheckmarkCircle02Icon, Home01Icon, Message01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -39,6 +40,8 @@ export function RecordDetailView({ tableId, recordId, mode, onClose, nav }: Prop
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [tab, setTab] = useState("detail")
   const [flash, setFlash] = useState("")
+  // null = follow the table's "Vị trí bình luận"; the header button overrides it for this view.
+  const [commentsOverride, setCommentsOverride] = useState<boolean | null>(null)
   useEffect(() => { setTab("detail") }, [recordId])
   const fullUrl = `/tables/${tableId}/records/${recordId}`
 
@@ -51,7 +54,19 @@ export function RecordDetailView({ tableId, recordId, mode, onClose, nav }: Prop
   const subLine = detail.headSubLineFields.map(byName).filter((f): f is TableField => !!f)
   // Sub-line is plain text like the reference ("KH00006 · Tiếp cận · Honda Air Blade 160").
   const subText = subLine.map((f) => valueToText(f, record.record[f.name], { users, recordLabel })).filter(Boolean)
-  const rows = (detail.rowTailFields.length ? detail.rowTailFields : table.config.fields.map((f) => f.name)).map(byName).filter((f): f is TableField => !!f)
+  const pick = (names: string[]) => names.map(byName).filter((f): f is TableField => !!f)
+  const rows = pick(detail.rowTailFields.length ? detail.rowTailFields : table.config.fields.map((f) => f.name))
+  // Two-column layout splits fields left / right; the narrow drawer always stacks them.
+  const left = pick(detail.leftFields ?? []), right = pick(detail.rightFields ?? [])
+  // Two columns with nothing assigned yet: split the one-column list instead of showing no fields.
+  const columns = detail.layout !== "two-column" ? [rows] : left.length || right.length ? [left, right] : [rows.slice(0, Math.ceil(rows.length / 2)), rows.slice(Math.ceil(rows.length / 2))]
+  const showComments = commentsOverride ?? detail.commentsPosition !== "hidden"
+  const commentsToggle = (
+    <Button size="icon-sm" variant="ghost" className={cn("size-7 text-muted-foreground", showComments && "bg-accent text-foreground")} aria-pressed={showComments}
+      aria-label={showComments ? "Ẩn bình luận" : "Hiện bình luận"} title={showComments ? "Ẩn bình luận" : "Hiện bình luận"} onClick={() => setCommentsOverride(!showComments)}>
+      <HugeiconsIcon icon={Message01Icon} className="size-4" />
+    </Button>
+  )
   const sumTargets = new Set(table.config.items.enabled ? table.config.items.sums.map((s) => s.sumField) : [])
   const readOnly = (f: TableField) => f.type === "AUTO_GENERATED_CODE" || !!f.isLocked || sumTargets.has(f.name)
   const tabs = [{ id: "detail", title: "Chi tiết" }, ...detail.refRecords.map((r, i) => ({ id: `ref${i}`, title: r.title }))]
@@ -88,19 +103,23 @@ export function RecordDetailView({ tableId, recordId, mode, onClose, nav }: Prop
           </button>
         ))}
       </div>
-      {flash && <p className="mb-4 flex items-center gap-2 rounded-md bg-emerald-50 px-4 py-2 text-sm text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300"><CheckCircle2 className="size-4" />{flash}</p>}
+      {flash && <p className="mb-4 flex items-center gap-2 rounded-md bg-emerald-50 px-4 py-2 text-sm text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300"><HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4" />{flash}</p>}
 
       {tab === "detail" ? (
         <div className="space-y-6">
           {/* Container query: label beside value when there is room, stacked in the narrow drawer column. */}
-          <dl className="@container -mx-2 flex flex-col gap-0.5">
-            {rows.map((f) => (
-              <div key={f.name} className={cn("grid min-h-9 grid-cols-1 items-start gap-x-3 gap-y-1 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/50", f.type !== "RICH_TEXT" && "@xl:grid-cols-[minmax(104px,180px)_minmax(0,1fr)] @xl:gap-y-0")}>
-                <dt className="text-[13px] leading-5 font-medium text-muted-foreground @xl:truncate">{f.label}{f.required && <span className="ml-1 text-destructive" aria-label="bắt buộc">*</span>}</dt>
-                <dd className="min-w-0 text-sm"><InlineField tableId={table.id} record={record} field={f} users={users} readOnly={readOnly(f)} /></dd>
-              </div>
+          <div className={cn("grid gap-x-6 gap-y-0.5", columns.length > 1 && !drawer && "lg:grid-cols-2")}>
+            {columns.map((col, i) => (
+              <dl key={i} className="@container -mx-2 flex flex-col gap-0.5">
+                {col.map((f) => (
+                  <div key={f.name} className={cn("grid min-h-9 grid-cols-1 items-start gap-x-3 gap-y-1 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/50", f.type !== "RICH_TEXT" && "@xl:grid-cols-[minmax(104px,180px)_minmax(0,1fr)] @xl:gap-y-0")}>
+                    <dt className="text-[13px] leading-5 font-medium text-muted-foreground @xl:truncate">{f.label}{f.required && <span className="ml-1 text-destructive" aria-label="bắt buộc">*</span>}</dt>
+                    <dd className="min-w-0 text-sm"><InlineField tableId={table.id} record={record} field={f} users={users} readOnly={readOnly(f)} /></dd>
+                  </div>
+                ))}
+              </dl>
             ))}
-          </dl>
+          </div>
           {table.config.items.enabled && (
             <div className="border-t pt-6"><ItemsEditor config={table.config.items} items={record.items ?? []} users={users} parent={record.record} pinnedSums={pinnedSumsOf(table.config.items, record.record)} /></div>
           )}
@@ -146,23 +165,26 @@ export function RecordDetailView({ tableId, recordId, mode, onClose, nav }: Prop
           <div className="flex shrink-0 items-center gap-1">
             {nav && nav.total > 1 && (
               <div className="mr-1 flex items-center gap-0.5 text-xs text-muted-foreground">
-                <Button size="icon-sm" variant="ghost" className="size-7" disabled={!nav.prev} onClick={nav.prev} title="Bản ghi trước (↑)" aria-label="Bản ghi trước"><ChevronUp /></Button>
-                <Button size="icon-sm" variant="ghost" className="size-7" disabled={!nav.next} onClick={nav.next} title="Bản ghi sau (↓)" aria-label="Bản ghi sau"><ChevronDown /></Button>
+                <Button size="icon-sm" variant="ghost" className="size-7" disabled={!nav.prev} onClick={nav.prev} title="Bản ghi trước (↑)" aria-label="Bản ghi trước"><HugeiconsIcon icon={ArrowUp01Icon} /></Button>
+                <Button size="icon-sm" variant="ghost" className="size-7" disabled={!nav.next} onClick={nav.next} title="Bản ghi sau (↓)" aria-label="Bản ghi sau"><HugeiconsIcon icon={ArrowDown01Icon} /></Button>
                 <span className="tabular-nums">{nav.index + 1}/{nav.total}</span>
               </div>
             )}
             <Button asChild variant="outline" className="h-7 gap-1.5 px-2.5 has-[>svg]:px-2 max-sm:size-7 max-sm:px-0" title="Mở trang chi tiết (giữ Ctrl/⌘ để mở tab mới)">
-              <Link to={fullUrl}><ArrowUpRight className="size-3.5" /><span className="max-sm:sr-only">Mở trang chi tiết</span></Link>
+              <Link to={fullUrl}><HugeiconsIcon icon={ArrowUpRight01Icon} className="size-3.5" /><span className="max-sm:sr-only">Mở trang chi tiết</span></Link>
             </Button>
+            {commentsToggle}
             {actions}
-            <Button size="icon-sm" variant="ghost" className="size-7 text-muted-foreground" onClick={onClose} aria-label="Đóng" title="Đóng (Esc)"><X /></Button>
+            <Button size="icon-sm" variant="ghost" className="size-7 text-muted-foreground" onClick={onClose} aria-label="Đóng" title="Đóng (Esc)"><HugeiconsIcon icon={Cancel01Icon} /></Button>
           </div>
         </header>
         <div className="flex min-h-0 max-md:flex-col max-md:overflow-y-auto">
           <div className="min-w-0 flex-1 overflow-y-auto p-4 max-md:overflow-visible">{fields}</div>
-          <aside className="flex min-h-[420px] flex-col border-t md:w-[400px] md:shrink-0 md:border-t-0 md:border-l">
-            <CommentsPanel recordId={record.id} users={users} />
-          </aside>
+          {showComments && (
+            <aside className="flex min-h-[420px] flex-col border-t md:w-[400px] md:shrink-0 md:border-t-0 md:border-l">
+              <CommentsPanel recordId={record.id} users={users} />
+            </aside>
+          )}
         </div>
         {confirm}
       </div>
@@ -172,11 +194,12 @@ export function RecordDetailView({ tableId, recordId, mode, onClose, nav }: Prop
     <div className="min-h-0 flex-1 overflow-y-auto">
       <header className="sticky top-0 z-10 border-b bg-card">
         <div className="mx-auto flex max-w-7xl min-w-0 items-start gap-3 px-4 py-3">
-          <Button asChild size="icon-sm" variant="ghost" className="text-muted-foreground" aria-label="Quay lại"><Link to={`/tables/${table.id}`}><ChevronLeft /></Link></Button>
+          <Button asChild size="icon-sm" variant="ghost" className="text-muted-foreground" aria-label="Quay lại"><Link to={`/tables/${table.id}`}><HugeiconsIcon icon={ArrowLeft01Icon} /></Link></Button>
           {heading}
           <div className="flex shrink-0 items-center gap-2">
+            {commentsToggle}
             <Button className="h-7 gap-1.5 px-2.5 has-[>svg]:px-2 max-sm:size-7 max-sm:px-0" onClick={() => navigate(`/tables/${table.id}/records/new`)} aria-label="Tạo mới">
-              <Plus className="size-3.5" /><span className="max-sm:sr-only">Tạo mới</span>
+              <HugeiconsIcon icon={Add01Icon} className="size-3.5" /><span className="max-sm:sr-only">Tạo mới</span>
             </Button>
             {actions}
           </div>
@@ -185,18 +208,20 @@ export function RecordDetailView({ tableId, recordId, mode, onClose, nav }: Prop
 
       <div className="mx-auto max-w-7xl px-4 py-6">
         <nav aria-label="Breadcrumb" className="mb-3 flex flex-wrap items-center gap-2 py-2 text-[13px]">
-          <Link to="/tables" className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"><Home className="size-3.5" /><span className="text-foreground">Apps</span></Link>
-          <ChevronRight className="size-3.5 text-muted-foreground" />
+          <Link to="/tables" className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"><HugeiconsIcon icon={Home01Icon} className="size-3.5" /><span className="text-foreground">Apps</span></Link>
+          <HugeiconsIcon icon={ArrowRight01Icon} className="size-3.5 text-muted-foreground" />
           <Link to={`/tables/${table.id}`} aria-current="page" className="font-medium hover:underline">{table.name}</Link>
         </nav>
 
         <div className="flex flex-col gap-6 lg:flex-row">
           {fields}
-          <aside className="w-full scroll-mt-20 lg:w-[400px] lg:shrink-0">
-            <div className="flex h-[480px] flex-col rounded-lg border lg:sticky lg:top-[88px] lg:h-[calc(100svh-168px)] lg:rounded-none lg:border-y-0 lg:border-r-0">
-              <CommentsPanel recordId={record.id} users={users} />
-            </div>
-          </aside>
+          {showComments && (
+            <aside className="w-full scroll-mt-20 lg:w-[400px] lg:shrink-0">
+              <div className="flex h-[480px] flex-col rounded-lg border lg:sticky lg:top-[88px] lg:h-[calc(100svh-168px)] lg:rounded-none lg:border-y-0 lg:border-r-0">
+                <CommentsPanel recordId={record.id} users={users} />
+              </div>
+            </aside>
+          )}
         </div>
       </div>
       {confirm}
