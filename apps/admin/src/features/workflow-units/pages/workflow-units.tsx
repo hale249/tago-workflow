@@ -1,7 +1,9 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router"
 import { useQueryClient } from "@tanstack/react-query"
-import { MoreHorizontal, Pencil, Plus, RefreshCw, Search, Trash2, Workflow } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, Delete02Icon, MoreVerticalIcon, PencilEdit01Icon, RefreshIcon, Search01Icon } from "@hugeicons/core-free-icons"
+import { WorkflowUnitIcon } from "@/components/icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
@@ -24,36 +26,41 @@ export function WorkflowUnitsPage() {
   const list = units.filter((u) => u.name.toLowerCase().includes(q.trim().toLowerCase()))
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg bg-background">
-      <header className="flex flex-wrap items-start gap-3 px-5 pt-5">
-        <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-semibold">Cloud Logic (Workflow)</h1>
-          <p className="text-sm text-muted-foreground">Tự động hoá quy trình bằng các sự kiện và bước xử lý</p>
-        </div>
-        <div className="relative w-full max-w-64">
-          <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm kiếm workflow..." className="h-9 pl-8" />
-        </div>
-        <Button size="icon" variant="outline" aria-label="Làm mới" onClick={() => qc.invalidateQueries({ queryKey: workflowKeys.all })}><RefreshCw className={cn(isFetching && "animate-spin")} /></Button>
-        <Button onClick={() => setDialog({ open: true })}><Plus />Tạo mới</Button>
-      </header>
-      <div className="flex-1 overflow-y-auto p-5">
-        <div className="overflow-hidden rounded-lg border">
-          <p className="border-b px-3 py-2 text-xs text-muted-foreground">{list.length} workflow</p>
+    <section className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-background p-6">
+      <div className="flex flex-col gap-4">
+        <header className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-semibold">Cloud Logic (Workflow)</h1>
+            <p className="text-[13px] text-muted-foreground">Quản lý các workflow tự động hóa quy trình công việc</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative w-full sm:w-64">
+              <HugeiconsIcon icon={Search01Icon} className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm kiếm workflow..." className="h-8 pl-8" />
+            </div>
+            <Button size="icon-sm" variant="outline" aria-label="Làm mới" onClick={() => qc.invalidateQueries({ queryKey: workflowKeys.all })}><HugeiconsIcon icon={RefreshIcon} className={cn(isFetching && "animate-spin")} /></Button>
+            <Button size="sm" className="h-7 gap-1.5 px-2.5 has-[>svg]:px-2" onClick={() => setDialog({ open: true })}><HugeiconsIcon icon={Add01Icon} />Tạo mới</Button>
+          </div>
+        </header>
+        <div className="divide-y overflow-hidden rounded-lg border bg-card">
+          <p className="flex h-9 items-center px-3 text-xs text-muted-foreground tabular-nums">{list.length} workflow</p>
           {isLoading && <div className="space-y-2 p-3"><Skeleton className="h-10" /><Skeleton className="h-10" /></div>}
           {list.map((u) => (
-            <div key={u.id} className="group flex items-center gap-3 border-b px-3 py-2.5 last:border-b-0 hover:bg-muted/40">
-              <span className="grid size-8 place-items-center rounded-md bg-brand/10 text-brand"><Workflow className="size-4" /></span>
-              <Link to={`/workflow-units/${u.id}`} className="min-w-0 flex-1 truncate font-medium hover:underline">{u.name}</Link>
-              <span className="text-sm text-muted-foreground max-sm:hidden">{stamp.format(new Date(u.updatedAt))}</span>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild><Button size="icon-sm" variant="ghost" aria-label="Mở menu"><MoreHorizontal /></Button></DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onSelect={() => navigate(`/workflow-units/${u.id}`)}>Xem chi tiết</DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => setDialog({ open: true, unit: u })}><Pencil />Chỉnh sửa</DropdownMenuItem>
-                  <DropdownMenuItem variant="destructive" onSelect={() => window.confirm(`Xoá workflow “${u.name}” và toàn bộ sự kiện?`) && del.mutate(u.id)}><Trash2 />Xoá</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+            <div key={u.id} role="link" tabIndex={0} onClick={() => navigate(`/workflow-units/${u.id}`)} onKeyDown={(e) => e.key === "Enter" && navigate(`/workflow-units/${u.id}`)}
+              className="group flex min-h-14 cursor-pointer items-center gap-3 px-3 py-2 transition-colors hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none focus-visible:ring-inset">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-brand/10 text-brand"><HugeiconsIcon icon={WorkflowUnitIcon} className="size-4" /></span>
+              <Link to={`/workflow-units/${u.id}`} onClick={(e) => e.stopPropagation()} className="min-w-0 flex-1 truncate text-sm font-medium">{u.name}</Link>
+              <span className="hidden shrink-0 text-[13px] text-muted-foreground tabular-nums sm:block">{stamp.format(new Date(u.updatedAt))}</span>
+              <div className="shrink-0 transition-opacity sm:opacity-0 sm:group-focus-within:opacity-100 sm:group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild><Button size="icon-sm" variant="ghost" aria-label="Mở menu"><HugeiconsIcon icon={MoreVerticalIcon} /></Button></DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onSelect={() => navigate(`/workflow-units/${u.id}`)}>Xem chi tiết</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => setDialog({ open: true, unit: u })}><HugeiconsIcon icon={PencilEdit01Icon} />Chỉnh sửa</DropdownMenuItem>
+                    <DropdownMenuItem variant="destructive" onSelect={() => window.confirm(`Xoá workflow “${u.name}” và toàn bộ sự kiện?`) && del.mutate(u.id)}><HugeiconsIcon icon={Delete02Icon} />Xoá</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           ))}
           {!isLoading && !list.length && <p className="p-10 text-center text-sm text-muted-foreground">{q ? "Không tìm thấy workflow" : "Chưa có workflow nào"}</p>}

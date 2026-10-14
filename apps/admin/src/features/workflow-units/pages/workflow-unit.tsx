@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link, useNavigate, useParams } from "react-router"
-import { Calendar, ChevronRight, MoreHorizontal, Pencil, Plus, Terminal, Trash2, Workflow } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, ArrowRight01Icon, Calendar01Icon, ComputerTerminal01Icon, Delete02Icon, MoreHorizontalIcon, PencilEdit01Icon, WorkflowCircle01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
@@ -39,26 +40,26 @@ export function WorkflowUnitPage() {
   return (
     <section className="flex min-h-0 flex-1 flex-col overflow-y-auto rounded-lg bg-background p-5">
       <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-foreground">Workspace</Link><ChevronRight className="size-3.5" />
-        <Link to="/workflow-units" className="hover:text-foreground">Cloud Logic (Workflow)</Link><ChevronRight className="size-3.5" />
+        <Link to="/" className="hover:text-foreground">Workspace</Link><HugeiconsIcon icon={ArrowRight01Icon} className="size-3.5" />
+        <Link to="/workflow-units" className="hover:text-foreground">Cloud Logic (Workflow)</Link><HugeiconsIcon icon={ArrowRight01Icon} className="size-3.5" />
         <span className="text-foreground">{unit.name}</span>
       </nav>
       <div className="mt-5 flex flex-wrap items-center gap-3">
-        <span className="grid size-10 place-items-center rounded-lg bg-brand/10 text-brand"><Workflow className="size-5" /></span>
+        <span className="grid size-10 place-items-center rounded-lg bg-brand/10 text-brand"><HugeiconsIcon icon={WorkflowCircle01Icon} className="size-5" /></span>
         <h1 className="min-w-0 flex-1 truncate text-2xl font-semibold">{unit.name}</h1>
-        <Button size="sm" variant="outline" onClick={() => setUnitOpen(true)}><Pencil />Sửa</Button>
-        <Button size="sm" variant="outline" onClick={() => window.confirm(`Xoá workflow “${unit.name}”?`) && delUnit.mutate(unit.id, { onSuccess: () => navigate("/workflow-units", { replace: true }) })}><Trash2 />Xóa</Button>
+        <Button size="sm" variant="outline" onClick={() => setUnitOpen(true)}><HugeiconsIcon icon={PencilEdit01Icon} />Sửa</Button>
+        <Button size="sm" variant="outline" onClick={() => window.confirm(`Xoá workflow “${unit.name}”?`) && delUnit.mutate(unit.id, { onSuccess: () => navigate("/workflow-units", { replace: true }) })}><HugeiconsIcon icon={Delete02Icon} />Xóa</Button>
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-3 border-b pb-5 text-xs text-muted-foreground">
         <span className="rounded border border-brand/40 px-1.5 py-0.5 text-brand">Cloud Logic (Workflow)</span>
-        <span>•</span><span className="flex items-center gap-1"><Calendar className="size-3.5" />Tạo lúc {day.format(new Date(unit.createdAt))}</span>
+        <span>•</span><span className="flex items-center gap-1"><HugeiconsIcon icon={Calendar01Icon} className="size-3.5" />Tạo lúc {day.format(new Date(unit.createdAt))}</span>
         <span>•</span><span>Cập nhật {day.format(new Date(unit.updatedAt))}</span>
       </div>
       {unit.description && <p className="mt-3 text-sm text-muted-foreground">{unit.description}</p>}
 
       <div className="mt-6 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Sự kiện quy trình</h2>
-        <Button size="sm" onClick={() => setEventDialog({ open: true })}><Plus />Tạo sự kiện</Button>
+        <Button size="sm" onClick={() => setEventDialog({ open: true })}><HugeiconsIcon icon={Add01Icon} />Tạo sự kiện</Button>
       </div>
       <div className="mt-3 overflow-x-auto rounded-lg border">
         <table className="w-full min-w-[560px] text-sm">
@@ -70,20 +71,20 @@ export function WorkflowUnitPage() {
                 <tr key={e.id} className="border-t hover:bg-muted/40">
                   <td className="px-3 py-2">
                     <Link to={`/workflow-units/${unit.id}/events/${e.id}/edit`} className="flex items-center gap-2.5 font-medium hover:underline">
-                      <span className="grid size-8 place-items-center rounded-md" style={{ backgroundColor: `${T.color}1a`, color: T.color }}><T.icon className="size-4" /></span>{e.name}
+                      <span className="grid size-8 place-items-center rounded-md" style={{ backgroundColor: `${T.color}1a`, color: T.color }}><HugeiconsIcon icon={T.icon} className="size-4" /></span>{e.name}
                     </Link>
                   </td>
                   <td className="px-3 py-2 text-muted-foreground">{T.label}</td>
                   <td className="px-3 py-2"><Toggle on={e.active} label={e.active ? "Hoạt động" : "Tạm dừng"} onChange={(active) => saveEvent.mutate({ ...e, active })} /></td>
                   <td className="px-2 py-2">
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild><Button size="icon-sm" variant="ghost" aria-label="Open menu"><MoreHorizontal /></Button></DropdownMenuTrigger>
+                      <DropdownMenuTrigger asChild><Button size="icon-sm" variant="ghost" aria-label="Open menu"><HugeiconsIcon icon={MoreHorizontalIcon} /></Button></DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onSelect={() => navigate(`/workflow-units/${unit.id}/events/${e.id}/edit`)}><Workflow />Mở trình dựng</DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => navigate(`/workflow-units/${unit.id}/events/${e.id}/console`)}><Terminal />Console</DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => setEventDialog({ open: true, event: e })}><Pencil />Chỉnh sửa</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => navigate(`/workflow-units/${unit.id}/events/${e.id}/edit`)}><HugeiconsIcon icon={WorkflowCircle01Icon} />Mở trình dựng</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => navigate(`/workflow-units/${unit.id}/events/${e.id}/console`)}><HugeiconsIcon icon={ComputerTerminal01Icon} />Console</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => setEventDialog({ open: true, event: e })}><HugeiconsIcon icon={PencilEdit01Icon} />Chỉnh sửa</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem variant="destructive" onSelect={() => window.confirm(`Xoá sự kiện “${e.name}”?`) && delEvent.mutate(e.id)}><Trash2 />Xóa</DropdownMenuItem>
+                        <DropdownMenuItem variant="destructive" onSelect={() => window.confirm(`Xoá sự kiện “${e.name}”?`) && delEvent.mutate(e.id)}><HugeiconsIcon icon={Delete02Icon} />Xóa</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </td>

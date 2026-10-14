@@ -1,7 +1,9 @@
 import { NavLink } from "react-router"
-import { ChevronRight, Folder } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@workspace/ui/lib/utils"
+import { WorkGroupIcon } from "@/components/icons"
 import { useUiStore } from "@/stores/ui.store"
 import { useTables, useWorkGroups } from "../api/tables.queries"
 import { TableIcon } from "./table-icon"
@@ -27,10 +29,10 @@ export function TablesNavTree({ onNavigate }: { onNavigate?: () => void }) {
           <div key={group.id} className="flex flex-col">
             <div className="group/row relative flex items-center">
               <button type="button" onClick={() => toggleTree(key)} aria-expanded={open} className={cn(ROW, "pl-6 text-left")}>
-                <Folder strokeWidth={1.5} className="size-4 shrink-0 text-sidebar-foreground/60 transition-colors group-hover/row:text-sidebar-foreground" />
+                <HugeiconsIcon icon={WorkGroupIcon} className="size-4 shrink-0 text-sidebar-foreground/60 transition-colors group-hover/row:text-sidebar-foreground" />
                 <span className="flex-1 truncate">{group.name}</span>
               </button>
-              <ChevronRight
+              <HugeiconsIcon icon={ArrowRight01Icon}
                 aria-hidden
                 className={cn(
                   "pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-sidebar-foreground/40 opacity-0 transition-[opacity,transform] duration-200 group-hover/row:opacity-100",

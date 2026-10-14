@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
+import { HugeiconsIcon } from "@hugeicons/react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
@@ -10,8 +11,10 @@ import { formsListQuery } from "@/features/workflow-forms"
 import { useSaveEvent } from "../api/workflow.queries"
 import { TRIGGERS } from "../data/node-types"
 import type { TriggerType, WorkflowEvent } from "../types/workflow"
+import { FormRow } from "@/components/form-row"
+import { Select } from "@/components/select"
 
-const select = "h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-xs"
+const select = "w-full"
 
 /** Create / edit an event: name + trigger configuration. Steps are edited in the canvas. */
 export function EventDialog({ open, onOpenChange, unitId, event, onSaved }: { open: boolean; onOpenChange: (o: boolean) => void; unitId: string; event?: WorkflowEvent; onSaved?: (e: WorkflowEvent) => void }) {
@@ -53,7 +56,7 @@ export function EventDialog({ open, onOpenChange, unitId, event, onSaved }: { op
                 return (
                   <button key={t} type="button" onClick={() => { setType(t); setParams({}) }}
                     className={cn("flex items-center gap-2 rounded-lg border p-2.5 text-left", type === t && "border-brand ring-1 ring-brand")}>
-                    <span className="grid size-7 place-items-center rounded-md" style={{ backgroundColor: `${T.color}1a`, color: T.color }}><T.icon className="size-4" /></span>
+                    <span className="grid size-7 place-items-center rounded-md" style={{ backgroundColor: `${T.color}1a`, color: T.color }}><HugeiconsIcon icon={T.icon} className="size-4" /></span>
                     {T.label}
                   </button>
                 )
@@ -63,31 +66,30 @@ export function EventDialog({ open, onOpenChange, unitId, event, onSaved }: { op
           {type === "ACTIVE_TABLE" && (
             <div className="grid grid-cols-2 gap-3">
               <label className="grid gap-1.5"><span>Bảng</span>
-                <select className={select} value={params.tableId ?? ""} onChange={(e) => set("tableId", e.target.value)}>
+                <Select className={select} value={params.tableId ?? ""} onChange={(e) => set("tableId", e.target.value)}>
                   <option value="">Chọn bảng…</option>{tables.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-                </select>
+                </Select>
               </label>
               <label className="grid gap-1.5"><span>Khi bản ghi được</span>
-                <select className={select} value={params.action ?? "create"} onChange={(e) => set("action", e.target.value)}>
+                <Select className={select} value={params.action ?? "create"} onChange={(e) => set("action", e.target.value)}>
                   <option value="create">Tạo mới</option><option value="update">Cập nhật</option><option value="delete">Xoá</option><option value="action">Chạy hành động tuỳ chỉnh</option>
-                </select>
+                </Select>
               </label>
             </div>
           )}
           {type === "SCHEDULE" && (
-            <label className="grid gap-1.5"><span>Biểu thức cron</span>
+            <FormRow label="Biểu thức cron" hint="phút giờ ngày tháng thứ — vd “0 8 * * *” = 8:00 mỗi ngày">
               <Input className="font-mono" placeholder="0 8 * * *" value={params.expression ?? ""} onChange={(e) => set("expression", e.target.value)} />
-              <span className="text-xs text-muted-foreground">phút giờ ngày tháng thứ — vd “0 8 * * *” = 8:00 mỗi ngày</span>
-            </label>
+            </FormRow>
           )}
           {type === "WEBHOOK" && (
             <label className="grid gap-1.5"><span>Đường dẫn nhận</span><Input className="font-mono" placeholder="/hooks/ten-su-kien" value={params.path ?? ""} onChange={(e) => set("path", e.target.value)} /></label>
           )}
           {type === "FORM" && (
             <label className="grid gap-1.5"><span>Biểu mẫu</span>
-              <select className={select} value={params.formId ?? ""} onChange={(e) => set("formId", e.target.value)}>
+              <Select className={select} value={params.formId ?? ""} onChange={(e) => set("formId", e.target.value)}>
                 <option value="">{forms.length ? "Chọn biểu mẫu…" : "Chưa có biểu mẫu — tạo ở mục Biểu mẫu"}</option>{forms.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
-              </select>
+              </Select>
             </label>
           )}
           {save.error && <p className="text-destructive">{save.error.message}</p>}

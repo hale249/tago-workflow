@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
-import { Filter, Plus, Trash2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, Delete02Icon, FilterIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
@@ -51,7 +52,7 @@ export function AdvancedFilterButton({ fields, users, value, onApply }: Props) {
   return (
     <>
       <Button size="sm" variant="outline" className={cn("h-8 gap-2 px-2.5 font-normal", value.length && "border-brand text-brand")} onClick={() => setOpen(true)}>
-        <Filter />Bộ lọc nâng cao{value.length > 0 && ` (${value.length})`}
+        <HugeiconsIcon icon={FilterIcon} />Bộ lọc nâng cao{value.length > 0 && ` (${value.length})`}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-2xl">
@@ -73,11 +74,11 @@ export function AdvancedFilterButton({ fields, users, value, onApply }: Props) {
                     {OPERATORS.filter((o) => ops.includes(o.op)).map((o) => <option key={o.op} value={o.op}>{o.label}</option>)}
                   </NativeSelect>
                   <ValueInput field={f} cond={r} users={users} onChange={(value) => set(i, { value })} />
-                  <Button size="icon-sm" variant="ghost" aria-label="Xoá điều kiện" onClick={() => setRows(rows.filter((_, j) => j !== i))}><Trash2 /></Button>
+                  <Button size="icon-sm" variant="ghost" aria-label="Xoá điều kiện" onClick={() => setRows(rows.filter((_, j) => j !== i))}><HugeiconsIcon icon={Delete02Icon} /></Button>
                 </div>
               )
             })}
-            <Button size="sm" variant="outline" onClick={() => setRows([...rows, { field: "", op: "eq", value: "" }])}><Plus />Thêm điều kiện</Button>
+            <Button size="sm" variant="outline" onClick={() => setRows([...rows, { field: "", op: "eq", value: "" }])}><HugeiconsIcon icon={Add01Icon} />Thêm điều kiện</Button>
             {error && <p className="text-sm text-destructive">{error}</p>}
           </div>
           <DialogFooter className="sm:justify-between">

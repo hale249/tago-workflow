@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router"
-import { ArrowDown, ArrowUp, Check, ChevronLeft, Copy, Pencil, Plus, Save, Trash2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, ArrowDown02Icon, ArrowLeft01Icon, ArrowUp02Icon, Copy01Icon, Delete02Icon, FloppyDiskIcon, PencilEdit01Icon, Tick02Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
@@ -9,6 +10,7 @@ import { useDeleteForm, useForm, useUpdateForm } from "../api/forms.queries"
 import { FormFieldDialog } from "../components/form-field-dialog"
 import { FIELD_TYPES, FORM_TYPES } from "../data/templates"
 import type { FormConfig, FormField, WorkflowForm } from "../types/form"
+import { Select } from "@/components/select"
 
 const control = "w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-xs"
 
@@ -21,9 +23,9 @@ function Preview({ config }: { config: FormConfig }) {
           {f.type !== "checkbox" && <span className="font-medium">{f.label}{f.required && <span className="text-destructive"> *</span>}</span>}
           {f.type === "textarea" ? <textarea rows={3} className={`${control} py-2`} placeholder={f.placeholder} defaultValue={f.defaultValue} />
             : f.type === "select" ? (
-              <select className={`${control} h-9`} defaultValue={f.defaultValue ?? ""}>
+              <Select defaultValue={f.defaultValue ?? ""}>
                 <option value="">{f.placeholder || "Chọn một tuỳ chọn"}</option>{f.options?.map((o) => <option key={o.value} value={o.value}>{o.text}</option>)}
-              </select>
+              </Select>
             ) : f.type === "checkbox" ? <span className="flex items-center gap-2"><input type="checkbox" defaultChecked={f.defaultValue === "true"} />{f.label}{f.required && <span className="text-destructive">*</span>}</span>
             : <input className={`${control} h-9`} type={f.type === "datetime" ? "datetime-local" : f.type} placeholder={f.placeholder} defaultValue={f.defaultValue} />}
         </label>
@@ -40,7 +42,7 @@ function CopyRow({ label, value, area }: { label: string; value: string; area?: 
       <span className="text-xs font-medium">{label}</span>
       <div className="flex items-start gap-1.5">
         {area ? <textarea readOnly rows={3} value={value} className="flex-1 rounded-md border bg-muted/40 p-2 font-mono text-[11px]" /> : <Input readOnly value={value} className="bg-muted/40 font-mono text-xs" />}
-        <Button size="icon-sm" variant="outline" aria-label={`Sao chép ${label}`} onClick={() => navigator.clipboard?.writeText(value).then(() => { setDone(true); setTimeout(() => setDone(false), 1500) })}>{done ? <Check /> : <Copy />}</Button>
+        <Button size="icon-sm" variant="outline" aria-label={`Sao chép ${label}`} onClick={() => navigator.clipboard?.writeText(value).then(() => { setDone(true); setTimeout(() => setDone(false), 1500) })}>{done ? <HugeiconsIcon icon={Tick02Icon} /> : <HugeiconsIcon icon={Copy01Icon} />}</Button>
       </div>
     </div>
   )
@@ -70,18 +72,18 @@ export function FormBuilderPage() {
   return (
     <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg bg-background">
       <div className="flex flex-wrap items-center gap-2 border-b px-3 py-2">
-        <Button asChild size="icon-sm" variant="ghost" aria-label="Quay lại"><Link to="/workflow-forms"><ChevronLeft /></Link></Button>
+        <Button asChild size="icon-sm" variant="ghost" aria-label="Quay lại"><Link to="/workflow-forms"><HugeiconsIcon icon={ArrowLeft01Icon} /></Link></Button>
         <h1 className="min-w-0 flex-1 truncate font-semibold">{saved.name}</h1>
         <span className={`text-xs ${update.error ? "text-destructive" : "text-muted-foreground"}`}>{update.error?.message || msg || (dirty ? "Có thay đổi chưa lưu" : "")}</span>
         <Button size="sm" variant="outline" className="h-8 text-destructive" onClick={() => window.confirm(`Xoá form “${saved.name}”?`) && del.mutate(saved.id, { onSuccess: () => navigate("/workflow-forms", { replace: true }) })}>
-          <Trash2 />{del.isPending ? "Đang xóa..." : "Xóa"}
+          <HugeiconsIcon icon={Delete02Icon} />{del.isPending ? "Đang xóa..." : "Xóa"}
         </Button>
-        <Button size="sm" className="h-8" disabled={!dirty || update.isPending || !draft.name.trim()} onClick={save}><Save />Lưu</Button>
+        <Button size="sm" className="h-8" disabled={!dirty || update.isPending || !draft.name.trim()} onClick={save}><HugeiconsIcon icon={FloppyDiskIcon} />Lưu</Button>
       </div>
 
       <div className="flex min-h-0 flex-1 max-lg:flex-col max-lg:overflow-y-auto">
         <aside className="w-72 shrink-0 space-y-3 overflow-y-auto border-r p-3 max-lg:w-full max-lg:border-r-0 max-lg:border-b">
-          <div className="flex items-center justify-between"><p className="text-sm font-semibold">Danh sách Fields</p><Button size="xs" onClick={() => setDialog({ open: true })}><Plus />Thêm Field</Button></div>
+          <div className="flex items-center justify-between"><p className="text-sm font-semibold">Danh sách Fields</p><Button size="xs" onClick={() => setDialog({ open: true })}><HugeiconsIcon icon={Add01Icon} />Thêm Field</Button></div>
           {!c.fields.length && (
             <div className="rounded-lg border border-dashed p-4 text-center text-xs text-muted-foreground">
               <p className="font-medium text-foreground">Chưa có field nào</p>Thêm field đầu tiên để xây dựng form
@@ -91,10 +93,10 @@ export function FormBuilderPage() {
             <div key={f.name} className="group rounded-md border p-2 text-sm">
               <div className="flex items-center gap-1">
                 <span className="min-w-0 flex-1 truncate font-medium">{f.label}</span>
-                <Button size="icon-xs" variant="ghost" disabled={i === 0} aria-label="Lên" onClick={() => move(i, -1)}><ArrowUp /></Button>
-                <Button size="icon-xs" variant="ghost" disabled={i === c.fields.length - 1} aria-label="Xuống" onClick={() => move(i, 1)}><ArrowDown /></Button>
-                <Button size="icon-xs" variant="ghost" aria-label={`Sửa ${f.label}`} onClick={() => setDialog({ open: true, index: i })}><Pencil /></Button>
-                <Button size="icon-xs" variant="ghost" aria-label={`Xoá ${f.label}`} onClick={() => setFields(c.fields.filter((_, j) => j !== i))}><Trash2 /></Button>
+                <Button size="icon-xs" variant="ghost" disabled={i === 0} aria-label="Lên" onClick={() => move(i, -1)}><HugeiconsIcon icon={ArrowUp02Icon} /></Button>
+                <Button size="icon-xs" variant="ghost" disabled={i === c.fields.length - 1} aria-label="Xuống" onClick={() => move(i, 1)}><HugeiconsIcon icon={ArrowDown02Icon} /></Button>
+                <Button size="icon-xs" variant="ghost" aria-label={`Sửa ${f.label}`} onClick={() => setDialog({ open: true, index: i })}><HugeiconsIcon icon={PencilEdit01Icon} /></Button>
+                <Button size="icon-xs" variant="ghost" aria-label={`Xoá ${f.label}`} onClick={() => setFields(c.fields.filter((_, j) => j !== i))}><HugeiconsIcon icon={Delete02Icon} /></Button>
               </div>
               <p className="text-xs text-muted-foreground">
                 <span className="font-mono">{f.name}</span> · {FIELD_TYPES.find((t) => t.type === f.type)?.label.split(" ")[0]}{f.required && <span className="ml-1 rounded bg-muted px-1">Bắt buộc</span>}
@@ -116,9 +118,9 @@ export function FormBuilderPage() {
           </div>
           <div className="space-y-3 border-t pt-4">
             <label className="grid gap-1"><span className="text-xs font-medium">Loại Form</span>
-              <select className="h-9 rounded-md border border-input bg-transparent px-3" value={draft.formType} onChange={(e) => setDraft({ ...draft, formType: e.target.value as WorkflowForm["formType"] })}>
+              <Select value={draft.formType} onChange={(e) => setDraft({ ...draft, formType: e.target.value as WorkflowForm["formType"] })}>
                 {FORM_TYPES.map((t) => <option key={t.type} value={t.type}>{t.name}</option>)}
-              </select>
+              </Select>
             </label>
             <label className="grid gap-1"><span className="text-xs font-medium">Tiêu đề hiển thị</span><Input value={c.title} onChange={(e) => setC({ title: e.target.value })} /></label>
             <label className="grid gap-1"><span className="text-xs font-medium">Nút Gửi</span><Input value={c.submitButton.text} placeholder="Nhập text cho nút gửi" onChange={(e) => setC({ submitButton: { text: e.target.value } })} /></label>

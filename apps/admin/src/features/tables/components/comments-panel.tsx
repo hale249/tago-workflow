@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { MessageSquare, Pencil, SendHorizontal, Trash2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Delete02Icon, Message01Icon, PencilEdit01Icon, SentIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
@@ -34,7 +35,7 @@ export function CommentsPanel({ recordId, users }: { recordId: string; users: Wo
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex h-10 shrink-0 items-center border-b px-3">
-        <h2 className="flex items-center gap-2 text-sm font-medium"><MessageSquare className="size-4 text-muted-foreground" />Bình luận</h2>
+        <h2 className="flex items-center gap-2 text-sm font-medium"><HugeiconsIcon icon={Message01Icon} className="size-4 text-muted-foreground" />Bình luận</h2>
       </div>
       <div className="flex min-h-0 flex-1 flex-col px-3 pt-3 pb-3">
         <div className="shrink-0 pb-4">
@@ -59,7 +60,7 @@ export function CommentsPanel({ recordId, users }: { recordId: string; users: Wo
                 onClick={send}
                 className={cn("grid size-8 place-items-center rounded-full transition-colors", canSend ? "bg-brand text-white hover:bg-brand/90" : "cursor-not-allowed bg-muted text-muted-foreground")}
               >
-                <SendHorizontal className="size-4" />
+                <HugeiconsIcon icon={SentIcon} className="size-4" />
               </button>
             </div>
           </div>
@@ -80,8 +81,8 @@ export function CommentsPanel({ recordId, users }: { recordId: string; users: Wo
                       <span className="text-xs whitespace-nowrap text-muted-foreground">{formatStamp(c.createdAt)}{c.updatedAt && " · đã sửa"}</span>
                       {mine && editing?.id !== c.id && (
                         <span className="ml-auto flex opacity-0 group-hover:opacity-100 max-md:opacity-100">
-                          <Button size="icon-xs" variant="ghost" aria-label="Sửa" onClick={() => setEditing({ id: c.id, content: c.content })}><Pencil /></Button>
-                          <Button size="icon-xs" variant="ghost" aria-label="Xoá" onClick={() => remove.mutate(c.id)}><Trash2 /></Button>
+                          <Button size="icon-xs" variant="ghost" aria-label="Sửa" onClick={() => setEditing({ id: c.id, content: c.content })}><HugeiconsIcon icon={PencilEdit01Icon} /></Button>
+                          <Button size="icon-xs" variant="ghost" aria-label="Xoá" onClick={() => remove.mutate(c.id)}><HugeiconsIcon icon={Delete02Icon} /></Button>
                         </span>
                       )}
                     </div>

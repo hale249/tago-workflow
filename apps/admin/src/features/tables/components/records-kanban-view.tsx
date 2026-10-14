@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { ChevronDown, ChevronsLeftRight, Plus } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, ArrowDown01Icon, ArrowHorizontalIcon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@workspace/ui/lib/utils"
 import { useUpdateRecord } from "../api/tables.queries"
@@ -15,7 +16,7 @@ const EMPTY = "__empty__"
 
 function buildColumns(field: TableField, users: WorkspaceUser[]): Column[] {
   const none = { key: EMPTY, title: "Chưa phân loại", value: "", color: "#9ca3af" }
-  if (field.type === "SELECT_ONE") return [...(field.options ?? []).map((o) => ({ key: o.value, title: o.text, value: o.value, color: o.textColor })), none]
+  if (field.type === "SELECT_ONE") return [...(field.options ?? []).map((o) => ({ key: o.value, title: o.text, value: o.value, color: o.backgroundColor })), none]
   if (field.type === "SELECT_ONE_WORKSPACE_USER") return [...users.map((u) => ({ key: u.id, title: <UserChip user={u} />, value: u.id, color: u.color })), { ...none, title: "Chưa gán" }]
   return [{ key: "true", title: "Có", value: true, color: "#16a34a" }, { key: "false", title: "Không", value: false, color: "#9ca3af" }]
 }
@@ -72,7 +73,7 @@ export function RecordsKanbanView({ table, config, records, users, onOpen, onCre
         if (isCollapsed)
           return (
             <button key={col.key} type="button" onClick={toggle} aria-label="Mở rộng cột" className="flex w-10 shrink-0 flex-col items-center gap-2 rounded-lg bg-muted/60 py-3 text-xs">
-              <ChevronsLeftRight className="size-3.5" />
+              <HugeiconsIcon icon={ArrowHorizontalIcon} className="size-3.5" />
               <span className="size-2 rounded-full" style={{ backgroundColor: col.color }} />
               <span className="[writing-mode:vertical-rl]">{typeof col.title === "string" ? col.title : ""} · {inCol.length}</span>
             </button>
@@ -93,9 +94,9 @@ export function RecordsKanbanView({ table, config, records, users, onOpen, onCre
               <h3 className="min-w-0 truncate text-sm font-semibold">{col.title}</h3>
               <span className="text-xs text-muted-foreground tabular-nums">{range ? `${items.length}/${inCol.length}` : items.length}</span>
               <span className="ml-auto flex items-center gap-1 text-muted-foreground">
-                <button type="button" onClick={() => onCreate({ [statusField.name]: col.value })} aria-label="Thêm bản ghi vào cột" className="grid size-7 place-items-center rounded-md transition-colors hover:bg-accent"><Plus className="size-4" /></button>
+                <button type="button" onClick={() => onCreate({ [statusField.name]: col.value })} aria-label="Thêm bản ghi vào cột" className="grid size-7 place-items-center rounded-md transition-colors hover:bg-accent"><HugeiconsIcon icon={Add01Icon} className="size-4" /></button>
                 <DateRangeFilter compact value={range ?? null} onChange={(v) => setColRange({ ...colRange, [col.key]: v })} />
-                <button type="button" onClick={toggle} aria-label="Thu gọn cột" className="grid size-7 place-items-center rounded-md transition-colors hover:bg-accent"><ChevronDown className="size-4" /></button>
+                <button type="button" onClick={toggle} aria-label="Thu gọn cột" className="grid size-7 place-items-center rounded-md transition-colors hover:bg-accent"><HugeiconsIcon icon={ArrowDown01Icon} className="size-4" /></button>
               </span>
             </div>
             <div className="flex max-h-[calc(100vh-300px)] flex-col gap-2 overflow-y-auto p-2">

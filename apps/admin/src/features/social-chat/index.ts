@@ -1,2 +1,2 @@
 export { SocialChatPage } from "./pages/social-chat"
-export { useSocialStore, useUnreadChats } from "./store/social.store"
+export { useSocialStore, useUnreadChats, useUnreadChatsIn } from "./store/social.store"

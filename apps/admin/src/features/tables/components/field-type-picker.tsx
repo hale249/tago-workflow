@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { Check, ChevronDown } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowDown01Icon, Tick02Icon } from "@hugeicons/core-free-icons"
 
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@workspace/ui/components/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
@@ -35,7 +36,7 @@ export function FieldTypePicker({ value, onChange, disabled }: { value?: FieldTy
           ) : (
             <span className="flex-1 text-muted-foreground">Chọn loại trường…</span>
           )}
-          <ChevronDown className="size-4 text-muted-foreground" />
+          <HugeiconsIcon icon={ArrowDown01Icon} className="size-4 text-muted-foreground" />
         </button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-(--radix-popover-trigger-width) p-0">
@@ -60,7 +61,7 @@ export function FieldTypePicker({ value, onChange, disabled }: { value?: FieldTy
                       <span className="font-medium">{t.label}</span>
                       <span className="text-xs text-muted-foreground">{t.description}</span>
                     </span>
-                    {value === t.type && <Check className="mt-0.5 size-4 text-brand" />}
+                    {value === t.type && <HugeiconsIcon icon={Tick02Icon} className="mt-0.5 size-4 text-brand" />}
                   </CommandItem>
                 ))}
               </CommandGroup>

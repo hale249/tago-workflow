@@ -1,4 +1,5 @@
-import { ArrowDown, ArrowUp } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowDown02Icon, ArrowUp02Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -28,8 +29,8 @@ export function FieldPicker({ fields, value, onChange }: { fields: TableField[];
             <span className="flex w-14 justify-end">
               {on && (
                 <>
-                  <Button size="icon-xs" variant="ghost" disabled={idx === 0} onClick={() => move(idx, -1)} aria-label="Lên"><ArrowUp /></Button>
-                  <Button size="icon-xs" variant="ghost" disabled={idx === value.length - 1} onClick={() => move(idx, 1)} aria-label="Xuống"><ArrowDown /></Button>
+                  <Button size="icon-xs" variant="ghost" disabled={idx === 0} onClick={() => move(idx, -1)} aria-label="Lên"><HugeiconsIcon icon={ArrowUp02Icon} /></Button>
+                  <Button size="icon-xs" variant="ghost" disabled={idx === value.length - 1} onClick={() => move(idx, 1)} aria-label="Xuống"><HugeiconsIcon icon={ArrowDown02Icon} /></Button>
                 </>
               )}
             </span>

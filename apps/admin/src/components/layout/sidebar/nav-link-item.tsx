@@ -1,5 +1,6 @@
 import { NavLink } from "react-router"
-import { ChevronRight } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
@@ -34,7 +35,7 @@ export function NavLinkItem({ item, collapsed, onNavigate }: Props) {
     >
       {({ isActive }) => (
         <>
-          <item.icon
+          <HugeiconsIcon icon={item.icon}
             strokeWidth={1.5}
             className={cn("size-4 shrink-0 transition-colors", isActive ? "text-brand" : "text-sidebar-foreground/60 group-hover/nav:text-sidebar-foreground")}
           />
@@ -73,7 +74,7 @@ export function NavLinkItem({ item, collapsed, onNavigate }: Props) {
         aria-expanded={treeOpen}
         className="absolute top-1/2 right-1 flex size-5 -translate-y-1/2 items-center justify-center rounded text-sidebar-foreground/30 opacity-0 transition-[color,background-color,opacity] group-hover/row:opacity-100 hover:bg-sidebar-foreground/10 hover:text-sidebar-foreground/70 focus-visible:opacity-100"
       >
-        <ChevronRight className={cn("size-3 transition-transform duration-200", treeOpen && "rotate-90")} />
+        <HugeiconsIcon icon={ArrowRight01Icon} className={cn("size-3 transition-transform duration-200", treeOpen && "rotate-90")} />
       </button>}
     </div>
   )

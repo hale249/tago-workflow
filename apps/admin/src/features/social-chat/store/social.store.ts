@@ -48,3 +48,5 @@ export const useSocialStore = create<State>()(
 
 /** Conversations with unread messages (sidebar badge). */
 export const useUnreadChats = () => useSocialStore((s) => s.conversations.filter((c) => c.unread > 0).length)
+export const useUnreadChatsIn = (channel: Channel) =>
+  useSocialStore((s) => s.conversations.filter((c) => c.unread > 0 && channelOfPage(s, c.pageId) === channel).length)

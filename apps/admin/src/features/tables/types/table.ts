@@ -61,7 +61,21 @@ export type KanbanConfig = {
 /** formula: COUNT(*), SUM(field), AVG(field), MIN(field), MAX(field) */
 export type TotalSumField = { label: string; formula: string }
 
-export type RefRecordsConfig = { title: string; refTableId: string; refField: string; displayFields: string[] }
+export type RefRecordsConfig = {
+  title: string
+  refTableId: string
+  refField: string
+  displayFields: string[]
+  /** "table" = classic rows (default), "cards" = stacked cards. */
+  layout?: "table" | "cards"
+  /** Show the "Thêm" button on the tab (default true). */
+  showCreate?: boolean
+  /** Sub-title under the tab heading. */
+  description?: string
+  /** Extra equality filters as a JSON object, e.g. {"loai": "xuat_kho"}. */
+  extraFilter?: string
+  totalSumFields?: TotalSumField[]
+}
 
 export type SystemActionType = "create" | "access" | "update" | "delete" | "comment_create" | "comment_access" | "comment_update" | "comment_delete"
 export type TableAction = { actionId: string; name: string; type: SystemActionType | "custom"; icon: string; inputFields: TableField[] }
@@ -138,8 +152,24 @@ export type TableConfig = {
   quickFilters: string[]
   defaultSort: "asc" | "desc"
   defaultScreen: { type: "list" | "kanban" | "gantt" | "pivot" | "objective" | "conversion"; screenId: string }
-  recordList: { displayFields: string[]; totalSumFields: TotalSumField[] }
-  recordDetail: { headTitleField: string; headSubLineFields: string[]; rowTailFields: string[]; refRecords: RefRecordsConfig[] }
+  /** Text fields indexed for the list search box; empty = search every field. */
+  searchableFields?: string[]
+  /** Shown when another table picks a record from this one; empty = the reference field's label field. */
+  lookupPrimaryField?: string
+  lookupSecondaryFields?: string[]
+  /** sortField empty = by creation time (defaultSort). */
+  recordList: { displayFields: string[]; totalSumFields: TotalSumField[]; sortField?: string; sortOrder?: "asc" | "desc" }
+  recordDetail: {
+    /** "head-detail" = one column (default), "two-column" = leftFields / rightFields side by side. */
+    layout?: "head-detail" | "two-column"
+    commentsPosition?: "right-panel" | "hidden"
+    headTitleField: string
+    headSubLineFields: string[]
+    rowTailFields: string[]
+    leftFields?: string[]
+    rightFields?: string[]
+    refRecords: RefRecordsConfig[]
+  }
   kanbanConfigs: KanbanConfig[]
 }
 

@@ -1,23 +1,25 @@
 import { useState } from "react"
 import { Link } from "react-router"
-import { CalendarDays, ChevronLeft, Clock, Cpu, FolderKanban, Pencil, Plus, Server, Shield, Tag, Trash2, UserPlus, Users, type LucideIcon } from "lucide-react"
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react"
+import { Add01Icon, ArrowLeft01Icon, Calendar02Icon, Clock01Icon, CpuIcon, Delete02Icon, FolderKanbanIcon, PencilEdit01Icon, ServerStack01Icon, Shield01Icon, Tag01Icon, UserAdd01Icon, UserMultipleIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { cn } from "@workspace/ui/lib/utils"
 import { useCreateWorkGroup, useRecordCounts, useTables, useWorkGroups, useWorkspaceUsers } from "@/features/tables"
 import { useSettingsStore, type Label, type LabelType, type Team } from "../settings.store"
+import { Select } from "@/components/select"
 
 const uid = () => Math.random().toString(36).slice(2, 10)
-const sel = "h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+const sel = "w-full"
 const set = useSettingsStore.setState
 const nf = new Intl.NumberFormat("vi-VN")
 
-function Card({ title, description, action, icon: Icon, children }: { title: string; description?: string; action?: React.ReactNode; icon?: LucideIcon; children: React.ReactNode }) {
+function Card({ title, description, action, icon: Icon, children }: { title: string; description?: string; action?: React.ReactNode; icon?: IconSvgElement; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
-        <div><h2 className="flex items-center gap-2 text-sm font-semibold">{Icon && <Icon className="size-4 text-muted-foreground" />}{title}</h2>{description && <p className="text-xs text-muted-foreground">{description}</p>}</div>
+        <div><h2 className="flex items-center gap-2 text-sm font-semibold">{Icon && <HugeiconsIcon icon={Icon} className="size-4 text-muted-foreground" />}{title}</h2>{description && <p className="text-xs text-muted-foreground">{description}</p>}</div>
         {action}
       </div>
       {children}
@@ -32,7 +34,7 @@ function AddRow({ placeholder, onAdd, label = "Tạo mới" }: { placeholder: st
   return (
     <div className="flex gap-2">
       <Input value={v} placeholder={placeholder} className="h-9" onChange={(e) => setV(e.target.value)} onKeyDown={(e) => e.key === "Enter" && add()} />
-      <Button size="sm" className="h-9" disabled={!v.trim()} onClick={add}><Plus />{label}</Button>
+      <Button size="sm" className="h-9" disabled={!v.trim()} onClick={add}><HugeiconsIcon icon={Add01Icon} />{label}</Button>
     </div>
   )
 }
@@ -47,10 +49,10 @@ function SystemTab() {
   const { data: counts = {} } = useRecordCounts()
   return (
     <div className="space-y-4">
-      <Card icon={Server} title="Thông tin cơ bản" description="Thông số cấu hình kỹ thuật của workspace">
+      <Card icon={ServerStack01Icon} title="Thông tin cơ bản" description="Thông số cấu hình kỹ thuật của workspace">
         <dl className="divide-y text-sm">
-          {([[Clock, "Múi giờ", "GMT+7"], [Cpu, "Giới hạn CPU", "1 WCPU"], [CalendarDays, "Ngày bắt đầu", "2026-03-15 00:00:00"], [CalendarDays, "Ngày hết hạn", "2027-03-15 23:59:59"]] as const).map(([Icon, k, v]) => (
-            <div key={k} className="flex items-center gap-2 py-2.5"><Icon className="size-4 text-muted-foreground" /><dt className="flex-1">{k}</dt><dd className="font-mono text-muted-foreground tabular-nums">{v}</dd></div>
+          {([[Clock01Icon, "Múi giờ", "GMT+7"], [CpuIcon, "Giới hạn CPU", "1 WCPU"], [Calendar02Icon, "Ngày bắt đầu", "2026-03-15 00:00:00"], [Calendar02Icon, "Ngày hết hạn", "2027-03-15 23:59:59"]] as const).map(([Icon, k, v]) => (
+            <div key={k} className="flex items-center gap-2 py-2.5"><HugeiconsIcon icon={Icon} className="size-4 text-muted-foreground" /><dt className="flex-1">{k}</dt><dd className="font-mono text-muted-foreground tabular-nums">{v}</dd></div>
           ))}
         </dl>
       </Card>
@@ -115,14 +117,14 @@ function TeamsTab() {
       </Card>
       {team ? (
         <Card title={team.name} description={team.description || "Vai trò và thành viên của đội"}
-          action={<Button size="sm" variant="outline" className="text-destructive" onClick={() => window.confirm(`Xóa đội nhóm “${team.name}”?`) && (set((s) => ({ teams: s.teams.filter((t) => t.id !== team.id) })), setOpenId(""))}><Trash2 />Xóa</Button>}>
+          action={<Button size="sm" variant="outline" className="text-destructive" onClick={() => window.confirm(`Xóa đội nhóm “${team.name}”?`) && (set((s) => ({ teams: s.teams.filter((t) => t.id !== team.id) })), setOpenId(""))}><HugeiconsIcon icon={Delete02Icon} />Xóa</Button>}>
           <div className="space-y-5">
             <div className="space-y-2">
               <p className="text-sm font-medium">Vai trò</p>
               <div className="flex flex-wrap gap-1.5">
                 {team.roles.map((r) => (
                   <span key={r.id} className="inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-sm">{r.name}
-                    <button type="button" aria-label={`Xóa vai trò ${r.name}`} onClick={() => patch(team.id, (t) => ({ ...t, roles: t.roles.filter((x) => x.id !== r.id), members: t.members.filter((m) => m.roleId !== r.id) }))}><Trash2 className="size-3" /></button>
+                    <button type="button" aria-label={`Xóa vai trò ${r.name}`} onClick={() => patch(team.id, (t) => ({ ...t, roles: t.roles.filter((x) => x.id !== r.id), members: t.members.filter((m) => m.roleId !== r.id) }))}><HugeiconsIcon icon={Delete02Icon} className="size-3" /></button>
                   </span>
                 ))}
                 {!team.roles.length && <span className="text-xs text-muted-foreground">Chưa có vai trò nào</span>}
@@ -135,9 +137,9 @@ function TeamsTab() {
                 <tbody>{team.members.map((m) => (
                   <tr key={m.userId} className="border-t">
                     <td className="py-2">{users.find((u) => u.id === m.userId)?.fullName ?? m.userId}</td>
-                    <td className="py-2"><select className={cn(sel, "h-8")} value={m.roleId} onChange={(e) => patch(team.id, (t) => ({ ...t, members: t.members.map((x) => (x.userId === m.userId ? { ...x, roleId: e.target.value } : x)) }))}>
-                      {team.roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}</select></td>
-                    <td className="py-2 text-right"><Button size="icon-sm" variant="ghost" aria-label="Xóa khỏi đội" onClick={() => patch(team.id, (t) => ({ ...t, members: t.members.filter((x) => x.userId !== m.userId) }))}><Trash2 /></Button></td>
+                    <td className="py-2"><Select className={sel} value={m.roleId} onChange={(e) => patch(team.id, (t) => ({ ...t, members: t.members.map((x) => (x.userId === m.userId ? { ...x, roleId: e.target.value } : x)) }))}>
+                      {team.roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}</Select></td>
+                    <td className="py-2 text-right"><Button size="icon-sm" variant="ghost" aria-label="Xóa khỏi đội" onClick={() => patch(team.id, (t) => ({ ...t, members: t.members.filter((x) => x.userId !== m.userId) }))}><HugeiconsIcon icon={Delete02Icon} /></Button></td>
                   </tr>
                 ))}</tbody></table>
               {!team.members.length && <p className="text-xs text-muted-foreground">Đội này chưa có thành viên nào</p>}
@@ -155,9 +157,9 @@ function AddMember({ team, users, onAdd }: { team: Team; users: { id: string; fu
   const free = users.filter((u) => !team.members.some((m) => m.userId === u.id))
   return (
     <div className="flex flex-wrap gap-2">
-      <select className={sel} value={userId} onChange={(e) => setUserId(e.target.value)}><option value="">Chọn thành viên…</option>{free.map((u) => <option key={u.id} value={u.id}>{u.fullName}</option>)}</select>
-      <select className={sel} value={roleId} onChange={(e) => setRoleId(e.target.value)}><option value="">Vai trò…</option>{team.roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}</select>
-      <Button size="sm" className="h-9" disabled={!userId || !roleId} onClick={() => { onAdd(userId, roleId); setUserId(""); setRoleId("") }}><UserPlus />Thêm thành viên</Button>
+      <Select className={sel} value={userId} onChange={(e) => setUserId(e.target.value)}><option value="">Chọn thành viên…</option>{free.map((u) => <option key={u.id} value={u.id}>{u.fullName}</option>)}</Select>
+      <Select className={sel} value={roleId} onChange={(e) => setRoleId(e.target.value)}><option value="">Vai trò…</option>{team.roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}</Select>
+      <Button size="sm" className="h-9" disabled={!userId || !roleId} onClick={() => { onAdd(userId, roleId); setUserId(""); setRoleId("") }}><HugeiconsIcon icon={UserAdd01Icon} />Thêm thành viên</Button>
     </div>
   )
 }
@@ -175,18 +177,18 @@ function PermissionsTab() {
     <Card title="Cấu hình phân quyền" description="Phân quyền theo nhóm và vai trò cho từng đối tượng trong workspace">
       <div className="mb-4 flex flex-wrap gap-3 text-sm">
         <label className="grid gap-1"><span className="text-xs font-medium">Chọn nhóm</span>
-          <select className={sel} value={teamId} onChange={(e) => { setTeamId(e.target.value); setRoleId(teams.find((t) => t.id === e.target.value)?.roles[0]?.id ?? "") }}>{teams.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</select></label>
+          <Select className={sel} value={teamId} onChange={(e) => { setTeamId(e.target.value); setRoleId(teams.find((t) => t.id === e.target.value)?.roles[0]?.id ?? "") }}>{teams.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select></label>
         <label className="grid gap-1"><span className="text-xs font-medium">Chọn vai trò</span>
-          <select className={sel} value={roleId} onChange={(e) => setRoleId(e.target.value)}>{team?.roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}</select></label>
+          <Select className={sel} value={roleId} onChange={(e) => setRoleId(e.target.value)}>{team?.roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}</Select></label>
       </div>
       {!team?.roles.length ? <p className="text-sm text-muted-foreground">Không tìm thấy vai trò cho nhóm này.</p> : (
         <div className="divide-y rounded-lg border">
           {SUBJECTS.map((s) => (
             <div key={s} className="flex items-center gap-3 px-3 py-2 text-sm">
               <span className="flex-1">{s}</span>
-              <select className={cn(sel, "h-8")} value={permissions[key]?.[s] ?? "none"} onChange={(e) => set((st) => ({ permissions: { ...st.permissions, [key]: { ...st.permissions[key], [s]: e.target.value } } }))}>
+              <Select className={sel} value={permissions[key]?.[s] ?? "none"} onChange={(e) => set((st) => ({ permissions: { ...st.permissions, [key]: { ...st.permissions[key], [s]: e.target.value } } }))}>
                 {SCOPES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-              </select>
+              </Select>
             </div>
           ))}
         </div>
@@ -217,8 +219,8 @@ function LabelsTab() {
             <tr key={l.id} className="border-t">
               <td className="py-2">{l.name}</td><td className="py-2 text-muted-foreground">{new Date(l.updatedAt).toLocaleDateString("vi-VN")}</td>
               <td className="py-2 text-right">
-                <Button size="icon-sm" variant="ghost" aria-label="Chỉnh sửa nhãn" onClick={() => { const n = window.prompt("Tên nhãn", l.name); if (n?.trim()) upd(l.id, { name: n.trim() }) }}><Pencil /></Button>
-                <Button size="icon-sm" variant="ghost" aria-label="Xóa nhãn" onClick={() => window.confirm(`Xóa nhãn “${l.name}”?`) && set((s) => ({ labels: s.labels.filter((x) => x.id !== l.id) }))}><Trash2 /></Button>
+                <Button size="icon-sm" variant="ghost" aria-label="Chỉnh sửa nhãn" onClick={() => { const n = window.prompt("Tên nhãn", l.name); if (n?.trim()) upd(l.id, { name: n.trim() }) }}><HugeiconsIcon icon={PencilEdit01Icon} /></Button>
+                <Button size="icon-sm" variant="ghost" aria-label="Xóa nhãn" onClick={() => window.confirm(`Xóa nhãn “${l.name}”?`) && set((s) => ({ labels: s.labels.filter((x) => x.id !== l.id) }))}><HugeiconsIcon icon={Delete02Icon} /></Button>
               </td>
             </tr>
           ))}</tbody></table>
@@ -227,7 +229,7 @@ function LabelsTab() {
   )
 }
 
-const TABS = [["system", "Thông tin hệ thống", SystemTab, Server], ["groups", "Nhóm công việc", WorkGroupsTab, FolderKanban], ["teams", "Nhóm", TeamsTab, Users], ["perms", "Quyền", PermissionsTab, Shield], ["labels", "Nhãn", LabelsTab, Tag]] as const
+const TABS = [["system", "Thông tin hệ thống", SystemTab, ServerStack01Icon], ["groups", "Nhóm công việc", WorkGroupsTab, FolderKanbanIcon], ["teams", "Nhóm", TeamsTab, UserMultipleIcon], ["perms", "Quyền", PermissionsTab, Shield01Icon], ["labels", "Nhãn", LabelsTab, Tag01Icon]] as const
 
 export function WorkspaceSettingsPage() {
   const [tab, setTab] = useState<string>("system")
@@ -235,13 +237,13 @@ export function WorkspaceSettingsPage() {
   return (
     <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg bg-background">
       <header className="flex items-center gap-2 px-5 pt-5">
-        <Link to="/" aria-label="Quay lại" className="rounded p-1 text-muted-foreground hover:bg-muted"><ChevronLeft className="size-5" /></Link>
+        <Link to="/" aria-label="Quay lại" className="rounded p-1 text-muted-foreground hover:bg-muted"><HugeiconsIcon icon={ArrowLeft01Icon} className="size-5" /></Link>
         <h1 className="text-2xl font-semibold">Evergreen - Cài đặt</h1>
       </header>
       <div role="tablist" className="mx-5 mt-4 flex gap-1 overflow-x-auto border-b">
         {TABS.map(([id, label, , Icon]) => (
           <button key={id} role="tab" type="button" aria-selected={tab === id} onClick={() => setTab(id)}
-            className={cn("-mb-px flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2 text-sm", tab === id ? "border-foreground font-medium text-foreground" : "border-transparent text-muted-foreground hover:text-foreground")}><Icon className="size-4" />{label}</button>
+            className={cn("-mb-px flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2 text-sm", tab === id ? "border-foreground font-medium text-foreground" : "border-transparent text-muted-foreground hover:text-foreground")}><HugeiconsIcon icon={Icon} className="size-4" />{label}</button>
         ))}
       </div>
       <div className="flex-1 overflow-y-auto p-5"><Active /></div>

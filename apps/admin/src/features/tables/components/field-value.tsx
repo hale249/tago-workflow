@@ -1,4 +1,5 @@
-import { Check, ExternalLink, Minus } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { LinkSquare02Icon, MinusSignIcon, Tick02Icon } from "@hugeicons/core-free-icons"
 import { Link } from "react-router"
 
 import { cn } from "@workspace/ui/lib/utils"
@@ -6,14 +7,18 @@ import { recordLabel } from "../api/tables.api"
 import type { FieldOption, RecordValue, TableField, WorkspaceUser } from "../types/table"
 import { formatDateValue, formatNumber, isBlank } from "../utils/fields"
 
-export function OptionBadge({ option, className }: { option?: FieldOption; className?: string }) {
+/** "sm" = list cells (20px, 11px text), "md" = detail / line items (22px, 12px) — as in the reference. */
+const CHIP = { sm: "h-5 text-[11px]", md: "h-[22px] text-xs" }
+
+export function OptionBadge({ option, className, size = "sm" }: { option?: FieldOption; className?: string; size?: "sm" | "md" }) {
   if (!option) return null
   return (
     <span
-      className={cn("inline-flex h-5 max-w-full items-center truncate rounded-md px-1.5 text-[11px] font-medium", className)}
-      style={{ color: option.textColor, backgroundColor: option.backgroundColor }}
+      className={cn("inline-flex max-w-full items-center rounded-md border px-1.5 font-medium whitespace-nowrap", CHIP[size], className)}
+      // Reference chip: option colors + a border in the text color at 20%.
+      style={{ color: option.textColor, backgroundColor: option.backgroundColor, borderColor: `color-mix(in oklab, ${option.textColor} 20%, transparent)` }}
     >
-      {option.text}
+      <span className="truncate">{option.text}</span>
     </span>
   )
 }
@@ -31,10 +36,10 @@ export function UserChip({ user, compact }: { user?: WorkspaceUser; compact?: bo
   )
 }
 
-type Props = { field: TableField; value: RecordValue | undefined; users: WorkspaceUser[]; className?: string }
+type Props = { field: TableField; value: RecordValue | undefined; users: WorkspaceUser[]; className?: string; size?: "sm" | "md" }
 
 /** Read-only rendering of a record value according to its field type. */
-export function FieldValue({ field, value, users, className }: Props) {
+export function FieldValue({ field, value, users, className, size = "sm" }: Props) {
   if (isBlank(value) && field.type !== "CHECKBOX_YES_NO") return <span className={cn("text-muted-foreground/60", className)}>—</span>
   const list = Array.isArray(value) ? value : [value]
 
@@ -44,7 +49,7 @@ export function FieldValue({ field, value, users, className }: Props) {
       return (
         <span className={cn("flex min-w-0 flex-wrap gap-1", className)}>
           {list.map((v) => (
-            <OptionBadge key={String(v)} option={field.options?.find((o) => o.value === v) ?? { text: String(v), value: String(v), textColor: "#374151", backgroundColor: "#e5e7eb" }} />
+            <OptionBadge key={String(v)} size={size} option={field.options?.find((o) => o.value === v) ?? { text: String(v), value: String(v), textColor: "#374151", backgroundColor: "#e5e7eb" }} />
           ))}
         </span>
       )
@@ -61,15 +66,16 @@ export function FieldValue({ field, value, users, className }: Props) {
         <Link
           to={`/tables/${field.referenceTableId}/records/${value}`}
           onClick={(e) => e.stopPropagation()}
-          className={cn("truncate text-brand hover:underline", className)}
+          title={recordLabel(field.referenceTableId, String(value))}
+          className={cn("inline-flex max-w-full items-center rounded-md border bg-muted px-1.5 font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground", CHIP[size], className)}
         >
-          {recordLabel(field.referenceTableId, String(value))}
+          <span className="truncate">{recordLabel(field.referenceTableId, String(value))}</span>
         </Link>
       ) : (
         <span>{String(value)}</span>
       )
     case "CHECKBOX_YES_NO":
-      return value ? <Check className="size-4 text-emerald-600" /> : <Minus className="size-4 text-muted-foreground/60" />
+      return value ? <HugeiconsIcon icon={Tick02Icon} className="size-4 text-emerald-600" /> : <HugeiconsIcon icon={MinusSignIcon} className="size-4 text-muted-foreground/60" />
     case "NUMERIC":
       return <span className={cn("tabular-nums", className)}>{formatNumber(Number(value), field.decimalPlaces, field.unit)}</span>
     case "DATE":
@@ -80,7 +86,7 @@ export function FieldValue({ field, value, users, className }: Props) {
       return (
         <a href={String(value)} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className={cn("inline-flex min-w-0 items-center gap-1 text-brand hover:underline", className)}>
           <span className="truncate">{String(value).replace(/^https?:\/\//, "")}</span>
-          <ExternalLink className="size-3 shrink-0" />
+          <HugeiconsIcon icon={LinkSquare02Icon} className="size-3 shrink-0" />
         </a>
       )
     case "EMAIL":

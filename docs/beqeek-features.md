@@ -165,3 +165,25 @@ Xem trực tiếp (chỉ đọc) các trang danh sách bảng, bản ghi, chi ti
 - Kanban: cột 280px nền xám, cao theo nội dung; thẻ dạng danh sách nhãn/giá trị (nhãn 88px).
 - Chi tiết bản ghi: header dính trên cùng, dòng phụ là văn bản thường, breadcrumb, tab gạch chân, dòng trường 180px + giá trị, khung bình luận 400px bên phải (ô soạn ở trên, danh sách mới nhất ở dưới, thời gian dạng "28 thg 7 lúc 13:04").
 - Tạo/sửa bản ghi: form giữa trang rộng 720px dạng thẻ, 2 cột, chân thẻ Hủy / Tạo bản ghi.
+
+## 12. Rà soát Cài đặt bảng lần 4 (2026-10-13)
+
+Đọc (chỉ đọc) 13 tab cài đặt bảng bên tham khảo, so với Tago. Đã bổ sung:
+- **Tổng quan**: Khóa mã hóa (chỉ hiển thị, mã hóa phía máy chủ); **Trường có thể tìm kiếm** (chỉ trường văn bản, ô tìm kiếm danh sách chỉ dò các trường này, để trống = mọi trường); **Trường hiển thị chính / phụ khi tìm bản ghi** (dùng trong ô chọn bản ghi tham chiếu và bộ lọc nhanh, phụ hiện dòng nhỏ bên dưới).
+- **Danh sách**: Loại bố cục (Bảng chung); **Sắp xếp theo trường** + Tăng/Giảm dần (để trống = theo ngày tạo).
+- **Bộ lọc**: thống kê Trường đủ điều kiện / Bộ lọc đang dùng / Có sẵn.
+- **Chi tiết**: **Loại bố cục** Một cột / **Hai cột** (cột trái, cột phải); **Vị trí bình luận** Bên phải / Ẩn; **Hồ sơ liên quan (Tabs)** thêm/sửa/xoá/đổi thứ tự tab, chọn bảng + trường liên kết, bố cục Bảng (Cổ điển) / Danh sách thẻ, bật/tắt nút Tạo mới.
+- **Nguy hiểm**: khối cảnh báo + danh sách dữ liệu bị xoá và việc cần làm trước khi xoá.
+
+Các module Cloud Logic (bảng node khớp 100%), Biểu mẫu, Kết nối (24 loại), Social, Cài đặt workspace, Hồ sơ, Thông báo: không thấy thiếu chức năng so với bản tham khảo. Trợ giúp / Ghim / Vai trò / Phân tích bên tham khảo vẫn là trang placeholder.
+
+## 13. Đồng bộ giao diện lần 5 (2026-10-13)
+
+So ảnh chụp (1440px, chỉ đọc) và class DOM của bản tham khảo:
+- **Icon**: bản tham khảo dùng Hugeicons (stroke-rounded 1.5). Tago bỏ hẳn lucide-react (cả `apps/admin` và `packages/ui`), dùng trực tiếp `@hugeicons/core-free-icons` (MIT) + `<HugeiconsIcon icon={…} />` từ `@hugeicons/react`. `src/components/icons.tsx` giữ các icon theo ngữ cảnh (sidebar, cài đặt bảng, loại bảng, connector) dưới dạng dữ liệu icon. shadcn `iconLibrary` = hugeicons.
+- **Icon loại trường** khớp bản tham khảo: văn bản / mã tự sinh = File02, số = Hashtag, ngày = Calendar01, SĐT = SmartPhone01, URL = Link01, chọn = ListView, tham chiếu = GitBranch, người dùng = UserMultiple (Email, Có/Không, chọn nhiều chưa thấy bên đó → chọn icon gần nhất).
+- **Sidebar**: thêm mục Social (4 inbox, mỗi kênh `/social-chat/:channel`, badge chưa đọc riêng).
+- **Bảng bản ghi**: chip lựa chọn có viền (màu chữ 20%), tham chiếu là chip xám, checkbox đậm hơn; trang chi tiết dùng chip 22px, nút bật/tắt bình luận trên header, bảng mặt hàng chỉ đọc có kẻ dọc + số căn phải, khối tổng dạng nhãn/giá trị.
+- **Kết nối**: danh sách dòng + tab Tất cả / Đã kết nối / Chưa kết nối, icon loại dịch vụ trên nền màu, chip trạng thái, "x/y trường".
+- **Workflow, Biểu mẫu**: header p-6, ô tìm 32px, nút 28px, dòng 56px, menu ⋮ hiện khi rê chuột.
+- **Bảng điều khiển**: thẻ workspace (avatar 44px, nhãn Chủ sở hữu, người tạo, ngày tạo, ghim sao).

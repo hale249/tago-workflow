@@ -20,6 +20,7 @@ export function CustomersTable({ rows, columns, isLoading }: Props) {
         <div role="row" className="sticky top-0 z-20 grid h-9 border-b bg-background" style={{ gridTemplateColumns }}>
           <div className="sticky left-0 z-10 flex items-center justify-center border-r bg-background">
             <Checkbox
+              aria-label="Chọn tất cả"
               checked={allSelected ? true : someSelected ? "indeterminate" : false}
               onCheckedChange={(v) => setSelection(v ? rows.map((r) => r.id) : [])}
             />
@@ -63,6 +64,7 @@ export function CustomersTable({ rows, columns, isLoading }: Props) {
                       {index + 1}
                     </span>
                     <Checkbox
+                      aria-label={`Chọn dòng ${index + 1}`}
                       checked={selected}
                       onCheckedChange={() => toggleRow(row.id)}
                       className={cn("hidden group-hover:flex", selected && "flex")}

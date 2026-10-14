@@ -4,26 +4,26 @@ export type { TabProps, Draft } from "./settings-types"
 
 export function SettingsCard({ title, description, action, children }: { title: string; description?: string; action?: ReactNode; children: ReactNode }) {
   return (
-    <div className="rounded-xl border p-5 md:p-6">
-      <div className="mb-5 flex items-start justify-between gap-4">
+    <div className="rounded-lg border bg-card p-3 sm:p-5">
+      <div className="mb-4 flex items-start justify-between gap-2">
         <div>
-          <h2 className="text-[15px] font-semibold">{title}</h2>
-          {description && <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>}
+          <h2 className="text-sm font-semibold">{title}</h2>
+          {description && <p className="mt-0.5 max-w-prose text-xs text-muted-foreground">{description}</p>}
         </div>
         {action}
       </div>
-      <div className="space-y-5">{children}</div>
+      <div className="space-y-6">{children}</div>
     </div>
   )
 }
 
 export function SubCard({ tag, hint, children }: { tag: string; hint?: string; children: ReactNode }) {
   return (
-    <div className="space-y-3 rounded-lg border p-4">
-      <p className="text-sm">
-        <span className="mr-2 rounded bg-muted px-1.5 py-0.5 text-xs font-medium">{tag}</span>
-        <span className="text-muted-foreground">{hint}</span>
-      </p>
+    <div className="space-y-4 rounded-lg border bg-muted/30 p-4">
+      <div className="flex items-center gap-2">
+        <span className="inline-flex h-[22px] shrink-0 items-center rounded-md bg-secondary px-1.5 text-xs font-medium whitespace-nowrap text-secondary-foreground">{tag}</span>
+        {hint && <span className="text-sm text-muted-foreground">{hint}</span>}
+      </div>
       {children}
     </div>
   )
@@ -39,11 +39,11 @@ export function EmptyBox({ icon, title, hint }: { icon?: ReactNode; title: strin
   )
 }
 
-export function InfoBox({ title, points }: { title: string; points: string[] }) {
+export function InfoBox({ title, points, tone = "info" }: { title: string; points: string[]; tone?: "info" | "bullets" }) {
   return (
-    <div className="rounded-lg bg-brand/5 px-4 py-3 text-xs text-brand">
-      <p className="mb-1 text-sm font-medium">{title}</p>
-      <ul className="list-inside list-disc space-y-0.5">{points.map((p) => <li key={p}>{p}</li>)}</ul>
+    <div className="rounded-lg border border-brand/20 bg-brand/5 p-4 text-brand dark:bg-brand/10">
+      <p className="text-sm font-medium">{title}</p>
+      {points.map((p) => <p key={p} className="mt-1 text-xs">{tone === "bullets" ? `• ${p}` : p}</p>)}
     </div>
   )
 }

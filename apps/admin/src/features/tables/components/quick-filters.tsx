@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 
 import { Input } from "@workspace/ui/components/input"
 import { cn } from "@workspace/ui/lib/utils"
-import { recordLabel } from "../api/tables.api"
+import { lookupLabel } from "../api/tables.api"
 import { recordsQuery } from "../api/tables.queries"
 import type { TableField, WorkspaceUser } from "../types/table"
 import { NativeSelect } from "./form-controls"
@@ -17,7 +17,7 @@ function RecordRefFilter({ field, value, onChange }: { field: TableField; value:
     <NativeSelect className={cls(!!value)} value={value} onChange={(e) => onChange(e.target.value)} aria-label={field.label}>
       <option value="">Tất cả {field.label}</option>
       {data.map((r) => (
-        <option key={r.id} value={r.id}>{field.referenceLabelField ? String(r.record[field.referenceLabelField] ?? r.id) : recordLabel(r.tableId, r.id)}</option>
+        <option key={r.id} value={r.id}>{lookupLabel(r.tableId, r.id, field.referenceLabelField).primary}</option>
       ))}
     </NativeSelect>
   )

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
-import { Plus, Trash2 } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, Delete02Icon } from "@hugeicons/core-free-icons"
 import { Children, isValidElement, type ReactNode } from "react"
 
 import { Button } from "@workspace/ui/components/button"
@@ -312,10 +313,10 @@ export function NodeConfigForm({ step, steps, onChange }: Props) {
                 <div key={i} className="grid grid-cols-[1fr_1.4fr_auto] gap-1.5">
                   <Input value={x.name} placeholder="khóa" className="font-mono" onChange={(e) => put(vars.map((y, j) => (j === i ? { ...y, name: e.target.value } : y)))} />
                   <Input value={x.value} placeholder="giá trị / biểu thức" onChange={(e) => put(vars.map((y, j) => (j === i ? { ...y, value: e.target.value } : y)))} />
-                  <Button size="icon-sm" variant="ghost" aria-label="Xoá biến" onClick={() => put(vars.filter((_, j) => j !== i))}><Trash2 /></Button>
+                  <Button size="icon-sm" variant="ghost" aria-label="Xoá biến" onClick={() => put(vars.filter((_, j) => j !== i))}><HugeiconsIcon icon={Delete02Icon} /></Button>
                 </div>
               ))}
-              <Button size="sm" variant="outline" onClick={() => put([...vars, { name: "", value: "" }])}><Plus />Thêm biến</Button>
+              <Button size="sm" variant="outline" onClick={() => put([...vars, { name: "", value: "" }])}><HugeiconsIcon icon={Add01Icon} />Thêm biến</Button>
             </div>
           )}
         </>

@@ -26,12 +26,49 @@ function requireTable(id: string) {
   return t
 }
 
+// Id → row indexes, rebuilt only when the store's arrays change (labels are looked up per option per render).
+const indexCache = new WeakMap<object, Map<string, unknown>>()
+function byId<T extends { id: string }>(rows: T[]): Map<string, T> {
+  let m = indexCache.get(rows) as Map<string, T> | undefined
+  if (!m) indexCache.set(rows, (m = new Map(rows.map((r) => [r.id, r]))))
+  return m
+}
+const tableById = (id: string) => byId(db().tables).get(id)
+const recordById = (id: string) => byId(db().records).get(id)
+
 export function recordLabel(tableId: string, recordId: string) {
-  const t = db().tables.find((x) => x.id === tableId)
-  const r = db().records.find((x) => x.id === recordId)
+  const t = tableById(tableId)
+  const r = recordById(recordId)
   if (!t || !r) return recordId
   const labelField = t.config.recordDetail.headTitleField || t.config.fields[0]?.name
   return String(r.record[labelField] ?? recordId)
+}
+
+/** How a record reads in another table's record picker: the table's lookup fields win over the reference field's label field. */
+export function lookupLabel(tableId: string, recordId: string, fallbackField?: string) {
+  const t = tableById(tableId)
+  const r = recordById(recordId)
+  if (!t || !r) return { primary: recordId, secondary: [] as string[] }
+  const ctx = { users: WORKSPACE_USERS, recordLabel }
+  const text = (name: string) => {
+    const f = t.config.fields.find((x) => x.name === name)
+    return f ? valueToText(f, r.record[name], ctx) : ""
+  }
+  const primaryField = t.config.lookupPrimaryField || fallbackField
+  const primary = (primaryField && text(primaryField)) || recordLabel(tableId, recordId)
+  const secondary = (t.config.lookupSecondaryFields ?? []).filter((n) => n !== primaryField).map(text).filter(Boolean)
+  return { primary, secondary }
+}
+
+/** Field comparison for sorting (blanks handled by the caller). */
+function compareRecords(table: ActiveTable, field: string, a: TableRecord, b: TableRecord) {
+  const f = table.config.fields.find((x) => x.name === field)
+  const av = a.record[field], bv = b.record[field]
+  if (typeof av === "number" && typeof bv === "number") return av - bv
+  const ctx = { users: WORKSPACE_USERS, recordLabel }
+  const at = f ? valueToText(f, av, ctx) : String(av)
+  const bt = f ? valueToText(f, bv, ctx) : String(bv)
+  return at.localeCompare(bt, "vi", { numeric: true })
 }
 
 function matches(table: ActiveTable, r: TableRecord, q: RecordQuery) {
@@ -65,7 +102,9 @@ function matches(table: ActiveTable, r: TableRecord, q: RecordQuery) {
   const s = q.search?.trim().toLowerCase()
   if (!s) return true
   const ctx = { users: WORKSPACE_USERS, recordLabel }
-  return table.config.fields.some((f) => valueToText(f, r.record[f.name], ctx).toLowerCase().includes(s))
+  const only = table.config.searchableFields ?? []
+  const fields = only.length ? table.config.fields.filter((f) => only.includes(f.name)) : table.config.fields
+  return fields.some((f) => valueToText(f, r.record[f.name], ctx).toLowerCase().includes(s))
 }
 
 function checkUnique(table: ActiveTable, data: RecordData, exceptId?: string) {
@@ -194,12 +233,21 @@ export const tablesApi = {
       patch.config = {
         ...c,
         quickFilters: c.quickFilters.filter(keep),
-        recordList: { ...c.recordList, displayFields: c.recordList.displayFields.filter(keep) },
+        searchableFields: c.searchableFields?.filter(keep),
+        lookupPrimaryField: c.lookupPrimaryField && keep(c.lookupPrimaryField) ? c.lookupPrimaryField : "",
+        lookupSecondaryFields: c.lookupSecondaryFields?.filter(keep),
+        recordList: {
+          ...c.recordList,
+          displayFields: c.recordList.displayFields.filter(keep),
+          sortField: c.recordList.sortField && keep(c.recordList.sortField) ? c.recordList.sortField : "",
+        },
         recordDetail: {
           ...c.recordDetail,
           headTitleField: keep(c.recordDetail.headTitleField) ? c.recordDetail.headTitleField : names[0] ?? "",
           headSubLineFields: c.recordDetail.headSubLineFields.filter(keep),
           rowTailFields: c.recordDetail.rowTailFields.filter(keep),
+          leftFields: c.recordDetail.leftFields?.filter(keep),
+          rightFields: c.recordDetail.rightFields?.filter(keep),
         },
         kanbanConfigs: c.kanbanConfigs
           .filter((k) => keep(k.statusField))
@@ -225,10 +273,18 @@ export const tablesApi = {
   async listRecords(tableId: string, q: RecordQuery = {}): Promise<TableRecord[]> {
     await delay()
     const table = requireTable(tableId)
-    const sort = q.sort ?? table.config.defaultSort
+    const { sortField, sortOrder = "asc" } = table.config.recordList
+    // The toolbar toggle (q.sort) flips whichever sort is active: the configured field, else creation time.
+    const dir = (q.sort ?? (sortField ? sortOrder : table.config.defaultSort)) === "asc" ? 1 : -1
+    const byCreated = (a: TableRecord, b: TableRecord) => dir * a.createdAt.localeCompare(b.createdAt)
+    const byField = (a: TableRecord, b: TableRecord) => {
+      const ab = isBlank(a.record[sortField!]), bb = isBlank(b.record[sortField!])
+      if (ab || bb) return ab === bb ? byCreated(a, b) : ab ? 1 : -1 // blanks always last
+      return dir * compareRecords(table, sortField!, a, b) || byCreated(a, b)
+    }
     return db()
       .records.filter((r) => r.tableId === tableId && matches(table, r, q))
-      .sort((a, b) => (sort === "asc" ? 1 : -1) * a.createdAt.localeCompare(b.createdAt))
+      .sort(sortField ? byField : byCreated)
   },
   async getRecord(tableId: string, recordId: string): Promise<TableRecord> {
     await delay(80)

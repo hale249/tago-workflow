@@ -1,5 +1,6 @@
 import { useEffect } from "react"
-import { Plus, Share, Users } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Add01Icon, Share08Icon, UserMultipleIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { PageHeader } from "@/components/layout/page-header"
@@ -26,11 +27,11 @@ export function CustomersPage() {
     <>
       <PageHeader
         title="Customers"
-        icon={<Users className="size-4 text-muted-foreground" />}
+        icon={<HugeiconsIcon icon={UserMultipleIcon} className="size-4 text-muted-foreground" />}
         actions={
           <>
-            <Button size="sm" variant="ghost" className="h-8 max-sm:size-8 max-sm:px-0" aria-label="Share"><Share /><span className="max-sm:sr-only">Share</span></Button>
-            <Button size="sm" className="h-8 max-sm:size-8 max-sm:px-0" aria-label="New customer"><Plus /><span className="max-sm:sr-only">Customer</span></Button>
+            <Button size="sm" variant="ghost" className="h-8 max-sm:size-8 max-sm:px-0" aria-label="Share"><HugeiconsIcon icon={Share08Icon} /><span className="max-sm:sr-only">Share</span></Button>
+            <Button size="sm" className="h-8 max-sm:size-8 max-sm:px-0" aria-label="New customer"><HugeiconsIcon icon={Add01Icon} /><span className="max-sm:sr-only">Customer</span></Button>
           </>
         }
       />
