@@ -1,4 +1,4 @@
-import { DarkModeIcon, LightModeIcon, SidebarToggleIcon } from "@/components/icons"
+import { DarkModeIcon, LightModeIcon, MobileMenuIcon, SidebarExpandIcon, SidebarToggleIcon } from "@/components/icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
 import { Button } from "@workspace/ui/components/button"
@@ -21,12 +21,12 @@ export function AppHeader() {
     <header className="relative z-30 flex h-12 shrink-0 items-center justify-between border-b bg-background px-3 sm:px-4">
       <div className="flex min-w-0 flex-1 items-center gap-1.5">
         <Button variant="ghost" size="icon" className={`${ICON_BTN} md:hidden`} onClick={() => setMobileSidebarOpen(true)} aria-label="Mở sidebar">
-          <HugeiconsIcon icon={SidebarToggleIcon} />
+          <HugeiconsIcon icon={MobileMenuIcon} className="size-[18px]" />
         </Button>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" className={`${ICON_BTN} max-md:hidden`} onClick={toggleSidebar} aria-label={sidebarLabel}>
-              <HugeiconsIcon icon={SidebarToggleIcon} />
+              <HugeiconsIcon icon={sidebarCollapsed ? SidebarExpandIcon : SidebarToggleIcon} />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="flex items-center gap-2">

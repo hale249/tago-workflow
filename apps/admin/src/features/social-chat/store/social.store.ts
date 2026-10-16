@@ -14,6 +14,8 @@ type State = {
   send: (conversationId: string, text: string, authorId: string) => void
   markRead: (conversationId: string) => void
   updateConversation: (id: string, patch: Partial<Conversation>) => void
+  /** Toggle an emoji reaction on a message (hover toolbar "Add reaction"). */
+  react: (messageId: string, emoji: string) => void
   saveSettings: (s: ChannelSettings) => void
 }
 
@@ -40,6 +42,13 @@ export const useSocialStore = create<State>()(
         }),
       markRead: (id) => set((s) => ({ conversations: s.conversations.map((c) => (c.id === id && c.unread ? { ...c, unread: 0 } : c)) })),
       updateConversation: (id, patch) => set((s) => ({ conversations: s.conversations.map((c) => (c.id === id ? { ...c, ...patch } : c)) })),
+      react: (messageId, emoji) => set((s) => ({
+        messages: s.messages.map((m) => {
+          if (m.id !== messageId) return m
+          const r = m.reactions ?? []
+          return { ...m, reactions: r.includes(emoji) ? r.filter((x) => x !== emoji) : [...r, emoji] }
+        }),
+      })),
       saveSettings: (settings) => set({ settings }),
     }),
     { name: "tago-social-chat", version: 3, migrate: () => ({ connections: SEED_CONNECTIONS, pages: SEED_PAGES, conversations: SEED_CONVERSATIONS, messages: SEED_MESSAGES, settings: defaultSettings() }) as never, partialize: ({ connections, pages, conversations, messages, settings }) => ({ connections, pages, conversations, messages, settings }) },

@@ -35,10 +35,12 @@ import {
   LinkIcon,
   ListViewIcon,
   Message01Icon,
-  Moon02Icon,
+  Menu01Icon,
+  MoonIcon,
   Notification01Icon,
   Package01Icon,
   PanelLeftCloseIcon,
+  PanelLeftIcon,
   Search01Icon,
   Settings01Icon,
   Shield01Icon,
@@ -55,8 +57,12 @@ export type AppIcon = IconSvgElement
 
 // Header + sidebar chrome
 export const SidebarToggleIcon = PanelLeftCloseIcon
+/** Header toggle while the rail is collapsed (plain panel, no arrow). */
+export const SidebarExpandIcon = PanelLeftIcon
+/** Mobile header: opens the sidebar sheet. */
+export const MobileMenuIcon = Menu01Icon
 export const LightModeIcon = Sun01Icon
-export const DarkModeIcon = Moon02Icon
+export const DarkModeIcon = MoonIcon
 export const SearchIcon = Search01Icon
 export const CheckIcon = Tick02Icon
 
@@ -64,6 +70,7 @@ export const CheckIcon = Tick02Icon
 export const SectionChevronIcon = ArrowDown01Icon
 export const HomeNavIcon = Home01Icon
 export const NotificationNavIcon = Notification01Icon
+export const InvitationNavIcon = Mail01Icon
 export const AppsNavIcon = LayoutGridIcon
 export const WorkGroupIcon = FolderKanbanIcon
 export const WorkflowNavIcon = WorkflowCircle01Icon

@@ -5,14 +5,18 @@ import { Add01Icon, Cancel01Icon, PencilEdit01Icon, Tick02Icon } from "@hugeicon
 import { Button } from "@workspace/ui/components/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
-import { ApiError } from "../api/tables.api"
+import { ApiError, autoFillPatch } from "../api/tables.api"
 import { useUpdateRecord } from "../api/tables.queries"
 import type { RecordValue, TableField, TableRecord, WorkspaceUser } from "../types/table"
-import { isBlank } from "../utils/fields"
+import { isBlank, isLongText } from "../utils/fields"
+import { BODY_SMALL_STYLE } from "../utils/typography"
+import { AttachmentInput } from "./attachment-field"
 import { FieldInput } from "./field-input"
 import { FieldValue, UserChip } from "./field-value"
 
 type Props = { tableId: string; record: TableRecord; field: TableField; users: WorkspaceUser[]; readOnly?: boolean }
+
+const initialsOf = (name: string) => name.split(" ").map((w) => w[0]).slice(-2).join("").toUpperCase()
 
 /** User fields: chips with × to remove and + to add, saved immediately. */
 function UserChips({ tableId, record, field, users, readOnly }: Props) {
@@ -25,22 +29,30 @@ function UserChips({ tableId, record, field, users, readOnly }: Props) {
   const available = users.filter((u) => !ids.includes(u.id))
 
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
-      {ids.map((id) => (
-        <span key={id} className="inline-flex items-center gap-1 rounded-full py-0.5 pr-1 pl-0.5 text-[13px]">
-          <UserChip user={users.find((u) => u.id === id)} />
-          {!readOnly && (
-            <button type="button" aria-label="Gỡ" disabled={field.required && ids.length === 1} onClick={() => save(ids.filter((x) => x !== id))} className="rounded-full p-0.5 text-muted-foreground hover:bg-muted disabled:opacity-30">
-              <HugeiconsIcon icon={Cancel01Icon} className="size-3" />
-            </button>
-          )}
-        </span>
-      ))}
-      {!ids.length && <span className="text-muted-foreground/60">—</span>}
+    // Reference: 24px avatar · 12/18 name · faded 20px × · faded 24px + (16px glyphs), 6px apart.
+    <div className="flex flex-wrap items-center justify-start gap-[var(--space-075)]">
+      {ids.map((id) => {
+        const u = users.find((x) => x.id === id)
+        if (!u) return null
+        return (
+          <span key={id} className="contents">
+            <span className="relative flex size-6 shrink-0 overflow-hidden rounded-full" title={u.fullName}>
+              <span className="grid size-full place-items-center text-[10px] font-semibold text-white" style={{ backgroundColor: u.color }}>{initialsOf(u.fullName)}</span>
+            </span>
+            <span className="text-foreground" style={BODY_SMALL_STYLE}>{u.fullName}</span>
+            {!readOnly && (
+              <Button size="icon-xs" variant="ghost" aria-label={`Gỡ ${u.fullName}`} disabled={field.required && ids.length === 1} onClick={() => save(ids.filter((x) => x !== id))} className="size-5 opacity-60 hover:bg-accent/50 hover:opacity-100 disabled:opacity-60 dark:hover:bg-white/5">
+                <HugeiconsIcon icon={Cancel01Icon} className="size-4" />
+              </Button>
+            )}
+          </span>
+        )
+      })}
+      {!ids.length && <span className="text-muted-foreground/50">—</span>}
       {!readOnly && (
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button size="icon-xs" variant="ghost" aria-label={`Thêm ${field.label}`}><HugeiconsIcon icon={Add01Icon} /></Button>
+            <Button size="icon-xs" variant="ghost" aria-label={`Thêm ${field.label}`} className="size-6 opacity-60 hover:bg-accent/50 hover:opacity-100 dark:hover:bg-white/5"><HugeiconsIcon icon={Add01Icon} className="size-4" /></Button>
           </PopoverTrigger>
           <PopoverContent align="start" className="w-56 p-1">
             {available.map((u) => (
@@ -65,6 +77,16 @@ export function InlineField(props: Props) {
   const [error, setError] = useState("")
 
   if (field.type === "SELECT_ONE_WORKSPACE_USER" || field.type === "SELECT_LIST_WORKSPACE_USER") return <UserChips {...props} />
+  // Files: upload / remove saves straight away (no edit mode).
+  if (field.type === "ATTACHMENT" && !readOnly) {
+    const v = record.record[field.name]
+    return (
+      <div className="space-y-1">
+        <AttachmentInput field={field} value={Array.isArray(v) ? v : []} onChange={(next) => update.mutate({ id: record.id, patch: { [field.name]: next } }, { onError: (e) => setError(e instanceof ApiError ? e.fieldErrors[field.name] ?? e.message : "Không lưu được") })} />
+        {error && <p className="text-xs text-destructive">{error}</p>}
+      </div>
+    )
+  }
 
   const start = () => {
     if (readOnly) return
@@ -74,7 +96,8 @@ export function InlineField(props: Props) {
   }
   const save = () =>
     update.mutate(
-      { id: record.id, patch: { [field.name]: draft } },
+      // Linking a record also fills the fields set to "Tự động điền từ liên kết".
+      { id: record.id, patch: { ...autoFillPatch(tableId, record.record, field.name, draft), [field.name]: draft } },
       {
         onSuccess: () => setEditing(false),
         onError: (e) => setError(e instanceof ApiError ? e.fieldErrors[field.name] ?? e.message : "Không lưu được"),
@@ -101,14 +124,14 @@ export function InlineField(props: Props) {
       className="space-y-1"
       onKeyDown={(e) => {
         if (e.key === "Escape") setEditing(false)
-        if (e.key === "Enter" && field.type !== "RICH_TEXT") {
+        if (e.key === "Enter" && !isLongText(field.type)) {
           e.preventDefault()
           save()
         }
       }}
     >
       <div className="flex items-start gap-1">
-        <div className="min-w-0 flex-1"><FieldInput field={field} value={draft} users={users} invalid={!!error} onChange={setDraft} /></div>
+        <div className="min-w-0 flex-1"><FieldInput field={field} value={draft} users={users} invalid={!!error} onChange={setDraft} record={{ ...record.record, [field.name]: draft }} /></div>
         <Button size="icon-sm" aria-label="Lưu" disabled={update.isPending} onClick={save}><HugeiconsIcon icon={Tick02Icon} /></Button>
         <Button size="icon-sm" variant="ghost" aria-label="Huỷ" onClick={() => setEditing(false)}><HugeiconsIcon icon={Cancel01Icon} /></Button>
       </div>

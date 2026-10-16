@@ -4,12 +4,21 @@ import type { TriggerType, WorkflowEvent } from "../types/workflow"
 const TRIGGER_TO_YAML: Record<TriggerType, string> = { ACTIVE_TABLE: "table", SCHEDULE: "schedule", WEBHOOK: "webhook", FORM: "form" }
 const YAML_TO_TRIGGER = Object.fromEntries(Object.entries(TRIGGER_TO_YAML).map(([k, v]) => [v, k])) as Record<string, TriggerType>
 
+/** js-yaml style scalars: plain when unambiguous, single-quoted when it would read as another type, JSON for control chars. */
+function quote(v: string): string {
+  if (/[\n\r\t]/.test(v)) return JSON.stringify(v)
+  const ambiguous =
+    !v || v !== v.trim() || /^-?\d+(\.\d+)?$/.test(v) || /^(true|false|null|~|yes|no|on|off)$/i.test(v) ||
+    /^[-?:,[\]{}#&*!|>'"%@`]/.test(v) || /: |:$| #/.test(v)
+  return ambiguous ? `'${v.replace(/'/g, "''")}'` : v
+}
+
 /** Minimal YAML emitter for the workflow document (scalars, arrays, nested objects). */
 function emit(v: unknown, indent: number): string {
   const pad = " ".repeat(indent)
   if (v === null || v === undefined) return "null"
   if (typeof v === "number" || typeof v === "boolean") return String(v)
-  if (typeof v === "string") return /^[\w./-]+$/.test(v) && !/^\d+$/.test(v) && !["true", "false", "null"].includes(v) ? v : JSON.stringify(v)
+  if (typeof v === "string") return quote(v)
   if (Array.isArray(v)) {
     if (!v.length) return "[]"
     return "\n" + v.map((x) => `${pad}- ${typeof x === "object" && x ? emit(x, indent + 2).trimStart() : emit(x, indent + 2)}`).join("\n")

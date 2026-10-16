@@ -14,7 +14,7 @@ export function NavSection({ section, collapsed, onNavigate }: Props) {
   const open = collapsed || !label || !closedSections.includes(label)
 
   return (
-    <div className={cn("space-y-0.5", label && (collapsed ? "mt-3" : "mt-4"))}>
+    <div className={cn("space-y-0.5", label && "mt-4")}>
       {label && !collapsed && (
         <button
           type="button"
@@ -27,9 +27,9 @@ export function NavSection({ section, collapsed, onNavigate }: Props) {
         </button>
       )}
       <div className={cn("grid transition-[grid-template-rows] duration-200", open ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
-        <div className={cn("space-y-0.5 overflow-hidden", collapsed && "space-y-1")}>
+        <div className="space-y-0.5 overflow-hidden">
           {section.items.map((item) => (
-            <div key={item.to} className="flex flex-col">
+            <div key={item.to} className="flex flex-col empty:hidden">
               <NavLinkItem item={item} collapsed={collapsed} onNavigate={onNavigate} />
               {item.tree && !collapsed && !closedTree.includes(item.to) && <item.tree onNavigate={onNavigate} />}
             </div>

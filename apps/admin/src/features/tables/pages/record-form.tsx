@@ -6,14 +6,14 @@ import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { ApiError, autoInitItems } from "../api/tables.api"
+import { ApiError, autoFillPatch, autoInitItems } from "../api/tables.api"
 import { useCreateRecord, useRecord, useTable, useUpdateRecord, useWorkspaceUsers } from "../api/tables.queries"
 import { ConfirmDialog } from "../components/confirm-dialog"
 import { FieldInput } from "../components/field-input"
 import { FormRow } from "../components/form-controls"
 import { ItemsEditor } from "../components/items-editor"
 import type { RecordData, RecordItem } from "../types/table"
-import { emptyValue, pinnedSumsOf, uid, validateRecord } from "../utils/fields"
+import { emptyValue, isLongText, pinnedSumsOf, uid, validateRecord } from "../utils/fields"
 
 function parseInit(raw: string | null): RecordData {
   if (!raw) return {}
@@ -73,6 +73,8 @@ export function RecordFormPage() {
       return row
     }
     const v = { ...base, ...(editing ? record!.record : parseInit(params.get("init"))) }
+    // A new record pre-linked via ?init= gets its auto-filled fields straight away.
+    if (!editing) for (const f of table.config.fields) if (f.type === "SELECT_ONE_RECORD" && v[f.name]) Object.assign(v, autoFillPatch(table.id, { ...v, [f.name]: null }, f.name, v[f.name]))
     const its = editing ? record!.items ?? [] : table.config.items.enabled ? [blankItem()] : []
     initial.current = JSON.stringify([v, its])
     setValues(v)
@@ -111,22 +113,22 @@ export function RecordFormPage() {
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto bg-muted/30">
-      {/* Wide card (wider still with line items) so two-column fields have room. */}
-      <div className={cn("mx-auto flex flex-col gap-4 p-3 sm:p-6", table.config.items.enabled ? "max-w-7xl" : "max-w-5xl")}>
+      {/* Reference width (max-w-3xl); wider only when the line-items table needs the room. */}
+      <div className={cn("mx-auto flex flex-col gap-4 p-3 sm:p-6", table.config.items.enabled ? "max-w-7xl" : "max-w-3xl")}>
         <header className="flex items-center gap-3 py-2">
-          <Button asChild size="icon-sm" variant="ghost" className="text-muted-foreground" aria-label="Quay lại"><Link to={back}><HugeiconsIcon icon={ArrowLeft01Icon} /></Link></Button>
+          <Button asChild size="icon" variant="ghost" className="size-8 hover:bg-background dark:hover:bg-white/5" aria-label="Quay lại"><Link to={back}><HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" /></Link></Button>
           <div className="min-w-0">
             <h1 className="text-2xl font-semibold tracking-tight">{editing ? "Cập nhật bản ghi" : "Tạo bản ghi mới"}</h1>
             <p className="text-sm text-muted-foreground">
-              {editing ? <>Chỉnh sửa các trường bên dưới để cập nhật bản ghi trong <b className="font-semibold text-foreground">{table.name}</b></> : <>Điền vào các trường bên dưới để tạo bản ghi mới trong <b className="font-semibold text-foreground">{table.name}</b></>}
+              {editing ? <>Chỉnh sửa các trường bên dưới để cập nhật bản ghi trong <strong>{table.name}</strong></> : <>Điền vào các trường bên dưới để tạo bản ghi mới trong <strong>{table.name}</strong></>}
             </p>
           </div>
         </header>
         <section className="overflow-hidden rounded-xl border bg-card shadow-sm">
         <form id="record-page-form" onSubmit={submit} className="p-3 sm:p-6 md:p-8">
-          <div className="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-2">
+          <div className="mb-4 grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-2 [&>*>label]:leading-5">
             {fields.map((f) => (
-              <FormRow key={f.name} label={f.label} required={f.required} error={errors[f.name]} className={f.type === "RICH_TEXT" || f.type.includes("LIST") ? "md:col-span-2" : undefined}>
+              <FormRow key={f.name} label={f.label} required={f.required} error={errors[f.name]} className={cn("gap-1", (isLongText(f.type) || f.type === "ATTACHMENT" || f.type.includes("LIST")) && "md:col-span-2")}>
                 <FieldInput
                   field={f}
                   value={values[f.name]}
@@ -134,8 +136,10 @@ export function RecordFormPage() {
                   invalid={!!errors[f.name]}
                   disabled={editing && f.isLocked}
                   allowCreate
+                  record={values}
                   onChange={(v) => {
-                    setValues((s) => ({ ...s!, [f.name]: v }))
+                    // Fields set to "Tự động điền từ liên kết" copy from the newly linked record.
+                    setValues((s) => ({ ...s!, ...autoFillPatch(table.id, s!, f.name, v), [f.name]: v }))
                     if (errors[f.name]) setErrors(({ [f.name]: _, ...rest }) => rest)
                     // Picking the trigger record copies its line items (+ mapped roll-ups).
                     if (ai?.enabled && f.name === ai.triggerField) {
@@ -158,9 +162,9 @@ export function RecordFormPage() {
           )}
           {formError && <p className="mt-6 text-sm text-destructive">{formError}</p>}
         </form>
-        <footer className="flex items-center justify-end gap-3 border-t bg-muted/50 px-3 py-4 sm:px-6">
+        <footer className="flex flex-wrap items-center justify-end gap-2 border-t bg-muted/50 px-3 py-4 sm:gap-3 sm:px-6">
           {dirty && <span className="mr-auto text-xs text-muted-foreground">Có thay đổi chưa lưu · <kbd className="font-sans">⌘/Ctrl S</kbd> để lưu</span>}
-          <Button variant="outline" size="sm" className="px-3" asChild><Link to={back}>Hủy</Link></Button>
+          <Button variant="outline" size="sm" className="px-3 py-1.5" asChild><Link to={back}>Hủy</Link></Button>
           <Button type="submit" size="sm" className="px-3" form="record-page-form" disabled={pending || (editing && !dirty)}>{pending ? "Đang lưu…" : editing ? "Cập nhật bản ghi" : "Tạo bản ghi"}</Button>
         </footer>
         </section>

@@ -1,15 +1,13 @@
 import { useState, type FormEvent } from "react"
-import { useNavigate } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Loading03Icon, ViewIcon, ViewOffIcon } from "@hugeicons/core-free-icons"
 
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { cn } from "@workspace/ui/lib/utils"
+import { authField as field, authLink, authSubmit } from "./auth-styles"
 
 type Errors = { username?: string; password?: string }
-
-const field =
-  "h-8 w-full rounded-md border border-slate-600 bg-slate-700/50 px-3 text-sm text-slate-200 outline-none placeholder:text-slate-400 transition-colors focus-visible:border-blue-500 focus-visible:ring-1 focus-visible:ring-blue-500/40 aria-invalid:border-red-400"
 
 /** UI-only: validates locally, fakes a request, then enters the app. No real auth yet. */
 export function LoginForm() {
@@ -60,10 +58,9 @@ export function LoginForm() {
           <Checkbox checked={remember} onCheckedChange={(v) => setRemember(v === true)} className="border-slate-500 data-[state=checked]:border-blue-500 data-[state=checked]:bg-blue-500" />
           Ghi nhớ đăng nhập
         </label>
-        <a href="#" onClick={(e) => e.preventDefault()} className="text-xs font-medium text-teal-400 hover:text-teal-300">Quên mật khẩu?</a>
+        <Link to="/forgot-password" className={authLink}>Quên mật khẩu?</Link>
       </div>
-      <button type="submit" disabled={submitting}
-        className="inline-flex h-8 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b6ef0] to-[#0ea5a5] text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none disabled:opacity-70">
+      <button type="submit" disabled={submitting} className={authSubmit}>
         {submitting && <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />}
         Đăng nhập
       </button>

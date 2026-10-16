@@ -38,7 +38,7 @@ export function ChipMultiSelect({ fields, value, onChange, placeholder = "Chọn
             className="flex min-h-10 w-full items-center gap-2 rounded-md border border-input bg-background px-3 text-left text-sm shadow-xs outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset"
           >
             <span className={cn("flex-1", !chosen.length && "text-muted-foreground")}>{chosen.length ? `${chosen.length} đã chọn` : placeholder}</span>
-            <HugeiconsIcon icon={ArrowDown01Icon} className="size-4 text-muted-foreground" />
+            <HugeiconsIcon icon={ArrowDown01Icon} className="size-4 shrink-0 opacity-60" />
             {chosen.length > 0 && (
               <span
                 role="button"
@@ -47,9 +47,9 @@ export function ChipMultiSelect({ fields, value, onChange, placeholder = "Chọn
                   e.stopPropagation()
                   onChange([])
                 }}
-                className="rounded p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                className="-mr-1 shrink-0 py-2 pr-0 text-muted-foreground transition-colors hover:text-foreground"
               >
-                <HugeiconsIcon icon={Cancel01Icon} className="size-3.5" />
+                <HugeiconsIcon icon={Cancel01Icon} className="size-4" />
               </span>
             )}
           </button>
@@ -87,7 +87,7 @@ export function ChipMultiSelect({ fields, value, onChange, placeholder = "Chọn
               className={cn("inline-flex h-[22px] cursor-grab items-center gap-1 rounded-md border border-border/50 bg-muted px-1.5 text-xs font-medium whitespace-nowrap text-muted-foreground shadow-sm", dragName === n && "opacity-50")}
             >
               {byName.get(n)!.label}
-              <button type="button" aria-label={`Bỏ ${byName.get(n)!.label}`} onClick={() => toggle(n)} className="text-muted-foreground hover:text-foreground">
+              <button type="button" aria-label={`Bỏ ${byName.get(n)!.label}`} onClick={() => toggle(n)} className="ml-1 rounded-full p-0.5 hover:bg-muted">
                 <HugeiconsIcon icon={Cancel01Icon} className="size-3" />
               </button>
             </span>

@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
-export type Profile = { username: string; fullName: string; email: string; language: "vi" | "en" }
+export type Profile = { username: string; fullName: string; email: string; language: "vi" | "en"; avatarUrl?: string }
 
 type State = Profile & { update: (p: Partial<Profile>) => void }
 

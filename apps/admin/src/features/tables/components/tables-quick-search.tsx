@@ -16,7 +16,8 @@ export function TablesQuickSearch({ onNavigate }: { onNavigate?: () => void }) {
   const navigate = useNavigate()
   const inputRef = useRef<HTMLInputElement>(null)
   const [q, setQ] = useState("")
-  const [active, setActive] = useState(0)
+  // -1 = nothing highlighted until hover / arrow keys (like the reference); Enter then opens the first hit.
+  const [active, setActive] = useState(-1)
 
   const results = useMemo(() => {
     const needle = fold(q.trim())
@@ -54,7 +55,7 @@ export function TablesQuickSearch({ onNavigate }: { onNavigate?: () => void }) {
         value={q}
         onChange={(e) => {
           setQ(e.target.value)
-          setActive(0)
+          setActive(-1)
         }}
         onKeyDown={(e) => {
           if (e.key === "Escape") {
@@ -65,9 +66,9 @@ export function TablesQuickSearch({ onNavigate }: { onNavigate?: () => void }) {
             setActive((i) => (i + 1) % results.length)
           } else if (e.key === "ArrowUp" && results.length) {
             e.preventDefault()
-            setActive((i) => (i - 1 + results.length) % results.length)
-          } else if (e.key === "Enter" && results[active]) {
-            open(results[active].table.id)
+            setActive((i) => (i <= 0 ? results.length - 1 : i - 1))
+          } else if (e.key === "Enter" && results.length) {
+            open(results[Math.max(active, 0)].table.id)
           }
         }}
         placeholder="Tìm kiếm trong không gian làm việc..."
@@ -91,7 +92,7 @@ export function TablesQuickSearch({ onNavigate }: { onNavigate?: () => void }) {
                 // mousedown keeps the input from blurring before the click lands
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => open(table.id)}
-                className={cn("flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-left", i === active && "bg-accent")}
+                className={cn("flex w-full items-center gap-3 rounded-sm px-2 py-2.5 text-left", i === active && "bg-accent")}
               >
                 <TableIcon icon={table.icon} color={table.iconColor} plain />
                 <span className="min-w-0 flex-1">

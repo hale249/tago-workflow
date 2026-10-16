@@ -19,6 +19,7 @@ export type WorkflowEvent = {
   id: string
   unitId: string
   name: string
+  description?: string
   active: boolean
   trigger: { type: TriggerType; params: Record<string, string> }
   startPosition: { x: number; y: number }

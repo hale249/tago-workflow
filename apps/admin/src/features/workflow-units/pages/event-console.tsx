@@ -1,69 +1,106 @@
 import { useEffect, useRef, useState } from "react"
-import { Link, useParams } from "react-router"
+import { useParams } from "react-router"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { ArrowLeft01Icon, Delete02Icon, Download01Icon, PlayIcon } from "@hugeicons/core-free-icons"
+import { Delete02Icon, Download01Icon, InformationCircleIcon, PlayIcon, Search01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
+import { Checkbox } from "@workspace/ui/components/checkbox"
+import { Input } from "@workspace/ui/components/input"
 import { cn } from "@workspace/ui/lib/utils"
 import { useClearLogs, useEvent, useLogs, useTestRun } from "../api/workflow.queries"
 import type { LogLevel } from "../types/workflow"
 
-const LEVELS: { id: LogLevel; label: string; cls: string }[] = [
-  { id: "debug", label: "Debug", cls: "text-muted-foreground" },
-  { id: "info", label: "Info", cls: "text-sky-600" },
-  { id: "warn", label: "Warn", cls: "text-amber-600" },
-  { id: "error", label: "Error", cls: "text-destructive" },
+const LEVELS: { id: LogLevel; cls: string }[] = [
+  { id: "debug", cls: "text-muted-foreground" },
+  { id: "info", cls: "text-accent-blue" },
+  { id: "warn", cls: "text-warning-subtle-foreground" },
+  { id: "error", cls: "text-destructive" },
 ]
 const time = new Intl.DateTimeFormat("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+const checkbox = "data-[state=checked]:border-primary data-[state=checked]:bg-primary"
 
 export function EventConsolePage() {
-  const { unitId = "", eventId = "" } = useParams()
+  const { eventId = "" } = useParams()
   const { data: event } = useEvent(eventId)
   const run = useTestRun()
   const clear = useClearLogs()
   const { data: logs = [] } = useLogs(eventId, run.isPending)
   const [levels, setLevels] = useState<LogLevel[]>(["debug", "info", "warn", "error"])
+  const [q, setQ] = useState("")
   const [autoScroll, setAutoScroll] = useState(true)
   const end = useRef<HTMLDivElement>(null)
-  const shown = logs.filter((l) => levels.includes(l.level))
+  const needle = q.trim().toLowerCase()
+  const shown = logs.filter((l) => levels.includes(l.level) && (!needle || `${l.stepId ?? ""} ${l.message}`.toLowerCase().includes(needle)))
   useEffect(() => { if (autoScroll) end.current?.scrollIntoView({ block: "end" }) }, [shown.length, autoScroll])
-  const download = () => {
-    const blob = new Blob([shown.map((l) => `${l.at}\t${l.level.toUpperCase()}\t${l.stepId ?? "-"}\t${l.message}`).join("\n")], { type: "text/plain" })
+  const asText = () => shown.map((l) => `${l.at}\t${l.level.toUpperCase()}\t${l.stepId ?? "-"}\t${l.message}`).join("\n")
+  /** Reference copies the visible logs to the clipboard; fall back to a .log download. */
+  const exportLogs = () => {
+    const text = asText()
+    if (navigator.clipboard) return void navigator.clipboard.writeText(text)
+    const blob = new Blob([text], { type: "text/plain" })
     Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: `${event?.name ?? "logs"}.log` }).click()
   }
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg bg-background">
-      <div className="flex flex-wrap items-center gap-2 border-b px-3 py-2 text-sm">
-        <Button asChild size="icon-sm" variant="ghost" aria-label="Quay lại"><Link to={`/workflow-units/${unitId}/events/${eventId}/edit`}><HugeiconsIcon icon={ArrowLeft01Icon} /></Link></Button>
-        <span className="font-medium">{event?.name}</span>
-        <span className="flex items-center gap-1.5 text-xs text-emerald-600"><span className="size-2 rounded-full bg-emerald-500" />Connected</span>
-        <span className="text-xs text-muted-foreground">{logs.length} total • {shown.length} shown</span>
-        <span className="ml-auto flex flex-wrap items-center gap-1">
-          <Button size="sm" className="h-8" disabled={run.isPending} onClick={() => run.mutate(eventId)}><HugeiconsIcon icon={PlayIcon} />{run.isPending ? "Đang chạy…" : "Chạy thử"}</Button>
-          <Button size="sm" variant="outline" className="h-8" disabled={!shown.length} onClick={download}><HugeiconsIcon icon={Download01Icon} />Export</Button>
-          <Button size="sm" variant="outline" className="h-8" disabled={!logs.length} onClick={() => clear.mutate(eventId)}><HugeiconsIcon icon={Delete02Icon} />Clear</Button>
-        </span>
+    <section className="flex min-h-0 flex-1 flex-col overflow-hidden bg-background">
+      <div className="space-y-4 border-b border-border p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className={cn("size-2 rounded-full", run.isPending ? "animate-pulse bg-warning" : "bg-success")} aria-label={run.isPending ? "Running" : "Connected"} />
+            <span className="text-sm font-medium">{run.isPending ? "Running..." : "Connected"}</span>
+            <span className="ml-2 inline-flex h-[22px] items-center rounded-md border border-border bg-muted px-1.5 text-xs font-medium whitespace-nowrap text-muted-foreground">{logs.length} total • {shown.length} shown</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="ghost" className="h-7 gap-1.5 px-2.5 has-[>svg]:px-2" title={event ? `Chạy thử “${event.name}”` : "Chạy thử"} disabled={run.isPending} onClick={() => run.mutate(eventId)}><HugeiconsIcon icon={PlayIcon} className="size-4" />{run.isPending ? "Đang chạy…" : "Chạy thử"}</Button>
+            <Button size="sm" variant="ghost" className="h-7 gap-1.5 px-2.5 has-[>svg]:px-2" aria-label="Export logs to clipboard" disabled={!shown.length} onClick={exportLogs}><HugeiconsIcon icon={Download01Icon} className="size-4" />Export</Button>
+            <Button size="sm" variant="ghost" className="h-7 gap-1.5 px-2.5 has-[>svg]:px-2" aria-label="Clear all logs" disabled={!logs.length} onClick={() => clear.mutate(eventId)}><HugeiconsIcon icon={Delete02Icon} className="size-4" />Clear</Button>
+          </div>
+        </div>
+        <div className="relative">
+          <HugeiconsIcon icon={Search01Icon} className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search logs..." aria-label="Search logs" className="h-8 pl-10" />
+        </div>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
+            <label className="text-sm font-medium">Levels:</label>
+            {LEVELS.map((l) => (
+              <div key={l.id} className="flex items-center gap-2">
+                <Checkbox id={`level-${l.id}`} aria-label={`Filter ${l.id} logs`} className={checkbox} checked={levels.includes(l.id)}
+                  onCheckedChange={(v) => setLevels(v ? [...levels, l.id] : levels.filter((x) => x !== l.id))} />
+                <label htmlFor={`level-${l.id}`} className="cursor-pointer text-sm font-medium capitalize">{l.id}</label>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <Checkbox id="auto-scroll" aria-label="Auto-scroll to latest log" className={checkbox} checked={autoScroll} onCheckedChange={(v) => setAutoScroll(v === true)} />
+            <label htmlFor="auto-scroll" className="cursor-pointer text-sm font-medium">Auto-scroll</label>
+          </div>
+        </div>
       </div>
-      <div className="flex flex-wrap items-center gap-2 border-b px-3 py-1.5 text-xs">
-        <span className="text-muted-foreground">Levels:</span>
-        {LEVELS.map((l) => (
-          <button key={l.id} type="button" aria-pressed={levels.includes(l.id)} onClick={() => setLevels(levels.includes(l.id) ? levels.filter((x) => x !== l.id) : [...levels, l.id])}
-            className={cn("rounded border px-2 py-0.5", levels.includes(l.id) ? "border-brand bg-brand/10 text-brand" : "text-muted-foreground")}>{l.label}</button>
-        ))}
-        <label className="ml-auto flex items-center gap-1.5"><input type="checkbox" checked={autoScroll} onChange={(e) => setAutoScroll(e.target.checked)} />Auto-scroll</label>
-      </div>
-      <div className="flex-1 overflow-y-auto bg-zinc-950 p-3 font-mono text-xs text-zinc-200">
-        {!shown.length && <p className="py-16 text-center text-zinc-500">Chưa có log. Bấm “Chạy thử” — log sẽ hiện ở đây khi workflow chạy.</p>}
-        {shown.map((l) => (
-          <p key={l.id} className="flex gap-3 py-0.5">
-            <span className="text-zinc-500">{time.format(new Date(l.at))}</span>
-            <span className={cn("w-12 uppercase", LEVELS.find((x) => x.id === l.level)!.cls)}>{l.level}</span>
-            {l.stepId && <span className="text-violet-400">[{l.stepId}]</span>}
-            <span className="min-w-0 break-all">{l.message}</span>
-          </p>
-        ))}
-        <div ref={end} />
+      <div className="relative min-h-0 flex-1 overflow-y-auto">
+        {!shown.length ? (
+          // The reference's console is a full-viewport (h-screen) panel under the 48px app header, so its
+          // empty state sits 24px below the visible centre; pt-12 reproduces that without clipping logs.
+          <div className="flex h-full items-center justify-center pt-12">
+            <div className="text-center text-muted-foreground">
+              <HugeiconsIcon icon={InformationCircleIcon} className="mx-auto mb-4 size-12 opacity-50" />
+              <p className="text-lg font-medium">No logs to display</p>
+              <p className="mt-1 text-sm">{logs.length ? "No logs match the current filters" : run.isPending ? "Running workflow..." : "Waiting for logs..."}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="divide-y divide-border/60 font-mono text-xs">
+            {shown.map((l) => (
+              <p key={l.id} className="flex gap-3 px-4 py-1.5 hover:bg-muted/50">
+                <span className="shrink-0 text-muted-foreground tabular-nums">{time.format(new Date(l.at))}</span>
+                <span className={cn("w-12 shrink-0 font-semibold uppercase", LEVELS.find((x) => x.id === l.level)!.cls)}>{l.level}</span>
+                {l.stepId && <span className="shrink-0 text-accent-purple">[{l.stepId}]</span>}
+                <span className="min-w-0 break-all text-foreground">{l.message}</span>
+              </p>
+            ))}
+            <div ref={end} />
+          </div>
+        )}
       </div>
     </section>
   )

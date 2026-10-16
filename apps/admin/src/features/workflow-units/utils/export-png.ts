@@ -90,7 +90,7 @@ export function exportWorkflowPng(e: WorkflowEvent, triggerLabel: string) {
   text("▶  BẮT ĐẦU", sp.x + 16, sp.y + 21, `600 11px ${FONT}`, C.muted)
   g.fillStyle = "#dbeafe"; g.beginPath(); g.roundRect(sp.x + 16, sp.y + 49, 40, 40, 8); g.fill()
   text(T.label.slice(0, 1), sp.x + 31, sp.y + 74, `700 14px ${FONT}`, "#2563eb")
-  text(T.label.toUpperCase(), sp.x + 68, sp.y + 62, `600 13px ${FONT}`, C.fg, NODE_W - 84)
+  text(T.startLabel.toUpperCase(), sp.x + 68, sp.y + 62, `600 13px ${FONT}`, C.fg, NODE_W - 84)
   text(triggerLabel, sp.x + 68, sp.y + 82, `11px ${MONO}`, C.muted, NODE_W - 84)
   dot(sp.x + NODE_W, sp.y + START_H / 2, 6, "#3b82f6")
 

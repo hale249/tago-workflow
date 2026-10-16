@@ -1,10 +1,11 @@
 import { useState } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Delete02Icon, MoreVerticalIcon, PencilEdit01Icon, PlayIcon } from "@hugeicons/core-free-icons"
+import { Database01Icon, Delete02Icon, MoreVerticalIcon, PackageIcon, PencilIcon, PlayIcon, SentIcon, UserSettings01Icon, WorkflowSquare01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
+import { cn } from "@workspace/ui/lib/utils"
 import { useWorkspaceUsers } from "../api/tables.queries"
 import type { ActiveTable, RecordData, TableAction } from "../types/table"
 import { emptyValue, validateRecord } from "../utils/fields"
@@ -48,6 +49,22 @@ function ActionRunDialog({ action, onOpenChange, onRun }: { action: TableAction 
   )
 }
 
+/** Reference record menu item: top-aligned icon, label wraps to two lines. */
+/** Custom action icon keys (same set as the action settings icon picker). */
+const CUSTOM_ICON: Record<string, typeof PlayIcon> = {
+  play: PlayIcon,
+  workflow: WorkflowSquare01Icon,
+  package: PackageIcon,
+  send: SentIcon,
+  "user-cog": UserSettings01Icon,
+  database: Database01Icon,
+}
+const ITEM = "items-start gap-2 py-2"
+const ICON = "mt-0.5 h-4 w-4 shrink-0"
+function Label({ text }: { text: string }) {
+  return <span className="line-clamp-2 min-w-0 flex-1 leading-5 break-words whitespace-normal" title={text}>{text}</span>
+}
+
 type Props = {
   table: ActiveTable
   onEdit: () => void
@@ -68,12 +85,11 @@ export function RecordActionsMenu({ table, onEdit, onDelete, onRun, withCustom =
         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
           <Button size="icon-sm" variant="ghost" aria-label="Record actions" className={className}><HugeiconsIcon icon={MoreVerticalIcon} /></Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-          <DropdownMenuItem onSelect={onEdit}><HugeiconsIcon icon={PencilEdit01Icon} />Cập nhật bản ghi</DropdownMenuItem>
-          <DropdownMenuItem variant="destructive" onSelect={onDelete}><HugeiconsIcon icon={Delete02Icon} />Xoá bản ghi</DropdownMenuItem>
-          {custom.length > 0 && <DropdownMenuSeparator />}
+        <DropdownMenuContent align="end" className="z-[60] w-64 max-w-[calc(100vw-2rem)]" onClick={(e) => e.stopPropagation()}>
+          <DropdownMenuItem className={ITEM} onSelect={onEdit}><HugeiconsIcon icon={PencilIcon} className={cn(ICON, "text-muted-foreground")} /><Label text="Cập nhật bản ghi" /></DropdownMenuItem>
+          <DropdownMenuItem className={ITEM} variant="destructive" onSelect={onDelete}><HugeiconsIcon icon={Delete02Icon} className={cn(ICON, "text-inherit")} /><Label text="Xoá bản ghi" /></DropdownMenuItem>
           {custom.map((a) => (
-            <DropdownMenuItem key={a.actionId} onSelect={() => (a.inputFields.length ? setRunning(a) : onRun(a, {}))}><HugeiconsIcon icon={PlayIcon} />{a.name}</DropdownMenuItem>
+            <DropdownMenuItem className={ITEM} key={a.actionId} onSelect={() => (a.inputFields.length ? setRunning(a) : onRun(a, {}))}><HugeiconsIcon icon={CUSTOM_ICON[a.icon] ?? PlayIcon} className={cn(ICON, "text-muted-foreground")} /><Label text={a.name} /></DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>

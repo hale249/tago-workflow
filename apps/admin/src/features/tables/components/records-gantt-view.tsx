@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons"
 
-import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 import type { ActiveTable, GanttConfig, TableRecord } from "../types/table"
 
@@ -14,6 +13,9 @@ const ZOOMS: { id: Zoom; label: string }[] = [{ id: "week", label: "Tuần" }, {
 const WEEKDAY = ["CN", "Th 2", "Th 3", "Th 4", "Th 5", "Th 6", "Th 7"]
 const MONTH = new Intl.DateTimeFormat("vi-VN", { month: "long", year: "numeric" })
 const ROW_H = 36
+const HEADER_H = 56
+const todayLabel = (t: number) => { const d = new Date(t); return `${d.getDate()} thg ${d.getMonth() + 1} năm ${d.getFullYear()}` }
+const NAV_BTN = "flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-foreground"
 
 const startOfDay = (t: number) => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime() }
 const startOfMonth = (t: number) => { const d = new Date(t); return new Date(d.getFullYear(), d.getMonth(), 1).getTime() }
@@ -60,69 +62,97 @@ export function RecordsGanttView({ table, config, records, onOpen }: { table: Ac
   const colorOf = (r: TableRecord) => status?.options?.find((o) => o.value === r.record[config.statusField])
   const width = days * px
 
+  const zoomBtn = (active: boolean) =>
+    cn("h-7 rounded-md px-2.5 text-[13px] transition-colors duration-150", active ? "bg-accent font-medium text-foreground" : "text-muted-foreground hover:bg-accent/60 hover:text-foreground")
+
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3 p-3">
-      <div className="flex items-center gap-1">
-        {ZOOMS.map((z) => (
-          <Button key={z.id} size="sm" variant={zoom === z.id ? "secondary" : "ghost"} className="h-8" onClick={() => setZoom(z.id)}>{z.label}</Button>
-        ))}
-        <span className="ml-auto flex items-center gap-1">
-          <Button size="sm" variant="outline" className="h-8" onClick={scrollToToday}>Hôm nay</Button>
-          <Button size="icon-sm" variant="ghost" aria-label="Lùi" onClick={() => page(-1)}><HugeiconsIcon icon={ArrowLeft01Icon} /></Button>
-          <Button size="icon-sm" variant="ghost" aria-label="Tới" onClick={() => page(1)}><HugeiconsIcon icon={ArrowRight01Icon} /></Button>
-        </span>
+    <div className="relative flex h-[calc(100dvh-190px)] min-h-[320px] w-full flex-col sm:h-[calc(100vh-220px)] sm:min-h-[400px]">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 bg-background pb-2">
+        <div className="flex min-w-0 flex-1 items-center justify-between gap-1.5 sm:gap-2">
+          <div className="flex min-w-0 items-center gap-0.5" aria-label="Gantt">
+            {ZOOMS.map((z) => (
+              <button key={z.id} type="button" className={zoomBtn(zoom === z.id)} aria-pressed={zoom === z.id} onClick={() => setZoom(z.id)}>{z.label}</button>
+            ))}
+          </div>
+          <div className="flex shrink-0 items-center gap-1">
+            <button type="button" className="hidden h-7 rounded-md border border-border px-2.5 text-[13px] text-foreground transition-colors duration-150 hover:bg-accent sm:block" onClick={scrollToToday}>Hôm nay</button>
+            <button type="button" aria-label="Kỳ trước" className={NAV_BTN} onClick={() => page(-1)}><HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" /></button>
+            <button type="button" aria-label="Kỳ sau" className={NAV_BTN} onClick={() => page(1)}><HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" /></button>
+          </div>
+        </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 overflow-hidden rounded-lg border text-sm">
+      <div className="flex min-h-0 flex-1 overflow-hidden rounded-lg border border-border bg-background">
         {/* Task pane */}
-        <div className="flex w-80 shrink-0 flex-col border-r max-md:w-48">
-          <div className="flex h-14 items-end justify-between border-b px-3 pb-2 text-xs text-muted-foreground"><span>Tên</span><span>Thời lượng</span></div>
+        <div className="flex w-44 shrink-0 flex-col border-r border-border/70 sm:w-80">
+          <div className="flex shrink-0 items-end justify-between gap-2 border-b border-border/70 bg-background px-3 py-2 text-xs font-medium text-muted-foreground" style={{ height: HEADER_H }}>
+            <p className="flex-1 truncate text-left">Tên</p><p className="hidden shrink-0 sm:block">Thời lượng</p>
+          </div>
           <div ref={pane} className="no-scrollbar min-h-0 flex-1 overflow-y-auto" onScroll={(e) => scroller.current && scroller.current.scrollTop !== e.currentTarget.scrollTop && (scroller.current.scrollTop = e.currentTarget.scrollTop)}>
-            <div className="flex items-center border-b bg-muted/40 px-3 text-xs font-medium" style={{ height: ROW_H }}>{table.name}</div>
+            <p className="flex w-full items-center border-b border-border/50 bg-muted/40 px-3 text-left text-xs font-medium text-foreground" style={{ height: ROW_H }}>{table.name}</p>
             {rows.map(({ r, start, end }) => (
-              <button key={r.id} type="button" onClick={() => onOpen(r)} className="flex w-full items-center gap-2 border-b px-3 text-left hover:bg-muted/50" style={{ height: ROW_H }}>
-                <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: colorOf(r)?.textColor ?? "#9ca3af" }} />
-                <span className="min-w-0 flex-1 truncate text-[13px]">{String(r.record[config.taskNameField] || "(Không tên)")}</span>
-                <span className="shrink-0 text-xs text-muted-foreground">{Math.round((end - start) / DAY) + 1} ngày</span>
-              </button>
+              <div
+                key={r.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => onOpen(r)}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), onOpen(r))}
+                className="group relative flex cursor-pointer items-center gap-2 border-b border-border/50 px-2.5 text-xs transition-colors outline-none hover:bg-accent/70 focus-visible:bg-accent/70 sm:gap-2.5 sm:px-3"
+                style={{ height: ROW_H }}
+              >
+                <span className="pointer-events-none h-2 w-2 shrink-0 rounded-full ring-2 ring-background" style={{ backgroundColor: colorOf(r)?.textColor ?? "#6c757d" }} />
+                <p className="pointer-events-none min-w-0 flex-1 truncate text-left font-medium text-foreground">{String(r.record[config.taskNameField] || "(Không tên)")}</p>
+                <p className="pointer-events-none hidden shrink-0 text-muted-foreground sm:block">{Math.round((end - start) / DAY) + 1} ngày</p>
+              </div>
             ))}
             {!rows.length && <p className="p-6 text-center text-xs text-muted-foreground">Không có bản ghi nào có ngày bắt đầu/kết thúc.</p>}
           </div>
         </div>
 
         {/* Timeline */}
-        <div ref={scroller} className="min-w-0 flex-1 overflow-auto" onScroll={(e) => pane.current && pane.current.scrollTop !== e.currentTarget.scrollTop && (pane.current.scrollTop = e.currentTarget.scrollTop)}>
-          <div className="relative" style={{ width }}>
-            <div className="sticky top-0 z-20 h-14 border-b bg-background">
-              <div className="flex h-7">
+        <div ref={scroller} className="min-w-0 flex-1 overflow-auto overscroll-contain" onScroll={(e) => pane.current && pane.current.scrollTop !== e.currentTarget.scrollTop && (pane.current.scrollTop = e.currentTarget.scrollTop)}>
+          <div className="relative min-h-full" style={{ width, minHeight: HEADER_H + ROW_H * (rows.length + 1) }}>
+            <div className="sticky top-0 z-20 border-b border-border/70 bg-background" style={{ height: HEADER_H }}>
+              <div className="flex">
                 {months.map((m) => (
-                  <div key={m.t} className="shrink-0 truncate border-r px-2 pt-1.5 text-xs font-medium capitalize" style={{ width: m.w }}>{MONTH.format(m.t)}</div>
+                  <div key={m.t} className="shrink-0" style={{ width: m.w }}>
+                    <div className="sticky left-0 inline-flex px-3 pt-2 pb-0.5 text-xs font-medium whitespace-nowrap text-foreground first-letter:uppercase"><p>{MONTH.format(m.t)}</p></div>
+                  </div>
                 ))}
               </div>
               {showDays && (
-                <div className="flex h-7">
+                <div className="flex">
                   {Array.from({ length: days }, (_, i) => {
                     const d = new Date(from + i * DAY)
                     return (
-                      <div key={i} className="shrink-0 border-r text-center leading-3" style={{ width: px }}>
-                        <span className="block text-[11px] font-medium">{d.getDate()}</span>
-                        {zoom === "week" && <span className="text-[9px] text-muted-foreground">{WEEKDAY[d.getDay()]}</span>}
+                      <div key={i} className="flex shrink-0 items-center justify-center border-l border-border/60 py-1 text-center text-[11px] text-muted-foreground first:border-l-0" style={{ width: px }}>
+                        <div className="flex flex-col items-center justify-center gap-0.5 leading-none">
+                          <p className="font-medium text-foreground tabular-nums">{d.getDate()}</p>
+                          {zoom === "week" && <p className="text-[10px]">{WEEKDAY[d.getDay()]}</p>}
+                        </div>
                       </div>
                     )
                   })}
                 </div>
               )}
-              <span className="absolute top-0 rounded-b bg-brand px-3 py-0.5 text-[10px] text-white" style={{ left: x(today) + px / 2 - 34 }}>Hôm nay</span>
             </div>
 
-            {/* grid: weekends + today line */}
-            <div className="pointer-events-none absolute inset-x-0 top-14 bottom-0">
-              {showDays && Array.from({ length: days }, (_, i) => {
-                const wd = new Date(from + i * DAY).getDay()
-                return wd === 0 || wd === 6 ? <div key={i} className="absolute inset-y-0 bg-muted/60" style={{ left: i * px, width: px }} /> : null
-              })}
-              {months.map((m) => <div key={m.t} className="absolute inset-y-0 w-px bg-border" style={{ left: x(m.t) }} />)}
-              <div className="absolute inset-y-0 w-px bg-foreground/60" style={{ left: x(today) + px / 2 }} />
+            {/* grid: one column per day (weekends shaded), month dividers */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 flex divide-x divide-border/50" style={{ top: HEADER_H }}>
+              {showDays
+                ? Array.from({ length: days }, (_, i) => {
+                    const wd = new Date(from + i * DAY).getDay()
+                    return <div key={i} className={cn("h-full shrink-0", wd === 0 || wd === 6 ? "bg-muted/55" : "bg-background/20")} style={{ width: px }} />
+                  })
+                : months.map((m) => <div key={m.t} className="h-full shrink-0 bg-background/20" style={{ width: m.w }} />)}
+            </div>
+
+            {/* today marker: label pinned to the top, line through the rows */}
+            <div className="pointer-events-none absolute top-0 left-0 z-20 flex h-full flex-col items-center overflow-visible" style={{ width: 0, transform: `translateX(${x(today) + px / 2}px)` }}>
+              <div className="group pointer-events-auto sticky top-0 flex flex-col flex-nowrap items-center justify-center rounded-b bg-primary px-1.5 py-0.5 text-[10px] leading-4 font-medium whitespace-nowrap text-primary-foreground">
+                Hôm nay<span className="max-h-0 overflow-hidden opacity-80 transition-all group-hover:max-h-8">{todayLabel(today)}</span>
+              </div>
+              <div className="h-full w-px bg-primary/60" />
             </div>
 
             <div className="relative" style={{ height: ROW_H * (rows.length + 1) }}>
@@ -137,7 +167,7 @@ export function RecordsGanttView({ table, config, records, onOpen }: { table: Ac
                     type="button"
                     onClick={() => onOpen(r)}
                     title={`${String(r.record[config.taskNameField] ?? "")} · ${progress}%`}
-                    className={cn("absolute flex items-center overflow-hidden rounded text-[11px] font-medium shadow-xs", done && "opacity-70")}
+                    className={cn("absolute z-10 flex items-center overflow-hidden rounded text-[11px] font-medium shadow-xs", done && "opacity-70")}
                     style={{ top: ROW_H * (i + 1) + 7, height: ROW_H - 14, left: x(start) + 1, width: w, backgroundColor: opt?.backgroundColor ?? "#dbeafe", color: opt?.textColor ?? "#1e3a8a" }}
                   >
                     <span className="absolute inset-y-0 left-0 opacity-25" style={{ width: `${progress}%`, backgroundColor: opt?.textColor ?? "#1d4ed8" }} />

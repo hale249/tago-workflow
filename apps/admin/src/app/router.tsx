@@ -18,6 +18,8 @@ const Notifications = page(() => import("@/features/dashboard/pages/dashboard"),
 const SocialChat = page(() => import("@/features/social-chat/pages/social-chat"), "SocialChatPage")
 const TableRecords = page(() => import("@/features/tables/pages/table-records"), "TableRecordsPage")
 const RecordForm = page(() => import("@/features/tables/pages/record-form"), "RecordFormPage")
+const Placeholder = (name: keyof typeof import("@/features/placeholders/pages/placeholder-pages")) =>
+  page(() => import("@/features/placeholders/pages/placeholder-pages"), name)
 
 const placeholderRoutes: RouteObject[] = NAV_ITEMS.filter((item) => item.comingSoon).map((item) => ({
   path: item.to.slice(1),
@@ -39,12 +41,17 @@ export const router = createBrowserRouter([
     HydrateFallback: BootFallback,
     children: [
     { path: "/login", handle: { title: "Đăng nhập" }, lazy: page(() => import("@/features/auth/pages/login"), "LoginPage") },
+    { path: "/forgot-password", handle: { title: "Quên mật khẩu" }, lazy: page(() => import("@/features/auth/pages/forgot-password"), "ForgotPasswordPage") },
+    { path: "/reset-password", handle: { title: "Đặt lại mật khẩu" }, lazy: page(() => import("@/features/auth/pages/reset-password"), "ResetPasswordPage") },
     {
       path: "/",
       element: <AppLayout />,
       children: [
         { index: true, handle: { title: "Bảng điều khiển" }, lazy: Dashboard },
         { path: "notifications", handle: { title: "Thông báo" }, lazy: Notifications },
+        { path: "invitations", handle: { title: "Lời mời" }, lazy: page(() => import("@/features/invitations/pages/invitations"), "InvitationsPage") },
+        { path: "team", handle: { title: "Quản lý đội nhóm" }, lazy: page(() => import("@/features/teams/pages/teams"), "TeamsPage") },
+        { path: "team/:teamId", handle: { title: "Chi tiết đội nhóm" }, lazy: page(() => import("@/features/teams/pages/team-detail"), "TeamDetailPage") },
         { path: "customers", handle: { title: "Khách hàng" }, lazy: page(() => import("@/features/customers/pages/customers"), "CustomersPage") },
         { path: "settings", handle: { title: "Cài đặt workspace" }, lazy: page(() => import("@/features/workspace-settings/pages/workspace-settings"), "WorkspaceSettingsPage") },
         { path: "profile", handle: { title: "Hồ sơ người dùng" }, lazy: page(() => import("@/features/profile/pages/profile"), "ProfilePage") },
@@ -67,6 +74,14 @@ export const router = createBrowserRouter([
         { path: "tables/:tableId/records/new", handle: { title: "Tạo bản ghi" }, lazy: RecordForm },
         { path: "tables/:tableId/records/:recordId", handle: { title: "Chi tiết bản ghi" }, lazy: page(() => import("@/features/tables/pages/record-detail"), "RecordDetailPage") },
         { path: "tables/:tableId/records/:recordId/edit", handle: { title: "Sửa bản ghi" }, lazy: RecordForm },
+        // Pages the reference itself still ships as "coming soon" cards.
+        { path: "help", handle: { title: "Trợ giúp & hỗ trợ", h1: true }, lazy: Placeholder("HelpPage") },
+        { path: "roles", handle: { title: "Vai trò & quyền", h1: true }, lazy: Placeholder("RolesPage") },
+        { path: "starred", handle: { title: "Bộ sưu tập được ghim", h1: true }, lazy: Placeholder("StarredPage") },
+        { path: "recent-activity", handle: { title: "Hoạt động gần đây", h1: true }, lazy: Placeholder("RecentActivityPage") },
+        { path: "archived", handle: { title: "Mục đã lưu trữ", h1: true }, lazy: Placeholder("ArchivedPage") },
+        { path: "analytics", handle: { title: "Phân tích Workspace", h1: true }, lazy: Placeholder("AnalyticsPage") },
+        { path: "workflows", handle: { title: "Tự động hóa quy trình", h1: true }, lazy: Placeholder("WorkflowsPage") },
         ...placeholderRoutes,
         { path: "home", element: <Navigate to="/" replace /> },
         { path: "*", handle: { title: "Không tìm thấy trang" }, lazy: page(() => import("@/pages/not-found"), "NotFoundPage") },

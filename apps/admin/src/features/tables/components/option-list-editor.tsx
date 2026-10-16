@@ -36,7 +36,7 @@ export function OptionListEditor({ value, onChange, error }: Props) {
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-2 rounded-lg border border-dashed p-3">
+      <div className="flex flex-col gap-2 rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/20 p-3 sm:flex-row">
         <Input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
@@ -46,10 +46,11 @@ export function OptionListEditor({ value, onChange, error }: Props) {
               add()
             }
           }}
-          placeholder="Gõ tên tuỳ chọn rồi Enter…"
+          placeholder="Nhập tên tùy chọn và nhấn Enter..."
+          className="h-8 flex-1"
           aria-invalid={!!error || undefined}
         />
-        <Button type="button" onClick={add} disabled={!draft.trim()}><HugeiconsIcon icon={Add01Icon} />Thêm</Button>
+        <Button type="button" size="sm" className="w-full shrink-0 px-3 sm:w-auto" onClick={add} disabled={!draft.trim()}><HugeiconsIcon icon={Add01Icon} />Thêm</Button>
       </div>
 
       {value.length > 0 && (
@@ -66,7 +67,7 @@ export function OptionListEditor({ value, onChange, error }: Props) {
                   <HugeiconsIcon icon={DragDropVerticalIcon} className="size-4" />
                 </span>
                 <OptionBadge option={o} className="px-2.5 py-1 text-sm" />
-                <Button type="button" size="icon-xs" variant="ghost" aria-label="Tuỳ chỉnh" aria-expanded={expanded === i} onClick={() => setExpanded(expanded === i ? null : i)}>
+                <Button type="button" size="icon-xs" variant="ghost" aria-label="Tùy chỉnh" aria-expanded={expanded === i} onClick={() => setExpanded(expanded === i ? null : i)}>
                   <HugeiconsIcon icon={ArrowDown01Icon} className={cn("transition-transform", expanded === i && "rotate-180")} />
                 </Button>
                 <Button type="button" size="icon-xs" variant="ghost" className="text-destructive hover:text-destructive" aria-label={`Xoá ${o.text}`} onClick={() => onChange(value.filter((_, j) => j !== i))}>
@@ -101,7 +102,7 @@ export function OptionListEditor({ value, onChange, error }: Props) {
           ))}
         </div>
       )}
-      <p className={cn("text-xs", error ? "text-destructive" : "text-muted-foreground")}>{error ?? `Có ${value.length} tuỳ chọn`}</p>
+      {(error || value.length > 0) && <p className={cn("text-xs", error ? "text-destructive" : "text-muted-foreground")}>{error ?? `Có ${value.length} tùy chọn`}</p>}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Cancel01Icon, Search01Icon } from "@hugeicons/core-free-icons"
+import { ArrowDown01Icon, Cancel01Icon, Search01Icon } from "@hugeicons/core-free-icons"
 
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
@@ -23,6 +23,10 @@ type Props = {
   placeholder?: string
   /** "sm" = h-8 option picker, "lg" = h-10 record / user picker (reference sizes). */
   size?: "sm" | "lg"
+  /** "form" = the record form's chevron (muted Hugeicons arrow). */
+  chevron?: "select" | "form"
+  /** Muted placeholder (reference record picker); default is the near-foreground option placeholder. */
+  mutedPlaceholder?: boolean
   clearable?: boolean
   invalid?: boolean
   disabled?: boolean
@@ -39,7 +43,7 @@ function Dot({ color }: { color: string }) {
 }
 
 /** Single-value dropdown styled like the reference product (not a native <select>). */
-export function ComboSelect({ value, onChange, options, placeholder = "Chọn", size = "sm", clearable, invalid, disabled, id, className, ...rest }: Props) {
+export function ComboSelect({ value, onChange, options, placeholder = "Chọn", size = "sm", chevron = "select", mutedPlaceholder, clearable, invalid, disabled, id, className, ...rest }: Props) {
   const [open, setOpen] = useState(false)
   const [q, setQ] = useState("")
   const selected = options.find((o) => o.value === value)
@@ -74,7 +78,7 @@ export function ComboSelect({ value, onChange, options, placeholder = "Chọn", 
             className,
           )}
         >
-          <span className={cn("min-w-0 flex-1 truncate", !selected && "text-foreground/90")}>{selected ? label(selected) : placeholder}</span>
+          <span className={cn("min-w-0 flex-1 truncate", !selected && (mutedPlaceholder ? "text-muted-foreground" : "text-foreground/90"))}>{selected ? label(selected) : placeholder}</span>
           <span className="ml-2 flex shrink-0 items-center gap-1 text-muted-foreground">
             {clearable && selected && !disabled && (
               <span
@@ -98,7 +102,8 @@ export function ComboSelect({ value, onChange, options, placeholder = "Chọn", 
                 <HugeiconsIcon icon={Cancel01Icon} className="size-4" />
               </span>
             )}
-            <SelectChevron className="ml-0" />
+            {/* Record forms (reference): a muted Hugeicons chevron; elsewhere the select's 50% heroicons chevron. */}
+            {chevron === "form" ? <HugeiconsIcon icon={ArrowDown01Icon} className="size-4" /> : <SelectChevron className="ml-0" />}
           </span>
         </button>
       </PopoverTrigger>

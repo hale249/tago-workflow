@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
-import { ApiError } from "../api/tables.api"
+import { ApiError, autoFillPatch } from "../api/tables.api"
 import { useCreateRecord, useUpdateRecord, useWorkspaceUsers } from "../api/tables.queries"
 import type { ActiveTable, RecordData, RecordItem, TableRecord } from "../types/table"
 import { emptyValue, validateRecord } from "../utils/fields"
@@ -79,8 +79,9 @@ export function RecordFormDialog({ table, open, onOpenChange, record, initial, o
                 users={users}
                 invalid={!!errors[f.name]}
                 disabled={!!record && f.isLocked}
+                record={values}
                 onChange={(v) => {
-                  setValues((s) => ({ ...s, [f.name]: v }))
+                  setValues((s) => ({ ...s, ...autoFillPatch(table.id, s, f.name, v), [f.name]: v }))
                   if (errors[f.name]) setErrors(({ [f.name]: _, ...rest }) => rest)
                 }}
               />

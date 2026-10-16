@@ -2,26 +2,25 @@ import { useMemo, useState } from "react"
 import { Link, useNavigate } from "react-router"
 import { useQueryClient } from "@tanstack/react-query"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Add01Icon, ArrowDown01Icon, ArrowUp01Icon, ArrowUpDownIcon, Delete02Icon, LayoutGridIcon, ListViewIcon, MoreHorizontalIcon, RefreshIcon, Search01Icon, Settings02Icon } from "@hugeicons/core-free-icons"
+import { Add01Icon, ArrowDown01Icon, ArrowUp01Icon, ArrowUpDownIcon, LayoutGridIcon, ListViewIcon, RefreshIcon, Search01Icon, Table01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
 import { Input } from "@workspace/ui/components/input"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { WORKSPACES } from "@/config/navigation"
-import { tableKeys, useDeleteTable, useTables, useWorkGroups, useWorkspaceUsers } from "../api/tables.queries"
+import { tableKeys, useTables, useWorkGroups, useWorkspaceUsers } from "../api/tables.queries"
 import { CURRENT_USER_ID } from "../data/seed"
-import { ConfirmDialog } from "../components/confirm-dialog"
 import { CreateTableDialog } from "../components/create-table-dialog"
 import { TableIcon } from "../components/table-icon"
+import { H1_STYLE } from "../utils/typography"
 import type { ActiveTable, TableTemplate, WorkspaceUser } from "../types/table"
 
 type ViewMode = "list" | "table" | "grid"
 const VIEW_KEY = "tago-apps-view"
 const VIEWS: { id: ViewMode; label: string; icon: typeof ListViewIcon }[] = [
   { id: "list", label: "Danh sách", icon: ListViewIcon },
-  { id: "table", label: "Bảng", icon: ListViewIcon },
+  { id: "table", label: "Bảng", icon: Table01Icon },
   { id: "grid", label: "Lưới", icon: LayoutGridIcon },
 ]
 /** Template label shown under each app, as on the reference. */
@@ -34,33 +33,14 @@ const TEMPLATE_LABEL: Record<TableTemplate, string> = {
 
 /** Creator's round initials avatar (orange gradient fallback like the reference). */
 function CreatorAvatar({ user }: { user?: WorkspaceUser }) {
-  const initials = (user?.fullName ?? "?").split(" ").map((w) => w[0]).slice(-2).join("").toUpperCase()
+  const words = (user?.fullName ?? "?").trim().split(/\s+/)
+  const initials = (words.length > 1 ? words[0]![0]! + words.at(-1)![0]! : words[0]!.slice(0, 2)).toUpperCase()
   return (
-    <span
-      title={user?.fullName}
-      className="flex size-6 shrink-0 items-center justify-center rounded-full text-[9px] font-semibold text-white uppercase"
-      style={{ background: user ? user.color : "linear-gradient(135deg, #fb923c, #f97316)" }}
-    >
-      {initials}
+    <span title={user?.fullName} className="relative flex size-6 shrink-0 overflow-hidden rounded-full">
+      <span className="flex size-full items-center justify-center rounded-full bg-muted text-[9px] font-semibold text-white uppercase" style={{ background: "linear-gradient(135deg, rgb(251, 146, 60) 0%, rgb(249, 115, 22) 100%)" }}>
+        {initials}
+      </span>
     </span>
-  )
-}
-
-function TableMenu({ table, onDelete }: { table: ActiveTable; onDelete: () => void }) {
-  const navigate = useNavigate()
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
-        <Button size="icon-sm" variant="ghost" className="size-7 text-muted-foreground opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100 max-md:opacity-100" aria-label="Tuỳ chọn">
-          <HugeiconsIcon icon={MoreHorizontalIcon} />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-        <DropdownMenuItem onSelect={() => navigate(`/tables/${table.id}/settings`)}><HugeiconsIcon icon={Settings02Icon} />Cài đặt bảng</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" onSelect={onDelete}><HugeiconsIcon icon={Delete02Icon} />Xoá bảng</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
   )
 }
 
@@ -68,14 +48,12 @@ export function TablesPage() {
   const qc = useQueryClient()
   const { data: tables, isLoading, isFetching } = useTables()
   const { data: groups = [] } = useWorkGroups()
-  const deleteTable = useDeleteTable()
   const [search, setSearch] = useState("")
   const [groupFilter, setGroupFilter] = useState("")
   const [view, setView] = useState<ViewMode>(() => {
     try { return (localStorage.getItem(VIEW_KEY) as ViewMode) || "grid" } catch { return "grid" }
   })
   const [createOpen, setCreateOpen] = useState(false)
-  const [toDelete, setToDelete] = useState<ActiveTable | null>(null)
   const [sort, setSort] = useState<"name" | "fields">("name")
   const [asc, setAsc] = useState(true)
   const { data: users = [] } = useWorkspaceUsers()
@@ -90,14 +68,17 @@ export function TablesPage() {
   const grouped = useMemo(() => {
     const s = search.trim().toLowerCase()
     const list = all.filter((t) => (!s || t.name.toLowerCase().includes(s) || t.description.toLowerCase().includes(s)) && (!groupFilter || t.workGroupId === groupFilter))
-    return groups.map((g) => ({ group: g, tables: list.filter((t) => t.workGroupId === g.id) })).filter((x) => x.tables.length || (!s && !groupFilter))
+    const known = new Set(groups.map((g) => g.id))
+    const ungrouped = list.filter((t) => !known.has(t.workGroupId))
+    const rows = groups.map((g) => ({ group: g, tables: list.filter((t) => t.workGroupId === g.id) })).filter((x) => x.tables.length || (!s && !groupFilter))
+    return ungrouped.length && !groupFilter ? [...rows, { group: { id: "", name: "Chưa phân nhóm", description: "" }, tables: ungrouped }] : rows
   }, [all, groups, search, groupFilter])
 
   const creator = (t: ActiveTable) => users.find((u) => u.id === (t.createdBy ?? CURRENT_USER_ID))
   const tab = (active: boolean) =>
     cn(
       "inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none",
-      active ? "bg-brand/8 font-medium text-brand" : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
+      active ? "bg-primary-subtle font-medium text-primary-subtle-foreground" : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
     )
   const sorted = useMemo(
     () =>
@@ -120,7 +101,7 @@ export function TablesPage() {
     <section className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-6">
       <header className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl leading-8 font-semibold">Apps</h1>
+          <h1 className="text-foreground" style={H1_STYLE}>Apps</h1>
           <p className="text-[13px] text-muted-foreground">Workspace · {WORKSPACES[0]!.name}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -130,6 +111,9 @@ export function TablesPage() {
           </div>
           <Button size="icon-sm" variant="outline" aria-label="Làm mới" onClick={() => qc.invalidateQueries({ queryKey: tableKeys.all })}>
             <HugeiconsIcon icon={RefreshIcon} className={cn(isFetching && "animate-spin")} />
+          </Button>
+          <Button asChild size="icon-sm" variant="outline" aria-label="Sắp xếp nhóm và bảng" title="Sắp xếp nhóm và bảng">
+            <Link to="/settings?t=workgroups"><HugeiconsIcon icon={ArrowUpDownIcon} /></Link>
           </Button>
           <Button className="h-7 gap-1.5 px-2.5 has-[>svg]:px-2 [&_svg:not([class*='size-'])]:size-3.5" onClick={() => setCreateOpen(true)}>
             <HugeiconsIcon icon={Add01Icon} />Tạo mới
@@ -160,7 +144,7 @@ export function TablesPage() {
       {!isLoading && grouped.every((g) => !g.tables.length) && search && <p className="py-16 text-center text-sm text-muted-foreground">Không tìm thấy app nào khớp “{search}”.</p>}
 
       {!isLoading && view === "table" && sorted.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-foreground/8 bg-background">
+        <div className="overflow-hidden rounded-xl border border-[var(--border-card)] bg-surface-elevated">
           <div className="relative w-full overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -173,12 +157,11 @@ export function TablesPage() {
                     <button type="button" onClick={() => sortBy("fields")} className="ml-auto inline-flex items-center gap-1 transition-colors hover:text-foreground">Số trường<SortIcon k="fields" /></button>
                   </th>
                   <th className="h-9 px-3 text-right text-[13px] font-medium whitespace-nowrap text-muted-foreground">Người tạo</th>
-                  <th className="h-9 w-10 px-1" />
                 </tr>
               </thead>
               <tbody className="[&_tr:last-child]:border-0">
                 {sorted.map(({ t, group }) => (
-                  <tr key={t.id} onClick={() => navigate(`/tables/${t.id}`)} className="group cursor-pointer border-b border-border/70 transition-colors hover:bg-muted/60">
+                  <tr key={t.id} onClick={() => navigate(`/tables/${t.id}`)} className="cursor-pointer border-b border-border/70 transition-colors hover:bg-muted/60">
                     <td className="h-9 px-3 py-1.5">
                       <div className="flex min-w-0 items-center gap-3">
                         <TableIcon icon={t.icon} color={t.iconColor} className="size-7 rounded-md [&_svg]:size-4" />
@@ -190,7 +173,6 @@ export function TablesPage() {
                     </td>
                     <td className="h-9 px-3 py-1.5 text-right tabular-nums">{t.config.fields.length}</td>
                     <td className="h-9 px-3 py-1.5"><div className="flex justify-end"><CreatorAvatar user={creator(t)} /></div></td>
-                    <td className="h-9 px-1 py-1.5 text-right" onClick={(e) => e.stopPropagation()}><TableMenu table={t} onDelete={() => setToDelete(t)} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -210,22 +192,20 @@ export function TablesPage() {
 
               {view === "list" ? (
                 <>
-                  <div className="grid grid-cols-[minmax(0,1fr)_80px_56px_32px] items-center gap-3 border-b border-border/60 px-3 pb-2 text-xs font-medium text-muted-foreground">
+                  <div className="grid grid-cols-[minmax(0,1fr)_80px_56px] items-center gap-3 border-b border-border/60 px-3 pb-2 text-xs font-medium text-muted-foreground">
                     <span>Tên</span>
                     <span className="text-right">Số trường</span>
                     <span className="text-right">Người tạo</span>
-                    <span />
                   </div>
                   <div className="mt-1 flex flex-col">
                     {list.map((t) => (
-                      <Link key={t.id} to={`/tables/${t.id}`} className="group grid w-full grid-cols-[minmax(0,1fr)_80px_56px_32px] items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
+                      <Link key={t.id} to={`/tables/${t.id}`} className="grid w-full grid-cols-[minmax(0,1fr)_80px_56px] items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
                         <div className="flex min-w-0 items-center gap-3">
                           <TableIcon icon={t.icon} color={t.iconColor} className="size-7 rounded-md [&_svg]:size-4" />
-                          <span className="truncate text-sm font-medium">{t.name}</span>
+                          <span className="truncate text-sm font-medium text-foreground">{t.name}</span>
                         </div>
                         <span className="text-right text-sm tabular-nums">{t.config.fields.length}</span>
                         <div className="flex justify-end"><CreatorAvatar user={creator(t)} /></div>
-                        <TableMenu table={t} onDelete={() => setToDelete(t)} />
                       </Link>
                     ))}
                   </div>
@@ -233,17 +213,16 @@ export function TablesPage() {
               ) : (
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
                   {list.map((t) => (
-                    <Link key={t.id} to={`/tables/${t.id}`} className="group flex w-full items-center gap-3 rounded-lg border border-foreground/8 bg-card p-3 transition-colors duration-150 hover:border-foreground/14 hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
+                    <Link key={t.id} to={`/tables/${t.id}`} className="group flex w-full items-center gap-3 rounded-lg border border-[var(--border-card)] bg-card p-3 text-left transition-colors duration-150 hover:border-[var(--border-card-hover)] hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
                       <TableIcon icon={t.icon} color={t.iconColor} />
                       <div className="flex min-w-0 flex-1 flex-col gap-1">
-                        <span className="truncate text-sm font-medium">{t.name}</span>
+                        <span className="truncate text-sm font-medium text-foreground">{t.name}</span>
                         <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
                           <span className="truncate">{TEMPLATE_LABEL[t.tableType] ?? t.tableType}</span>
                           <span aria-hidden>·</span>
                           <span className="shrink-0 tabular-nums">{t.config.fields.length} trường</span>
                         </div>
                       </div>
-                      <TableMenu table={t} onDelete={() => setToDelete(t)} />
                     </Link>
                   ))}
                 </div>
@@ -254,14 +233,6 @@ export function TablesPage() {
       )}
 
       <CreateTableDialog open={createOpen} onOpenChange={setCreateOpen} defaultGroupId={groupFilter || undefined} />
-      <ConfirmDialog
-        open={!!toDelete}
-        onOpenChange={(o) => !o && setToDelete(null)}
-        title={`Xoá bảng “${toDelete?.name}”?`}
-        description="Toàn bộ bản ghi và bình luận trong bảng sẽ bị xoá vĩnh viễn."
-        pending={deleteTable.isPending}
-        onConfirm={() => toDelete && deleteTable.mutate(toDelete.id, { onSuccess: () => setToDelete(null) })}
-      />
     </section>
   )
 }

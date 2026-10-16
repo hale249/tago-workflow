@@ -6,7 +6,7 @@ const GAP_Y = 48
 /** Card height estimate (matches the canvas card: base block + optional branch rows). */
 export const estimateNodeHeight = (type: string) => {
   const outs = nodeType(type).outputs?.length ?? 0
-  return 112 + (outs ? 17 + outs * 24 + (outs - 1) * 2 : 0)
+  return 112 + (type === "delay" ? 18 + 12 : 0) + (outs ? 17 + outs * 24 + (outs - 1) * 2 : 0)
 }
 
 /** Layered left-to-right layout: column = longest path from the trigger; cards stack by real height, columns centred. */

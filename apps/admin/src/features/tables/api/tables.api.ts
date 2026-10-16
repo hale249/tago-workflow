@@ -2,12 +2,14 @@ import { buildTemplateConfig, TEMPLATES } from "../data/table-templates"
 import { CURRENT_USER_ID, WORKSPACE_TEAMS, WORKSPACE_USERS } from "../data/seed"
 import { useTablesDb } from "../store/tables-db.store"
 import type {
-  ActiveTable, RecordComment, RecordData, RecordItem, RecordQuery, TableConfig, TableRecord, TableTemplate, WorkGroup,
+  ActiveTable, DateRange, RecordComment, RecordData, RecordItem, RecordQuery, TableConfig, TableRecord, TableTemplate, WorkGroup,
 } from "../types/table"
 import { evaluateFormula } from "../utils/formula"
 import { matchCondition, rangeBounds } from "../utils/filters"
 import { deriveUsers } from "../utils/people"
-import { emptyValue, isBlank, isMulti, nowIso, renderCodeTemplate, uid, validateRecord, valueToText } from "../utils/fields"
+import { sanitizeHtml } from "../utils/rich-text"
+import { computeSummaries, emptyValue, isBlank, isComputed, isMulti, isNumericValue, nowIso, renderCodeTemplate, uid, validateRecord, valueToText } from "../utils/fields"
+import { attachmentsApi } from "./attachments.api"
 
 // Swap these for real HTTP calls when the backend is ready — keep the signatures.
 const delay = (ms = 120) => new Promise((r) => setTimeout(r, ms))
@@ -36,10 +38,14 @@ function byId<T extends { id: string }>(rows: T[]): Map<string, T> {
 const tableById = (id: string) => byId(db().tables).get(id)
 const recordById = (id: string) => byId(db().records).get(id)
 
-export function recordLabel(tableId: string, recordId: string) {
+/** Title of a record; `displayField` (a reference field's "Trường hiển thị") wins when it has a value. */
+export function recordLabel(tableId: string, recordId: string, displayField?: string) {
   const t = tableById(tableId)
   const r = recordById(recordId)
   if (!t || !r) return recordId
+  const shown = displayField ? t.config.fields.find((f) => f.name === displayField) : undefined
+  const text = shown ? valueToText(shown, r.record[shown.name], { users: WORKSPACE_USERS, recordLabel }) : ""
+  if (text) return text
   const labelField = t.config.recordDetail.headTitleField || t.config.fields[0]?.name
   return String(r.record[labelField] ?? recordId)
 }
@@ -60,12 +66,38 @@ export function lookupLabel(tableId: string, recordId: string, fallbackField?: s
   return { primary, secondary }
 }
 
+const fileName = (id: string) => attachmentsApi.get(id)?.name
+const textCtx = { users: WORKSPACE_USERS, recordLabel, fileName }
+
+/**
+ * Fills derived values that are never stored: FIRST_REFERENCE_RECORD = id of the earliest-created record in the
+ * source table whose reference field (single or multi) points at the record.
+ */
+function deriveRecords(table: ActiveTable, rows: TableRecord[]): TableRecord[] {
+  const firstRefs = table.config.fields.filter((f) => f.type === "FIRST_REFERENCE_RECORD" && f.referenceTableId && f.referenceField)
+  if (!firstRefs.length) return rows
+  const maps = firstRefs.map((f) => {
+    const m = new Map<string, string>()
+    const source = db().records.filter((r) => r.tableId === f.referenceTableId).sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+    for (const r of source) {
+      const v = r.record[f.referenceField!]
+      for (const target of Array.isArray(v) ? v : isBlank(v) ? [] : [String(v)]) if (!m.has(target)) m.set(target, r.id)
+    }
+    return [f.name, m] as const
+  })
+  return rows.map((r) => {
+    const record = { ...r.record }
+    for (const [name, m] of maps) record[name] = m.get(r.id) ?? ""
+    return { ...r, record }
+  })
+}
+
 /** Field comparison for sorting (blanks handled by the caller). */
 function compareRecords(table: ActiveTable, field: string, a: TableRecord, b: TableRecord) {
   const f = table.config.fields.find((x) => x.name === field)
   const av = a.record[field], bv = b.record[field]
   if (typeof av === "number" && typeof bv === "number") return av - bv
-  const ctx = { users: WORKSPACE_USERS, recordLabel }
+  const ctx = textCtx
   const at = f ? valueToText(f, av, ctx) : String(av)
   const bt = f ? valueToText(f, bv, ctx) : String(bv)
   return at.localeCompare(bt, "vi", { numeric: true })
@@ -83,6 +115,15 @@ function matches(table: ActiveTable, r: TableRecord, q: RecordQuery) {
       if (!v.includes(want)) return false
     } else if (field.type === "CHECKBOX_YES_NO") {
       if (String(Boolean(v)) !== want) return false
+    } else if ((field.type === "DATE" || field.type === "DATETIME") && want.startsWith("{")) {
+      // Date quick filter: a JSON-encoded DateRange (preset or custom from/to).
+      let range: DateRange | null = null
+      try { range = JSON.parse(want) as DateRange } catch { /* malformed → ignore filter */ }
+      if (range) {
+        const t = Date.parse(String(v ?? "").length === 10 ? `${v}T00:00:00` : String(v ?? ""))
+        const [from, to] = rangeBounds(range)
+        if (Number.isNaN(t) || t < from || t >= to) return false
+      }
     } else if (field.type === "SHORT_TEXT" || field.type === "AUTO_GENERATED_CODE" || field.type === "DATE") {
       if (!String(v ?? "").toLowerCase().includes(want.toLowerCase())) return false
     } else if (String(v ?? "") !== want) return false
@@ -101,7 +142,7 @@ function matches(table: ActiveTable, r: TableRecord, q: RecordQuery) {
   }
   const s = q.search?.trim().toLowerCase()
   if (!s) return true
-  const ctx = { users: WORKSPACE_USERS, recordLabel }
+  const ctx = textCtx
   const only = table.config.searchableFields ?? []
   const fields = only.length ? table.config.fields.filter((f) => only.includes(f.name)) : table.config.fields
   return fields.some((f) => valueToText(f, r.record[f.name], ctx).toLowerCase().includes(s))
@@ -126,12 +167,52 @@ function sanitize(table: ActiveTable, data: RecordData): RecordData {
   for (const f of table.config.fields) {
     if (!(f.name in data)) continue
     const v = data[f.name]
-    if (f.type === "NUMERIC") out[f.name] = isBlank(v) ? null : Number(v)
+    // Computed by the system (Số tự tính is recomputed after sanitising; first reference is derived on read).
+    if (f.type === "NUMERIC_SUMMARY" || f.type === "FIRST_REFERENCE_RECORD") continue
+    if (isNumericValue(f.type)) out[f.name] = isBlank(v) ? null : Number(v)
     else if (isMulti(f.type)) out[f.name] = Array.isArray(v) ? v : isBlank(v) ? [] : [String(v)]
     else if (f.type === "CHECKBOX_YES_NO") out[f.name] = Boolean(v)
+    else if (f.type === "RICH_TEXT") out[f.name] = sanitizeHtml(String(v ?? ""))
     else out[f.name] = v ?? ""
   }
   return out
+}
+
+/** Attachment ids a record holds across its ATTACHMENT fields. */
+const attachmentIds = (table: ActiveTable, record: RecordData) =>
+  table.config.fields.filter((f) => f.type === "ATTACHMENT").flatMap((f) => (Array.isArray(record[f.name]) ? (record[f.name] as string[]) : []))
+
+const sameValue = (a: unknown, b: unknown) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null)
+const copyValue = <T,>(v: T): T => (Array.isArray(v) ? (v.slice() as T) : v)
+
+/**
+ * "Tự động điền từ liên kết": when `linkField` (a SELECT_ONE_RECORD field) changes from `record[linkField]`
+ * to `nextLinkId`, returns the values to copy into every field whose `autoFill` points at that link.
+ * A target is only (re)filled while it is empty or still holds what the previous linked record would have
+ * put there — a value the user typed by hand is never overwritten. Clearing the link clears auto-filled values.
+ */
+export function autoFillPatch(tableId: string, record: RecordData, linkField: string, nextLinkId: unknown): RecordData {
+  const t = tableById(tableId)
+  const link = t?.config.fields.find((f) => f.name === linkField)
+  if (!t || !link?.referenceTableId) return {}
+  const targets = t.config.fields.filter((f) => f.autoFill?.linkField === linkField && f.autoFill.sourceField && f.name !== linkField)
+  if (!targets.length) return {}
+  const sourceOf = (id: unknown) => {
+    const r = typeof id === "string" && id ? recordById(id) : undefined
+    return r && r.tableId === link.referenceTableId ? r : undefined
+  }
+  const prev = sourceOf(record[linkField])
+  const next = sourceOf(nextLinkId)
+  const patch: RecordData = {}
+  for (const f of targets) {
+    const src = f.autoFill!.sourceField
+    const current = record[f.name]
+    const wasAutoFilled = !!prev && !isBlank(current) && sameValue(current, prev.record[src])
+    if (!isBlank(current) && !wasAutoFilled) continue
+    const value = next ? next.record[src] : undefined
+    patch[f.name] = isBlank(value) ? emptyValue(f) : copyValue(value!)
+  }
+  return patch
 }
 
 /** Builds line items (and copied roll-ups) for a new record from the trigger record, per the auto-init mappings. */
@@ -159,9 +240,9 @@ function applyItems(table: ActiveTable, record: RecordData, items: RecordItem[] 
     const row: RecordItem = { id: it.id || uid() }
     for (const f of cfg.fields) {
       const v = it[f.name]
-      row[f.name] = f.type === "NUMERIC" ? (isBlank(v) ? null : Number(v)) : v ?? ""
+      row[f.name] = isNumericValue(f.type) ? (isBlank(v) ? null : Number(v)) : v ?? ""
     }
-    return row
+    return { ...row, ...computeSummaries(cfg.fields, row) } as RecordItem
   })
   for (const s of cfg.sums) if (s.sumField) record[s.sumField] = evaluateFormula(s.formula, clean)
   return clean
@@ -177,6 +258,39 @@ export const tablesApi = {
     const g = { id: uid(), name: input.name.trim(), description: input.description ?? "" }
     write((s) => ({ workGroups: [...s.workGroups, g] }))
     return g
+  },
+  async updateWorkGroup(id: string, input: { name: string; description?: string }): Promise<WorkGroup> {
+    await delay()
+    if (!input.name.trim()) throw new ApiError("Tên nhóm là bắt buộc")
+    const cur = db().workGroups.find((g) => g.id === id)
+    if (!cur) throw new ApiError("Không tìm thấy nhóm công việc")
+    const next = { ...cur, name: input.name.trim(), description: input.description ?? cur.description }
+    write((s) => ({ workGroups: s.workGroups.map((g) => (g.id === id ? next : g)) }))
+    return next
+  },
+  /** Only empty groups can be removed (tables must be moved out first). */
+  async deleteWorkGroup(id: string) {
+    await delay()
+    if (db().tables.some((t) => t.workGroupId === id)) throw new ApiError("Không thể xóa nhóm còn chứa bảng")
+    write((s) => ({ workGroups: s.workGroups.filter((g) => g.id !== id) }))
+  },
+  /** Workspace-wide order of work groups = array order (sidebar tree, tables page, settings). */
+  async reorderWorkGroups(ids: string[]) {
+    await delay(60)
+    write((s) => {
+      const rank = new Map(ids.map((id, i) => [id, i]))
+      return { workGroups: [...s.workGroups].sort((a, b) => (rank.get(a.id) ?? Infinity) - (rank.get(b.id) ?? Infinity)) }
+    })
+  },
+  /** Reorders the tables of one group in place; other tables keep their slots. */
+  async reorderTables(workGroupId: string, ids: string[]) {
+    await delay(60)
+    write((s) => {
+      const rank = new Map(ids.map((id, i) => [id, i]))
+      const inGroup = s.tables.filter((t) => t.workGroupId === workGroupId).sort((a, b) => (rank.get(a.id) ?? Infinity) - (rank.get(b.id) ?? Infinity))
+      let i = 0
+      return { tables: s.tables.map((t) => (t.workGroupId === workGroupId ? inGroup[i++]! : t)) }
+    })
   },
   async listTeams() {
     await delay(60)
@@ -256,6 +370,11 @@ export const tablesApi = {
     }
     const next = { ...cur, ...patch, updatedAt: nowIso() }
     write((s) => ({ tables: s.tables.map((t) => (t.id === id ? next : t)) }))
+    // Formulas may have changed: restore every Số tự tính value of the table.
+    if (patch.config?.fields.some((f) => f.type === "NUMERIC_SUMMARY")) {
+      const fields = patch.config.fields
+      write((s) => ({ records: s.records.map((r) => (r.tableId === id ? { ...r, record: computeSummaries(fields, r.record) } : r)) }))
+    }
     return next
   },
   async deleteTable(id: string): Promise<void> {
@@ -273,8 +392,9 @@ export const tablesApi = {
   async listRecords(tableId: string, q: RecordQuery = {}): Promise<TableRecord[]> {
     await delay()
     const table = requireTable(tableId)
-    const { sortField, sortOrder = "asc" } = table.config.recordList
-    // The toolbar toggle (q.sort) flips whichever sort is active: the configured field, else creation time.
+    const { sortOrder = "asc" } = table.config.recordList
+    // A clicked column header (q.sortBy) wins over the configured field; q.sort is its direction.
+    const sortField = q.sortBy || table.config.recordList.sortField
     const dir = (q.sort ?? (sortField ? sortOrder : table.config.defaultSort)) === "asc" ? 1 : -1
     const byCreated = (a: TableRecord, b: TableRecord) => dir * a.createdAt.localeCompare(b.createdAt)
     const byField = (a: TableRecord, b: TableRecord) => {
@@ -282,15 +402,15 @@ export const tablesApi = {
       if (ab || bb) return ab === bb ? byCreated(a, b) : ab ? 1 : -1 // blanks always last
       return dir * compareRecords(table, sortField!, a, b) || byCreated(a, b)
     }
-    return db()
-      .records.filter((r) => r.tableId === tableId && matches(table, r, q))
+    return deriveRecords(table, db().records.filter((r) => r.tableId === tableId))
+      .filter((r) => matches(table, r, q))
       .sort(sortField ? byField : byCreated)
   },
   async getRecord(tableId: string, recordId: string): Promise<TableRecord> {
     await delay(80)
     const r = db().records.find((x) => x.tableId === tableId && x.id === recordId)
     if (!r) throw new ApiError("Không tìm thấy bản ghi")
-    return r
+    return deriveRecords(requireTable(tableId), [r])[0]
   },
   async createRecord(tableId: string, data: RecordData, items?: RecordItem[]): Promise<TableRecord> {
     await delay()
@@ -306,6 +426,7 @@ export const tablesApi = {
       const src = db().records.find((r) => r.id === record[ai.triggerField])
       for (const m of ai.sumMappings) if (src && m.source && m.target) record[m.target] = src.record[m.source] ?? null
     }
+    Object.assign(record, computeSummaries(table.config.fields, record))
     const errors = { ...validateRecord(table.config.fields, record), ...checkUnique(table, record) }
     if (Object.keys(errors).length) throw new ApiError("Dữ liệu không hợp lệ", errors)
 
@@ -326,21 +447,28 @@ export const tablesApi = {
     const cur = db().records.find((x) => x.id === recordId && x.tableId === tableId)
     if (!cur) throw new ApiError("Không tìm thấy bản ghi")
     const clean = sanitize(table, patch)
-    for (const f of table.config.fields) if (f.type === "AUTO_GENERATED_CODE" || f.isLocked) delete clean[f.name]
-    const record = { ...cur.record, ...clean }
-    const lineItems = applyItems(table, record, items) ?? cur.items
+    for (const f of table.config.fields) if (isComputed(f.type) || f.isLocked) delete clean[f.name]
+    const merged = { ...cur.record, ...clean }
+    const lineItems = applyItems(table, merged, items) ?? cur.items
+    const record = computeSummaries(table.config.fields, merged)
     const errors = { ...validateRecord(table.config.fields, record), ...checkUnique(table, record, recordId) }
     if (Object.keys(errors).length) throw new ApiError("Dữ liệu không hợp lệ", errors)
     const at = nowIso()
     const valueUpdatedAt = { ...cur.valueUpdatedAt }
     for (const k of Object.keys(clean)) if (JSON.stringify(cur.record[k]) !== JSON.stringify(clean[k])) valueUpdatedAt[k] = at
+    for (const f of table.config.fields) if (f.type === "NUMERIC_SUMMARY" && cur.record[f.name] !== record[f.name]) valueUpdatedAt[f.name] = at
     const next = { ...cur, record, items: lineItems, ...deriveUsers(table.config.fields, record), updatedAt: at, valueUpdatedAt }
     write((s) => ({ records: s.records.map((r) => (r.id === recordId ? next : r)) }))
-    return next
+    // Files taken off the record are dropped from the mock storage.
+    const kept = new Set(attachmentIds(table, record))
+    attachmentsApi.remove(attachmentIds(table, cur.record).filter((x) => !kept.has(x)))
+    return deriveRecords(table, [next])[0]
   },
   async deleteRecords(tableId: string, ids: string[]): Promise<void> {
     await delay()
     const set = new Set(ids)
+    const table = db().tables.find((t) => t.id === tableId)
+    if (table) attachmentsApi.remove(db().records.filter((r) => r.tableId === tableId && set.has(r.id)).flatMap((r) => attachmentIds(table, r.record)))
     write((s) => ({
       records: s.records.filter((r) => !(r.tableId === tableId && set.has(r.id))),
       comments: s.comments.filter((c) => !set.has(c.recordId)),

@@ -12,8 +12,10 @@ export type Conversation = {
   unread: number
   lastMessageAt: string
   linkedRecordId?: string
+  /** Pinned conversations stay on top of the list (header pin button). */
+  pinned?: boolean
 }
-export type Message = { id: string; conversationId: string; from: "customer" | "agent"; authorId?: string; text: string; at: string; failed?: boolean }
+export type Message = { id: string; conversationId: string; from: "customer" | "agent"; authorId?: string; text: string; at: string; failed?: boolean; reactions?: string[] }
 export type Label = { id: string; name: string; color: string }
 export type TemplateGroup = { id: string; name: string }
 export type Template = { id: string; groupId?: string; name: string; content: string }

@@ -1,5 +1,5 @@
 import type { AdvancedCondition, DateRange, FilterOperator, RecordValue, TableField } from "../types/table"
-import { isBlank } from "./fields"
+import { hasOptions, isBlank, isNumericValue, isOrdered } from "./fields"
 
 export const OPERATORS: { op: FilterOperator; label: string }[] = [
   { op: "eq", label: "Bằng" },
@@ -15,9 +15,9 @@ export const OPERATORS: { op: FilterOperator; label: string }[] = [
 
 /** Operators that make sense for a field type. */
 export function operatorsFor(f: TableField): FilterOperator[] {
-  if (f.type === "NUMERIC" || f.type === "DATE" || f.type === "DATETIME") return ["eq", "neq", "gt", "gte", "lt", "lte"]
+  if (isOrdered(f.type)) return ["eq", "neq", "gt", "gte", "lt", "lte"]
   if (f.type === "CHECKBOX_YES_NO") return ["eq", "neq"]
-  if (f.type.startsWith("SELECT_")) return ["eq", "neq", "in", "notIn"]
+  if (f.type.startsWith("SELECT_") || hasOptions(f.type) || f.type === "FIRST_REFERENCE_RECORD") return ["eq", "neq", "in", "notIn"]
   return ["eq", "neq", "startsWith", "in", "notIn"]
 }
 
@@ -25,8 +25,9 @@ export function operatorsFor(f: TableField): FilterOperator[] {
 export const splitList = (v: string) => v.split(",").map((x) => x.trim()).filter(Boolean)
 
 function compare(a: RecordValue | undefined, b: string, f: TableField): number {
-  if (f.type === "NUMERIC") return Number(a ?? 0) - Number(b)
+  if (isNumericValue(f.type)) return Number(a ?? 0) - Number(b)
   if (f.type === "DATE" || f.type === "DATETIME") return Date.parse(String(a ?? "")) - Date.parse(b)
+  if (f.type === "TIME") return String(a ?? "").localeCompare(b)
   return String(a ?? "").localeCompare(b, "vi")
 }
 
@@ -35,9 +36,9 @@ export function matchCondition(f: TableField, v: RecordValue | undefined, c: Adv
   const lower = (s: string) => s.toLowerCase()
   switch (c.op) {
     case "eq":
-      return f.type === "NUMERIC" || f.type.startsWith("DATE") ? values.length > 0 && compare(v, c.value, f) === 0 : values.some((x) => lower(x) === lower(c.value))
+      return isOrdered(f.type) ? values.length > 0 && compare(v, c.value, f) === 0 : values.some((x) => lower(x) === lower(c.value))
     case "neq":
-      return !(f.type === "NUMERIC" || f.type.startsWith("DATE") ? values.length > 0 && compare(v, c.value, f) === 0 : values.some((x) => lower(x) === lower(c.value)))
+      return !(isOrdered(f.type) ? values.length > 0 && compare(v, c.value, f) === 0 : values.some((x) => lower(x) === lower(c.value)))
     case "gt": return values.length > 0 && compare(v, c.value, f) > 0
     case "gte": return values.length > 0 && compare(v, c.value, f) >= 0
     case "lt": return values.length > 0 && compare(v, c.value, f) < 0

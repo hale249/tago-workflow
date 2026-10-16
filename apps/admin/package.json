@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@fontsource/inter": "^5.3.0",
+    "@fontsource-variable/inter": "^5.3.0",
     "@hugeicons/core-free-icons": "^4.3.5",
     "@hugeicons/react": "^1.1.10",
     "@tanstack/react-query": "catalog:",
@@ -21,6 +21,8 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-router": "catalog:",
+    "read-excel-file": "^9.3.12",
+    "write-excel-file": "^4.1.1",
     "zustand": "catalog:"
   },
   "devDependencies": {

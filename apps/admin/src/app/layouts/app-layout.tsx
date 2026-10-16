@@ -4,6 +4,7 @@ import { useRouteHandle } from "@/app/layouts/route-meta"
 
 import { AppHeader } from "@/components/layout/app-header"
 import { AppSidebar, MobileSidebar } from "@/components/layout/sidebar"
+import { PushNotificationPrompt } from "@/components/push-notification-prompt"
 
 export function AppLayout() {
   // Pages are lazy chunks; show a thin top bar while the next one loads.
@@ -21,6 +22,7 @@ export function AppLayout() {
           <Outlet />
         </main>
       </div>
+      <PushNotificationPrompt />
     </div>
   )
 }

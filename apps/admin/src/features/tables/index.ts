@@ -10,4 +10,8 @@ export { tableKeys, tablesListQuery, useCreateWorkGroup, useRecordCounts, useTab
 export type { ActiveTable, TableField, TableRecord } from "./types/table"
 export { ComboSelect, type ComboOption } from "./components/combo-select"
 export { recordsQuery } from "./api/tables.queries"
+// Work-group management + ordering (Cài đặt workspace → Nhóm công việc).
+export { useDeleteWorkGroup, useReorderTables, useReorderWorkGroups, useUpdateWorkGroup } from "./api/tables.queries"
+export type { WorkGroup } from "./types/table"
+export { TableIcon } from "./components/table-icon"
 export { recordLabel } from "./api/tables.api"

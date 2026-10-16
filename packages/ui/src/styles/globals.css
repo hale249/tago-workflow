@@ -41,7 +41,7 @@
   --muted-foreground: #5e6266;
   --accent: #f1f2f2;
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: #d92d20;
   --border: #e6e8e9;
   --input: #dfe1e3;
   /* Focus rings follow the brand accent. */
@@ -59,38 +59,244 @@
 }
 
 .dark {
-  --background: var(--prep-gray-850);
-  --foreground: oklch(0.86 0 0);
-  --card: var(--prep-gray-850);
-  --card-foreground: oklch(0.86 0 0);
-  --popover: var(--prep-gray-850);
-  --popover-foreground: oklch(0.86 0 0);
+  /* Neutral dark palette sampled from the reference (beqeek) dark theme; brand stays ours. */
+  --background: #0f1113;
+  --foreground: #ecedee;
+  --card: #141618;
+  --card-foreground: #ecedee;
+  --popover: #141618;
+  --popover-foreground: #ecedee;
   /* Dark --brand is a light tint, so pair it with dark text. */
   --primary: var(--brand);
   --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.86 0 0);
-  --muted: oklch(1 0 0 / 5%);
-  --muted-foreground: oklch(0.6 0 0);
-  --accent: oklch(1 0 0 / 8%);
-  --accent-foreground: oklch(0.86 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 7%);
-  --input: oklch(1 0 0 / 15%);
+  --secondary: #1b1d20;
+  --secondary-foreground: #ecedee;
+  --muted: #1b1d20;
+  --muted-foreground: #9a9ea3;
+  --accent: #1b1d1f;
+  --accent-foreground: #ecedee;
+  --destructive: #f04438;
+  --border: #26292c;
+  --input: #2c2f33;
   --ring: var(--brand);
   --brand: var(--prep-blue-400);
-  --sidebar: var(--prep-gray-900);
-  --sidebar-foreground: oklch(0.86 0 0);
+  --sidebar: #121416;
+  --sidebar-foreground: #ecedee;
   --sidebar-primary: var(--prep-blue-500);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(1 0 0 / 8%);
-  --sidebar-accent-foreground: oklch(0.86 0 0);
-  --sidebar-border: oklch(1 0 0 / 7%);
+  --sidebar-accent: #1b1d1f;
+  --sidebar-accent-foreground: #ecedee;
+  --sidebar-border: #222528;
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Semantic accents, surfaces and card shadows used by the reference UI (beqeek). */
+:root {
+  --success: #16764a;
+  --success-foreground: #fff;
+  --warning: #e5a000;
+  --warning-foreground: #15181a;
+  --info: #3b6ef0;
+  --info-foreground: #fff;
+  --surface-base: #fff;
+  --surface-elevated: #fff;
+  --surface-overlay: #f8f9f8;
+  --surface-sunken: #f3f4f3;
+  --border-card: #15181a14;
+  --border-card-hover: #15181a24;
+  --border-card-active: #1d4ed866;
+  --success-subtle: #e6f3ec;
+  --success-subtle-foreground: #16653f;
+  --warning-subtle: #fff6db;
+  --warning-subtle-foreground: #7a5200;
+  --info-subtle: #eaf1fe;
+  --info-subtle-foreground: #2447b3;
+  --accent-blue: #3b6ef0;
+  --accent-blue-foreground: #fff;
+  --accent-blue-subtle: #eaf1fe;
+  --accent-blue-subtle-foreground: #2447b3;
+  --accent-purple: #7c68e8;
+  --accent-purple-foreground: #fff;
+  --accent-purple-subtle: #f1effd;
+  --accent-purple-subtle-foreground: #4f3fb0;
+  --accent-green: #16764a;
+  --accent-green-foreground: #fff;
+  --accent-green-subtle: #e6f3ec;
+  --accent-green-subtle-foreground: #16653f;
+  --accent-teal: #0ea5a5;
+  --accent-teal-foreground: #fff;
+  --accent-teal-subtle: #e5f4f3;
+  --accent-teal-subtle-foreground: #0f6660;
+  --accent-orange: #e0731f;
+  --accent-orange-foreground: #fff;
+  --accent-orange-subtle: #fff0e5;
+  --accent-orange-subtle-foreground: #a1490b;
+  --accent-red: #d92d20;
+  --accent-red-foreground: #fff;
+  --accent-red-subtle: #fdecec;
+  --accent-red-subtle-foreground: #b42318;
+  --accent-magenta: #c2387a;
+  --accent-magenta-foreground: #fff;
+  --accent-magenta-subtle: #fceef4;
+  --accent-magenta-subtle-foreground: #9c2b5e;
+  --accent-lime: #7fa82a;
+  --accent-lime-foreground: #15181a;
+  --accent-lime-subtle: #f1f8e3;
+  --accent-lime-subtle-foreground: #4d6b12;
+  --accent-yellow: #e5b700;
+  --accent-yellow-foreground: #15181a;
+  --accent-yellow-subtle: #fff6db;
+  --accent-yellow-subtle-foreground: #7a5200;
+  /* Subtle tint of the brand (reference: primary-subtle), kept on our brand colour. */
+  --primary-subtle: color-mix(in oklab, var(--brand) 9%, white);
+  --primary-subtle-foreground: var(--brand);
+  --shadow-card: 0 1px 2px 0 #10201c0d;
+  --shadow-card-hover: 0 4px 12px -2px #10201c1a, 0 1px 2px 0 #10201c0a;
+  --shadow-card-active: 0 1px 1px 0 #10201c0f;
+}
+
+.dark {
+  --success: #22c35d;
+  --success-foreground: #0a0a0a;
+  --warning: #f4a825;
+  --warning-foreground: #0a0a0a;
+  --info: #5593f7;
+  --info-foreground: #0a0a0a;
+  --success-subtle: #093419;
+  --success-subtle-foreground: #7de8a4;
+  --warning-subtle: #492f04;
+  --warning-subtle-foreground: #f9cf86;
+  --info-subtle: #031e49;
+  --info-subtle-foreground: #85b2f9;
+  --accent-blue: #5288e0;
+  --accent-blue-foreground: #0a0a0a;
+  --accent-blue-subtle: #172945;
+  --accent-blue-subtle-foreground: #85a8e0;
+  --accent-purple: #9a8af0;
+  --accent-purple-foreground: #0a0a0a;
+  --accent-purple-subtle: #221c40;
+  --accent-purple-subtle-foreground: #c3b8ff;
+  --accent-green: #45a167;
+  --accent-green-foreground: #fafafa;
+  --accent-green-subtle: #203c2a;
+  --accent-green-subtle-foreground: #70c28e;
+  --accent-teal: #3b9b90;
+  --accent-teal-foreground: #fafafa;
+  --accent-teal-subtle: #1e3e3a;
+  --accent-teal-subtle-foreground: #6bc7bc;
+  --accent-orange: #f9802f;
+  --accent-orange-foreground: #0a0a0a;
+  --accent-orange-subtle: #4a1f02;
+  --accent-orange-subtle-foreground: #fbb383;
+  --accent-red: #dd3c3c;
+  --accent-red-foreground: #fafafa;
+  --accent-red-subtle: #410b0b;
+  --accent-red-subtle-foreground: #ec9393;
+  --accent-magenta: #ef399a;
+  --accent-magenta-foreground: #0a0a0a;
+  --accent-magenta-subtle: #470628;
+  --accent-magenta-subtle-foreground: #f589c3;
+  --accent-lime: #9ceb14;
+  --accent-lime-foreground: #0a0a0a;
+  --accent-lime-subtle: #2f4606;
+  --accent-lime-subtle-foreground: #cef58a;
+  --accent-yellow: #f9cf53;
+  --accent-yellow-foreground: #0a0a0a;
+  --accent-yellow-subtle: #4a3803;
+  --accent-yellow-subtle-foreground: #fbdd84;
+  --surface-base: #0f1113;
+  --surface-elevated: #141618;
+  --surface-overlay: #17191b;
+  --surface-sunken: #0b0c0d;
+  --border-card: #ffffff14;
+  --border-card-hover: #ffffff24;
+  --border-card-active: #4c7cff80;
+  /* Reference: #17223f fill with a pale #a9c0ff label — same recipe on our brand. */
+  --primary-subtle: color-mix(in oklab, var(--brand) 20%, #0f1113);
+  --primary-subtle-foreground: color-mix(in oklab, var(--brand) 55%, white);
+}
+
+/* Spacing scale and type ramp of the reference UI (used as var(--space-300), var(--font-heading-h1-size) …).
+   Line heights are the values the reference actually renders at desktop width. */
+:root {
+  --font-family-heading: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-family-body: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-heading-h1-size: 1.5rem;
+  --font-heading-h1-line-height: 2rem;
+  --font-heading-h1-weight: 600;
+  --font-heading-h1-family: var(--font-family-heading);
+  --font-heading-h1-letter-spacing: 0em;
+  --font-heading-h2-size: 1.25rem;
+  --font-heading-h2-line-height: 1.75rem;
+  --font-heading-h2-weight: 600;
+  --font-heading-h2-family: var(--font-family-heading);
+  --font-heading-h2-letter-spacing: 0em;
+  --font-heading-h3-size: 1rem;
+  --font-heading-h3-line-height: 1.5rem;
+  --font-heading-h3-weight: 600;
+  --font-heading-h3-family: var(--font-family-heading);
+  --font-heading-h3-letter-spacing: 0em;
+  --font-heading-h4-size: .875rem;
+  --font-heading-h4-line-height: 1.375rem;
+  --font-heading-h4-weight: 600;
+  --font-heading-h4-family: var(--font-family-heading);
+  --font-heading-h4-letter-spacing: 0em;
+  --font-heading-h5-size: .8125rem;
+  --font-heading-h5-line-height: 1.25rem;
+  --font-heading-h5-weight: 600;
+  --font-heading-h5-family: var(--font-family-heading);
+  --font-heading-h5-letter-spacing: 0em;
+  --font-heading-h6-size: .75rem;
+  --font-heading-h6-line-height: 1.125rem;
+  --font-heading-h6-weight: 600;
+  --font-heading-h6-family: var(--font-family-heading);
+  --font-heading-h6-letter-spacing: .01em;
+  --font-body-large-size: 1rem;
+  --font-body-large-line-height: 1.625rem;
+  --font-body-large-weight: 400;
+  --font-body-large-family: var(--font-family-body);
+  --font-body-large-letter-spacing: 0em;
+  --font-body-default-size: .875rem;
+  --font-body-default-line-height: 1.375rem;
+  --font-body-default-weight: 400;
+  --font-body-default-family: var(--font-family-body);
+  --font-body-default-letter-spacing: 0em;
+  --font-body-small-size: .75rem;
+  --font-body-small-line-height: 1.125rem;
+  --font-body-small-weight: 400;
+  --font-body-small-family: var(--font-family-body);
+  --font-body-small-letter-spacing: 0em;
+  --space-0: 0rem;
+  --space-025: .125rem;
+  --space-037: .375rem;
+  --space-050: .25rem;
+  --space-075: .375rem;
+  --space-100: .5rem;
+  --space-150: .75rem;
+  --space-200: 1rem;
+  --space-250: 1.25rem;
+  --space-300: 1.5rem;
+  --space-400: 2rem;
+  --space-500: 2.5rem;
+  --space-600: 3rem;
+  --space-800: 4rem;
+  --space-1000: 5rem;
+  --space-negative-025: -.125rem;
+  --space-negative-050: -.25rem;
+  --space-negative-075: -.375rem;
+  --space-negative-100: -.5rem;
+  --space-negative-150: -.75rem;
+  --space-negative-200: -1rem;
+  --space-negative-300: -1.5rem;
+  --space-negative-400: -2rem;
+}
+
 @theme inline {
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -134,11 +340,78 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-surface-base: var(--surface-base);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-overlay: var(--surface-overlay);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-border-card: var(--border-card);
+  --color-border-card-hover: var(--border-card-hover);
+  --color-border-card-active: var(--border-card-active);
+  --color-success-subtle: var(--success-subtle);
+  --color-success-subtle-foreground: var(--success-subtle-foreground);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-warning-subtle-foreground: var(--warning-subtle-foreground);
+  --color-info-subtle: var(--info-subtle);
+  --color-info-subtle-foreground: var(--info-subtle-foreground);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-blue-foreground: var(--accent-blue-foreground);
+  --color-accent-blue-subtle: var(--accent-blue-subtle);
+  --color-accent-blue-subtle-foreground: var(--accent-blue-subtle-foreground);
+  --color-accent-purple: var(--accent-purple);
+  --color-accent-purple-foreground: var(--accent-purple-foreground);
+  --color-accent-purple-subtle: var(--accent-purple-subtle);
+  --color-accent-purple-subtle-foreground: var(--accent-purple-subtle-foreground);
+  --color-accent-green: var(--accent-green);
+  --color-accent-green-foreground: var(--accent-green-foreground);
+  --color-accent-green-subtle: var(--accent-green-subtle);
+  --color-accent-green-subtle-foreground: var(--accent-green-subtle-foreground);
+  --color-accent-teal: var(--accent-teal);
+  --color-accent-teal-foreground: var(--accent-teal-foreground);
+  --color-accent-teal-subtle: var(--accent-teal-subtle);
+  --color-accent-teal-subtle-foreground: var(--accent-teal-subtle-foreground);
+  --color-accent-orange: var(--accent-orange);
+  --color-accent-orange-foreground: var(--accent-orange-foreground);
+  --color-accent-orange-subtle: var(--accent-orange-subtle);
+  --color-accent-orange-subtle-foreground: var(--accent-orange-subtle-foreground);
+  --color-accent-red: var(--accent-red);
+  --color-accent-red-foreground: var(--accent-red-foreground);
+  --color-accent-red-subtle: var(--accent-red-subtle);
+  --color-accent-red-subtle-foreground: var(--accent-red-subtle-foreground);
+  --color-accent-magenta: var(--accent-magenta);
+  --color-accent-magenta-foreground: var(--accent-magenta-foreground);
+  --color-accent-magenta-subtle: var(--accent-magenta-subtle);
+  --color-accent-magenta-subtle-foreground: var(--accent-magenta-subtle-foreground);
+  --color-accent-lime: var(--accent-lime);
+  --color-accent-lime-foreground: var(--accent-lime-foreground);
+  --color-accent-lime-subtle: var(--accent-lime-subtle);
+  --color-accent-lime-subtle-foreground: var(--accent-lime-subtle-foreground);
+  --color-accent-yellow: var(--accent-yellow);
+  --color-accent-yellow-foreground: var(--accent-yellow-foreground);
+  --color-accent-yellow-subtle: var(--accent-yellow-subtle);
+  --color-accent-yellow-subtle-foreground: var(--accent-yellow-subtle-foreground);
+  --color-primary-subtle: var(--primary-subtle);
+  --color-primary-subtle-foreground: var(--primary-subtle-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --shadow-surface: var(--shadow-card);
+  --shadow-surface-hover: var(--shadow-card-hover);
+  --shadow-surface-active: var(--shadow-card-active);
 }
 
 @layer base {
   * { @apply border-border outline-ring/50; }
-  body { @apply bg-background text-foreground antialiased; }
+  /* Same text base as the reference UI: 14/20, slight negative tracking, legibility rendering. */
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-size: 0.875rem;
+    line-height: 1.428571;
+    letter-spacing: -0.005em;
+    text-rendering: optimizeLegibility;
+  }
 }
 
 /* Thin, quiet scrollbars everywhere (instead of hiding them). */

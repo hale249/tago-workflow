@@ -7,6 +7,7 @@ import {
   FormNavIcon,
   HelpNavIcon,
   HomeNavIcon,
+  InvitationNavIcon,
   InstagramNavIcon,
   NotificationNavIcon,
   SettingsNavIcon,
@@ -14,7 +15,10 @@ import {
   WorkflowNavIcon,
   ZaloNavIcon,
 } from "@/components/icons"
+import { useMatch } from "react-router"
+
 import { useUnreadNotifications } from "@/features/dashboard"
+import { usePendingInvitationCount } from "@/features/invitations"
 import { useUnreadChatsIn } from "@/features/social-chat"
 import { TablesNavTree } from "@/features/tables"
 
@@ -24,11 +28,18 @@ export type NavItem = {
   icon: AppIcon
   /** Hook returning the badge count (0 hides it). Called once per rendered item. */
   useBadge?: () => number
+  /** Hook deciding whether the item is listed at all (default: always). Called once per rendered item. */
+  useVisible?: () => boolean
   /** No page yet — the router serves a "coming soon" placeholder at `to`. */
   comingSoon?: true
   /** Optional nested tree rendered under the item when the sidebar is expanded. */
   tree?: ComponentType<{ onNavigate?: () => void }>
 }
+function useShowInvitations() {
+  const onPage = useMatch("/invitations") != null
+  return usePendingInvitationCount() > 0 || onPage
+}
+
 export type NavSection = { label?: string; items: NavItem[] }
 
 // The one place to manage the menu: order, grouping, badges and which entries
@@ -39,6 +50,8 @@ export const NAV_SECTIONS: NavSection[] = [
     items: [
       { title: "Bảng điều khiển", to: "/", icon: HomeNavIcon },
       { title: "Thông báo", to: "/notifications", icon: NotificationNavIcon, useBadge: useUnreadNotifications },
+      // Like the reference: only listed while invitations are pending (or the page is open).
+      { title: "Lời mời", to: "/invitations", icon: InvitationNavIcon, useVisible: useShowInvitations },
     ],
   },
   {
@@ -64,7 +77,7 @@ export const NAV_SECTIONS: NavSection[] = [
     label: "Hệ thống",
     items: [
       { title: "Cài đặt", to: "/settings", icon: SettingsNavIcon },
-      { title: "Trợ giúp & Hỗ trợ", to: "/help", icon: HelpNavIcon, comingSoon: true },
+      { title: "Trợ giúp & Hỗ trợ", to: "/help", icon: HelpNavIcon },
     ],
   },
 ]

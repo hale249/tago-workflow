@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Add01Icon, ArrowDown01Icon, ArrowHorizontalIcon } from "@hugeicons/core-free-icons"
+import { ArrowDown01Icon, ArrowHorizontalIcon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@workspace/ui/lib/utils"
 import { useUpdateRecord } from "../api/tables.queries"
@@ -30,13 +30,14 @@ type Props = {
   records: TableRecord[]
   users: WorkspaceUser[]
   onOpen: (r: TableRecord, e?: { metaKey?: boolean; ctrlKey?: boolean }) => void
-  onCreate: (initial: RecordData) => void
+  /** Kept for callers; the reference board has no per-column "+" (create from the header instead). */
+  onCreate?: (initial: RecordData) => void
   onEdit: (r: TableRecord) => void
   onDelete: (r: TableRecord) => void
   onRun: (r: TableRecord, a: TableAction, input: RecordData) => void
 }
 
-export function RecordsKanbanView({ table, config, records, users, onOpen, onCreate, onEdit, onDelete, onRun }: Props) {
+export function RecordsKanbanView({ table, config, records, users, onOpen, onEdit, onDelete, onRun }: Props) {
   const [collapsed, setCollapsed] = useState<string[]>([])
   const [colRange, setColRange] = useState<Record<string, DateRange | null>>({})
   const update = useUpdateRecord(table.id)
@@ -59,7 +60,9 @@ export function RecordsKanbanView({ table, config, records, users, onOpen, onCre
   }
 
   return (
-    <div className="flex min-h-0 flex-1 items-start gap-3 overflow-x-auto">
+    <div className="min-h-0 flex-1 overflow-x-auto overflow-y-hidden">
+    {/* Columns stretch to the tallest one, as on the reference board. */}
+    <div className="flex min-h-[400px] min-w-max gap-3 py-1">
       {columns.map((col) => {
         const range = colRange[col.key]
         const inCol = records.filter((r) => keyOf(statusField, r.record[statusField.name]) === col.key)
@@ -89,15 +92,16 @@ export function RecordsKanbanView({ table, config, records, users, onOpen, onCre
             onDrop={() => drop(col)}
             className={cn("flex min-h-40 w-[280px] shrink-0 flex-col overflow-hidden rounded-lg bg-muted/60 text-xs ring-2 ring-transparent transition-all", overKey === col.key && "bg-brand/10 ring-brand/40")}
           >
-            <div className="flex h-10 items-center gap-2 px-3">
-              <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: col.color }} />
-              <h3 className="min-w-0 truncate text-sm font-semibold">{col.title}</h3>
-              <span className="text-xs text-muted-foreground tabular-nums">{range ? `${items.length}/${inCol.length}` : items.length}</span>
-              <span className="ml-auto flex items-center gap-1 text-muted-foreground">
-                <button type="button" onClick={() => onCreate({ [statusField.name]: col.value })} aria-label="Thêm bản ghi vào cột" className="grid size-7 place-items-center rounded-md transition-colors hover:bg-accent"><HugeiconsIcon icon={Add01Icon} className="size-4" /></button>
+            <div className="m-0 flex h-10 items-center justify-between p-2 px-3 text-sm font-semibold">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: col.color }} />
+                <h3 className="truncate text-sm font-semibold text-nowrap text-foreground">{col.title}</h3>
+                <span className="text-xs text-muted-foreground tabular-nums">{range ? `${items.length}/${inCol.length}` : items.length}</span>
+              </div>
+              <div className="flex items-center gap-1">
                 <DateRangeFilter compact value={range ?? null} onChange={(v) => setColRange({ ...colRange, [col.key]: v })} />
-                <button type="button" onClick={toggle} aria-label="Thu gọn cột" className="grid size-7 place-items-center rounded-md transition-colors hover:bg-accent"><HugeiconsIcon icon={ArrowDown01Icon} className="size-4" /></button>
-              </span>
+                <button type="button" onClick={toggle} aria-label="Thu gọn cột" className="grid size-7 place-items-center rounded-md transition-colors hover:bg-accent"><HugeiconsIcon icon={ArrowDown01Icon} className="size-4 text-muted-foreground" /></button>
+              </div>
             </div>
             <div className="flex max-h-[calc(100vh-300px)] flex-col gap-2 overflow-y-auto p-2">
               {items.map((r) => {
@@ -111,12 +115,12 @@ export function RecordsKanbanView({ table, config, records, users, onOpen, onCre
                     }}
                     onDragEnd={() => setDragId(null)}
                     onClick={(e) => onOpen(r, e)}
-                    className={cn("cursor-pointer space-y-2 overflow-hidden rounded-lg border bg-card p-3 shadow-xs transition-[box-shadow,border-color] duration-150 hover:border-foreground/14 hover:shadow-sm", dragId === r.id && "opacity-50")}
+                    className={cn("cursor-pointer space-y-2 overflow-hidden rounded-lg border border-border bg-card p-3 text-card-foreground shadow-surface transition-[box-shadow,border-color] duration-150 hover:border-[var(--border-card-hover)] hover:shadow-surface-hover", dragId === r.id && "opacity-50")}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <p className="line-clamp-2 min-w-0 flex-1 text-sm font-semibold break-words">{headline ? String(r.record[headline.name] || "(Không tiêu đề)") : r.id}</p>
+                      <p className="line-clamp-2 min-w-0 flex-1 text-sm font-semibold break-words text-foreground">{headline ? String(r.record[headline.name] || "(Không tiêu đề)") : r.id}</p>
                       <span onClick={(e) => e.stopPropagation()}>
-                        <RecordActionsMenu table={table} withCustom={false} className="-mt-1 -mr-1 size-6" onEdit={() => onEdit(r)} onDelete={() => onDelete(r)} onRun={(a, input) => onRun(r, a, input)} />
+                        <RecordActionsMenu table={table} withCustom={false} className="size-7 text-muted-foreground" onEdit={() => onEdit(r)} onDelete={() => onDelete(r)} onRun={(a, input) => onRun(r, a, input)} />
                       </span>
                     </div>
                     {extras.length > 0 && (
@@ -124,7 +128,7 @@ export function RecordsKanbanView({ table, config, records, users, onOpen, onCre
                         {extras.map((f) => (
                           <div key={f.name} className="contents">
                             <dt className="truncate text-xs leading-5 text-muted-foreground" title={f.label}>{f.label}</dt>
-                            <dd className="m-0 flex min-w-0 items-center truncate text-[13px] leading-5"><FieldValue field={f} value={r.record[f.name]} users={users} className="min-w-0 truncate" /></dd>
+                            <dd className="m-0 flex min-w-0 items-center truncate text-[13px] leading-5"><FieldValue field={f} value={r.record[f.name]} users={users} className="min-w-0 truncate text-sm" /></dd>
                           </div>
                         ))}
                       </dl>
@@ -136,6 +140,7 @@ export function RecordsKanbanView({ table, config, records, users, onOpen, onCre
           </div>
         )
       })}
+    </div>
     </div>
   )
 }

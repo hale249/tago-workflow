@@ -61,7 +61,7 @@ function customerPipeline(): TableConfig {
     { type: "NUMERIC", name: "deal_value", label: "Giá trị tiềm năng", unit: "đ", decimalPlaces: 0, min: 0 },
     { type: "SELECT_ONE_WORKSPACE_USER", name: "assignee", label: "Người phụ trách" },
     { type: "DATE", name: "expected_close_date", label: "Ngày dự kiến chốt" },
-    { type: "RICH_TEXT", name: "notes", label: "Ghi chú" },
+    { type: "TEXT", name: "notes", label: "Ghi chú" },
   ]
   const kanbanId = uid()
   return {
@@ -105,7 +105,7 @@ function taskEisenhower(): TableConfig {
     { type: "DATETIME", name: "due_date", label: "Hạn hoàn thành" },
     { type: "NUMERIC", name: "progress", label: "Tiến độ", unit: "%", min: 0, max: 100, decimalPlaces: 0 },
     { type: "CHECKBOX_YES_NO", name: "is_blocked", label: "Đang bị chặn" },
-    { type: "RICH_TEXT", name: "description", label: "Mô tả" },
+    { type: "TEXT", name: "description", label: "Mô tả" },
   ]
   return {
     ...extraConfigDefaults(),

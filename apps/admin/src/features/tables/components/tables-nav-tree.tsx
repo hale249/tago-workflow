@@ -17,7 +17,12 @@ export function TablesNavTree({ onNavigate }: { onNavigate?: () => void }) {
   const { data: groups = [] } = useWorkGroups()
   const { closedTree, toggleTree } = useUiStore()
 
-  const tree = groups.map((g) => ({ group: g, tables: tables.filter((t) => t.workGroupId === g.id) })).filter((x) => x.tables.length)
+  const known = new Set(groups.map((g) => g.id))
+  const ungrouped = tables.filter((t) => !known.has(t.workGroupId))
+  const tree = [
+    ...groups.map((g) => ({ group: g, tables: tables.filter((t) => t.workGroupId === g.id) })),
+    { group: { id: "", name: "Chưa phân nhóm", description: "" }, tables: ungrouped },
+  ].filter((x) => x.tables.length)
   if (!tree.length) return null
 
   return (
@@ -47,7 +52,7 @@ export function TablesNavTree({ onNavigate }: { onNavigate?: () => void }) {
                     key={t.id}
                     to={`/tables/${t.id}`}
                     onClick={onNavigate}
-                    className={({ isActive }) => cn(ROW, "pl-10", isActive && "bg-brand/8 text-brand hover:bg-brand/10 hover:text-brand")}
+                    className={({ isActive }) => cn(ROW, "pl-10", isActive && "bg-primary-subtle text-primary-subtle-foreground hover:bg-primary-subtle hover:text-primary-subtle-foreground")}
                   >
                     <TableIcon icon={t.icon} color={t.iconColor} plain />
                     <span className="truncate">{t.name}</span>

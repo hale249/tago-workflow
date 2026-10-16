@@ -1,6 +1,6 @@
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
-import type { RecordData, RecordItem, RecordQuery, TableConfig, TableTemplate } from "../types/table"
+import type { ActiveTable, RecordData, RecordItem, RecordQuery, TableConfig, TableTemplate, WorkGroup } from "../types/table"
 import { tablesApi } from "./tables.api"
 
 export const tableKeys = {
@@ -42,6 +42,31 @@ function useInvalidatingMutation<V, R>(fn: (v: V) => Promise<R>) {
 }
 
 export const useCreateWorkGroup = () => useInvalidatingMutation((v: { name: string; description?: string }) => tablesApi.createWorkGroup(v))
+export const useUpdateWorkGroup = () => useInvalidatingMutation(({ id, ...v }: { id: string; name: string; description?: string }) => tablesApi.updateWorkGroup(id, v))
+export const useDeleteWorkGroup = () => useInvalidatingMutation((id: string) => tablesApi.deleteWorkGroup(id))
+/** Drag-to-reorder: the cached lists are reordered optimistically so rows don't jump back while saving. */
+export function useReorderWorkGroups() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (ids: string[]) => tablesApi.reorderWorkGroups(ids),
+    onMutate: (ids) => qc.setQueryData<WorkGroup[]>(tableKeys.workGroups(), (gs) => gs && [...gs].sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id))),
+    onSettled: () => qc.invalidateQueries({ queryKey: tableKeys.all }),
+  })
+}
+export function useReorderTables() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ workGroupId, ids }: { workGroupId: string; ids: string[] }) => tablesApi.reorderTables(workGroupId, ids),
+    onMutate: ({ workGroupId, ids }) =>
+      qc.setQueryData<ActiveTable[]>(tableKeys.list(), (ts) => {
+        if (!ts) return ts
+        const inGroup = ts.filter((t) => t.workGroupId === workGroupId).sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id))
+        let i = 0
+        return ts.map((t) => (t.workGroupId === workGroupId ? inGroup[i++]! : t))
+      }),
+    onSettled: () => qc.invalidateQueries({ queryKey: tableKeys.all }),
+  })
+}
 export const useCreateTable = () =>
   useInvalidatingMutation((v: { name: string; description?: string; workGroupId: string; template: TableTemplate }) => tablesApi.createTable(v))
 export const useUpdateTable = (id: string) =>

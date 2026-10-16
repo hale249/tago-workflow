@@ -10,26 +10,31 @@ import { useUiStore } from "@/stores/ui.store"
 type Props = { item: NavItem; collapsed: boolean; onNavigate?: () => void }
 
 const useNoBadge = () => 0
+const useAlwaysVisible = () => true
 
 export function NavLinkItem({ item, collapsed, onNavigate }: Props) {
   // An item's useBadge never changes, so the hook order stays stable per instance.
   const useBadge = item.useBadge ?? useNoBadge
   const badge = useBadge()
+  const useVisible = item.useVisible ?? useAlwaysVisible
+  const visible = useVisible()
   const { closedTree, toggleTree } = useUiStore()
   const treeOpen = !closedTree.includes(item.to)
+  if (!visible) return null
 
   const link = (
     <NavLink
       to={item.to}
-      end={item.to === "/"}
+      // With its tree unfolded, a parent is only active on its own page (a child row lights up instead), like the reference.
+      end={item.to === "/" || (!!item.tree && !collapsed && treeOpen)}
       onClick={onNavigate}
       aria-label={collapsed ? item.title : undefined}
       className={({ isActive }) =>
         cn(
           "group/nav relative flex h-8 flex-1 items-center gap-2 rounded-md px-2 text-sm font-medium text-sidebar-foreground/75 transition-colors duration-150 outline-none select-none",
           "hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring",
-          isActive && "bg-brand/8 text-brand hover:bg-brand/10 hover:text-brand",
-          collapsed && "mx-auto size-9 flex-none justify-center px-0",
+          isActive && "bg-primary-subtle text-primary-subtle-foreground hover:bg-primary-subtle hover:text-primary-subtle-foreground",
+          collapsed && "w-full flex-none justify-center px-0",
         )
       }
     >
@@ -37,7 +42,7 @@ export function NavLinkItem({ item, collapsed, onNavigate }: Props) {
         <>
           <HugeiconsIcon icon={item.icon}
             strokeWidth={1.5}
-            className={cn("size-4 shrink-0 transition-colors", isActive ? "text-brand" : "text-sidebar-foreground/60 group-hover/nav:text-sidebar-foreground")}
+            className={cn("size-4 shrink-0 transition-colors", isActive ? "text-primary-subtle-foreground" : "text-sidebar-foreground/60 group-hover/nav:text-sidebar-foreground")}
           />
           {!collapsed && <span className="flex-1 truncate">{item.title}</span>}
           {badge ? (

@@ -10,7 +10,7 @@ type Props = { collapsed: boolean; onNavigate?: () => void }
 export function SidebarContent({ collapsed, onNavigate }: Props) {
   return (
     <div className="flex h-full flex-col">
-      <div className={cn("flex h-12 shrink-0 items-center border-b border-sidebar-border px-2", collapsed && "justify-center")}>
+      <div className={cn("flex h-12 shrink-0 items-center border-b border-sidebar-border px-2 pb-px", collapsed && "justify-center")}>
         <div className={cn("min-w-0", !collapsed && "flex-1")}>
           <WorkspaceSwitcher collapsed={collapsed} />
         </div>
@@ -22,7 +22,7 @@ export function SidebarContent({ collapsed, onNavigate }: Props) {
         </div>
       )}
 
-      <nav aria-label="Main" className="no-scrollbar flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3">
+      <nav aria-label="Main" className={cn("no-scrollbar flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3", collapsed && "pt-2")}>
         {NAV_SECTIONS.map((section, i) => (
           <NavSection key={section.label ?? i} section={section} collapsed={collapsed} onNavigate={onNavigate} />
         ))}
