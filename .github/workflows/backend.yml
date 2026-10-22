@@ -1,0 +1,64 @@
+name: backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/backend/**"
+      - "packages/spec/**"
+      - ".github/workflows/backend.yml"
+  pull_request:
+    paths:
+      - "apps/backend/**"
+      - "packages/spec/**"
+      - ".github/workflows/backend.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: apps/backend
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # TODO(security): pin every action below to a full commit SHA (keep the tag as a comment), e.g.
+      #   uses: actions/checkout@<40-char-sha> # v5
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: apps/backend/go.mod
+          cache-dependency-path: apps/backend/go.sum
+
+      - name: gofmt
+        run: make fmt-check
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go build
+        run: go build ./...
+
+      - name: go test (race)
+        run: go test -race -count=1 ./...
+
+      - name: govulncheck
+        # TODO(security): pin to a release instead of @latest.
+        run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          # TODO(security): pin to an exact v2.x release built with Go >= 1.27.
+          version: latest
+          working-directory: apps/backend

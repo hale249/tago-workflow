@@ -1,0 +1,103 @@
+# golangci-lint v2 config. Run: make lint   (needs golangci-lint v2 built with Go >= 1.27)
+version: "2"
+
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  default: none
+  enable:
+    - errcheck        # unchecked errors
+    - govet           # go vet, extra analyzers below
+    - staticcheck     # SA/ST/S/QF checks (includes former gosimple/stylecheck)
+    - unused
+    - ineffassign
+    - gosec           # security: G112 slowloris, G104, G401 weak crypto, SQL string building…
+    - revive          # style / naming
+    - bodyclose       # http response bodies closed
+    - noctx           # HTTP requests / DB calls carry a context
+    - errorlint       # errors.Is/As instead of == and type asserts, %w wrapping
+    - gocritic
+    - contextcheck    # functions receive the caller's context instead of Background()
+    - sqlclosecheck   # sql.Rows / Stmt closed
+    - rowserrcheck    # rows.Err() checked
+    - copyloopvar
+    - usestdlibvars   # http.MethodGet, http.StatusOK…
+    - misspell
+    - unconvert
+    - nolintlint      # //nolint must name a linter and stay justified
+    - durationcheck
+    - nilerr          # returning nil while holding a non-nil err
+    - forcetypeassert
+    - exhaustive      # switches over enums are complete
+
+  settings:
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment  # noisy, low value for this codebase
+        - shadow          # `err` shadowing is idiomatic
+    errcheck:
+      check-type-assertions: true
+    gosec:
+      excludes:
+        - G104  # duplicated by errcheck
+    revive:
+      rules:
+        - name: blank-imports
+        - name: context-as-argument
+        - name: context-keys-type
+        - name: dot-imports
+        - name: error-return
+        - name: error-strings
+        - name: error-naming
+        - name: if-return
+        - name: increment-decrement
+        - name: var-naming
+        - name: package-comments
+        - name: range
+        - name: receiver-naming
+        - name: time-naming
+        - name: unexported-return
+          disabled: true  # constructors may return unexported types; intentional
+        - name: indent-error-flow
+        - name: errorf
+        - name: empty-block
+        - name: superfluous-else
+        - name: unreachable-code
+        - name: redefines-builtin-id
+        - name: unused-parameter
+          disabled: true  # http handlers keep (w, r) signatures
+    gocritic:
+      enabled-tags: [diagnostic, performance, style]
+      disabled-checks:
+        - hugeParam       # config.Config by value is fine
+        - unnamedResult
+        - whyNoLint       # nolintlint covers it
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+    exhaustive:
+      default-signifies-exhaustive: true
+
+  exclusions:
+    generated: lax      # sqlc / oapi-codegen output
+    presets:
+      - std-error-handling
+    rules:
+      - path: _test\.go
+        linters: [gosec, forcetypeassert, errcheck, noctx, contextcheck]
+    paths:
+      - internal/feature/.*/store   # sqlc generated
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/hale249/tago-workflow/apps/backend
+  exclusions:
+    generated: lax

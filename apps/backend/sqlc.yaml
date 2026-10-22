@@ -1,0 +1,8 @@
+# One block per feature: each feature owns its queries and generated store package.
+# Copy a block when a feature gets its first queries, e.g.:
+#   - engine: postgresql
+#     schema: migrations
+#     queries: internal/feature/workspace/queries
+#     gen: { go: { package: store, out: internal/feature/workspace/store, sql_package: pgx/v5 } }
+version: "2"
+sql: []

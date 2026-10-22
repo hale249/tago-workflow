@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tago/spec/filter.schema.json",
+  "title": "Record filter tree",
+  "description": "Compiled to parameterised SQL by apps/backend/internal/query; evaluated for previews in the frontend.",
+  "$ref": "#/$defs/node",
+  "$defs": {
+    "node": { "oneOf": [ { "$ref": "#/$defs/group" }, { "$ref": "#/$defs/condition" } ] },
+    "group": {
+      "type": "object",
+      "properties": {
+        "and": { "type": "array", "items": { "$ref": "#/$defs/node" } },
+        "or": { "type": "array", "items": { "$ref": "#/$defs/node" } }
+      },
+      "minProperties": 1,
+      "maxProperties": 1,
+      "additionalProperties": false
+    },
+    "condition": {
+      "type": "object",
+      "required": ["field", "op"],
+      "properties": {
+        "field": { "type": "string", "description": "Field name in the table config (or created_at / created_by)" },
+        "op": {
+          "enum": ["eq", "neq", "contains", "not_contains", "starts_with", "gt", "gte", "lt", "lte", "between",
+                   "in", "not_in", "has_any", "has_all", "is_empty", "is_not_empty", "within"]
+        },
+        "value": {}
+      },
+      "additionalProperties": false
+    }
+  }
+}

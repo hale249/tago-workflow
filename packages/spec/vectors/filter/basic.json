@@ -1,0 +1,13 @@
+{
+  "description": "Shared filter cases. Each case must give the same matching record ids in Go and TS.",
+  "records": [
+    { "id": "r1", "data": { "trang_thai": "chot", "gia_tri": 1500000 } },
+    { "id": "r2", "data": { "trang_thai": "tiep_can", "gia_tri": 200000 } },
+    { "id": "r3", "data": { "trang_thai": "chot", "gia_tri": 50000 } }
+  ],
+  "cases": [
+    { "name": "eq", "filter": { "field": "trang_thai", "op": "eq", "value": "chot" }, "expect": ["r1", "r3"] },
+    { "name": "and gte", "filter": { "and": [ { "field": "trang_thai", "op": "eq", "value": "chot" }, { "field": "gia_tri", "op": "gte", "value": 1000000 } ] }, "expect": ["r1"] },
+    { "name": "or", "filter": { "or": [ { "field": "trang_thai", "op": "eq", "value": "tiep_can" }, { "field": "gia_tri", "op": "lt", "value": 100000 } ] }, "expect": ["r2", "r3"] }
+  ]
+}

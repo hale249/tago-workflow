@@ -1,0 +1,9 @@
+{
+  "name": "@workspace/spec",
+  "private": true,
+  "description": "Shared contract between the Go backend and the TS frontend: JSON Schemas + test vectors.",
+  "exports": {
+    "./schemas/*": "./schemas/*",
+    "./vectors/*": "./vectors/*"
+  }
+}

@@ -1,0 +1,34 @@
+# API contract — source of truth. Generate Go types (oapi-codegen) and the TS client (openapi-typescript) from it.
+openapi: 3.1.0
+info:
+  title: Tago API
+  version: 0.1.0
+paths:
+  /livez:
+    get:
+      summary: Liveness probe
+      responses:
+        "200":
+          description: Process is up
+          content:
+            application/json:
+              schema: { type: object, properties: { status: { type: string } } }
+  /readyz:
+    get:
+      summary: Readiness probe (DB + Redis reachable)
+      responses:
+        "200": { description: Ready }
+        "503":
+          description: A dependency is unreachable (cause is logged server-side, not returned)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+components:
+  schemas:
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        errors: { type: object, additionalProperties: { type: string } }

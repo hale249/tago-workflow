@@ -1,0 +1,14 @@
+{
+  "name": "backend",
+  "private": true,
+  "scripts": {
+    "dev": "go run ./cmd all",
+    "build": "make build",
+    "test": "make test",
+    "lint": "make fmt-check vet",
+    "lint:strict": "make lint",
+    "vulncheck": "make vulncheck",
+    "ci": "make ci",
+    "typecheck": "go build ./..."
+  }
+}
