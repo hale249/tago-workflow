@@ -4,13 +4,14 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { Add01Icon, ArrowLeft01Icon, ArrowRight01Icon, ArrowUpRight01Icon, Cancel01Icon, CheckmarkCircle02Icon, FileQuestionMarkIcon, Home01Icon, Message01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
+import { ConfirmDialog } from "@workspace/ui/components/confirm-dialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { TYPE, typeStyle } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
 import { recordLabel } from "../api/tables.api"
 import { useDeleteRecords, useRecord, useTable, useWorkspaceUsers } from "../api/tables.queries"
 import { CommentsPanel } from "./comments-panel"
-import { ConfirmDialog } from "./confirm-dialog"
 import { UserChip } from "./field-value"
 import { InlineField } from "./inline-field"
 import { ItemsEditor } from "./items-editor"
@@ -18,7 +19,6 @@ import { RecordActionsMenu } from "./record-actions-menu"
 import { RelatedActions, RelatedRecords } from "./related-records"
 import type { TableAction, TableField } from "../types/table"
 import { isComputed, isLongText, pinnedSumsOf, valueToText } from "../utils/fields"
-import { BODY_SMALL_STYLE, H2_STYLE, typeStyle } from "../utils/typography"
 
 const H3_STYLE = typeStyle("heading-h3")
 
@@ -137,7 +137,7 @@ export function RecordDetailView({ tableId, recordId, mode, onClose }: Props) {
 
   const heading = (
     <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-050)] overflow-hidden">
-      <h1 className="block truncate font-semibold text-foreground" style={drawer ? H3_STYLE : H2_STYLE}>{title}</h1>
+      <h1 className="block truncate font-semibold text-foreground" style={drawer ? H3_STYLE : TYPE.h2}>{title}</h1>
       {subText.length > 0 && (
         <p className="truncate text-[13px] text-muted-foreground">
           {subText.map((t, i) => (
@@ -281,9 +281,9 @@ export function RecordDetailView({ tableId, recordId, mode, onClose }: Props) {
       <div className="mx-auto max-w-7xl px-4 py-6">
         <div className="mb-3">
           <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-[var(--space-100)] py-2">
-            <Link to="/tables" className="flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"><HugeiconsIcon icon={Home01Icon} className="size-3.5" /><span className="text-foreground" style={BODY_SMALL_STYLE}>Apps</span></Link>
+            <Link to="/tables" className="flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"><HugeiconsIcon icon={Home01Icon} className="size-3.5" /><span className="text-foreground" style={TYPE.small}>Apps</span></Link>
             <HugeiconsIcon icon={ArrowRight01Icon} className="size-3.5 text-muted-foreground" />
-            <Link to={`/tables/${table.id}`} aria-current="page" className="text-foreground hover:underline" style={BODY_SMALL_STYLE}>{table.name}</Link>
+            <Link to={`/tables/${table.id}`} aria-current="page" className="text-foreground hover:underline" style={TYPE.small}>{table.name}</Link>
           </nav>
         </div>
 

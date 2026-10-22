@@ -3,12 +3,16 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { Add01Icon, Delete02Icon, PencilEdit01Icon, TagsIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
+import { ConfirmDialog } from "@workspace/ui/components/confirm-dialog"
+import { EmptyState } from "@workspace/ui/components/empty-state"
+import { SearchBox } from "@workspace/ui/components/search-box"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { SMALL_BTN, TABLE_CARD, TD, TH, TR } from "@workspace/ui/lib/styles"
 import { cn } from "@workspace/ui/lib/utils"
-import { ConfirmDialog, EmptyState, SMALL_BTN, TABLE_CARD, TD, TH, TR, useDeleteLabel, useLabels, type Label, type LabelType } from "@/features/teams"
+import { useDeleteLabel, useLabels, type Label, type LabelType } from "@/features/teams"
 import { LABEL_TYPES, labelTypeName } from "../data/labels"
 import { LabelFormDialog } from "./label-form-dialog"
-import { SearchBox, SectionHeader } from "./settings-ui"
+import { SectionHeader } from "./settings-ui"
 
 const fmt = (iso?: string) => (iso ? new Date(iso).toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—")
 

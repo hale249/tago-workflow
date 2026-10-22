@@ -1,18 +1,20 @@
 import { useState } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Add01Icon, Delete02Icon, Search01Icon, UserMultipleIcon } from "@hugeicons/core-free-icons"
-import { Select } from "@/components/select"
 
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
+import { ConfirmDialog } from "@workspace/ui/components/confirm-dialog"
+import { EmptyState } from "@workspace/ui/components/empty-state"
 import { Input } from "@workspace/ui/components/input"
+import { Select } from "@workspace/ui/components/select"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { SMALL_BTN, TABLE_CARD, TD, TH, TR } from "@workspace/ui/lib/styles"
 import { cn } from "@workspace/ui/lib/utils"
 import { useRemoveFromRole, useTeamMembers } from "../api/teams.queries"
 import type { Team, TeamRole } from "../types/team"
 import { AddMemberDialog } from "./add-member-dialog"
-import { ConfirmDialog } from "./confirm-dialog"
-import { Chip, EmptyState, MemberAvatar, SMALL_BTN, TABLE_CARD, TD, TH, TR } from "./team-ui"
+import { Chip, MemberAvatar } from "./team-ui"
 
 type Removal = { roleId: string; userIds: string[] }
 

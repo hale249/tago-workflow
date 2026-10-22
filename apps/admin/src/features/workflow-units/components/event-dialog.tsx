@@ -5,13 +5,13 @@ import { InformationCircleIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
+import { Select } from "@workspace/ui/components/select"
+import { DIALOG_CONTENT, INPUT_FIELD, TEXTAREA_FIELD } from "@workspace/ui/lib/styles"
 import { cn } from "@workspace/ui/lib/utils"
 import { tablesListQuery } from "@/features/tables"
 import { formsListQuery } from "@/features/workflow-forms"
 import { useSaveEvent } from "../api/workflow.queries"
 import type { TriggerType, WorkflowEvent } from "../types/workflow"
-import { dialogHeader, dialogShell, dialogTitle, inputClass, textareaClass } from "../utils/dialog-styles"
-import { Select } from "@/components/select"
 
 /** Same order and labels as the reference "Loại kích hoạt" select. */
 const TRIGGER_OPTIONS: [TriggerType, string][] = [["SCHEDULE", "Lịch trình (Cron)"], ["WEBHOOK", "Webhook"], ["FORM", "Gửi biểu mẫu"], ["ACTIVE_TABLE", "Sự kiện bảng"]]
@@ -64,18 +64,18 @@ export function EventDialog({ open, onOpenChange, unitId, event, onSaved }: { op
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn(dialogShell, "sm:max-w-lg")}>
-        <DialogHeader className={dialogHeader}>
-          <DialogTitle className={dialogTitle}>{event ? "Chỉnh sửa sự kiện workflow" : "Tạo sự kiện mới"}</DialogTitle>
+      <DialogContent className={cn(DIALOG_CONTENT, "max-w-lg sm:max-w-lg")}>
+        <DialogHeader className="gap-0 space-y-1.5">
+          <DialogTitle className="tracking-tight">{event ? "Chỉnh sửa sự kiện workflow" : "Tạo sự kiện mới"}</DialogTitle>
           <DialogDescription className="text-xs">Tạo sự kiện mới để kích hoạt quy trình tự động</DialogDescription>
         </DialogHeader>
         <form className="space-y-4" onSubmit={submit}>
           <Field title="Tên sự kiện *" htmlFor="event-name">
-            <input id="event-name" type="text" required maxLength={100} autoFocus placeholder="Đồng bộ khách hàng hàng ngày" className={cn(inputClass, "h-9")}
+            <input id="event-name" type="text" required maxLength={100} autoFocus placeholder="Đồng bộ khách hàng hàng ngày" className={cn(INPUT_FIELD, "h-9")}
               value={name} onChange={(e) => setName(e.target.value)} />
           </Field>
           <Field title="Mô tả (tùy chọn)" htmlFor="event-description">
-            <textarea id="event-description" rows={2} maxLength={500} placeholder="Đồng bộ dữ liệu khách hàng từ CRM lúc 9h sáng mỗi ngày" className={cn(textareaClass, "resize-none")}
+            <textarea id="event-description" rows={2} maxLength={500} placeholder="Đồng bộ dữ liệu khách hàng từ CRM lúc 9h sáng mỗi ngày" className={cn(TEXTAREA_FIELD, "resize-none")}
               value={description} onChange={(e) => setDescription(e.target.value)} />
           </Field>
           <div className="space-y-4 rounded-lg border bg-muted/40 p-4">
@@ -90,7 +90,7 @@ export function EventDialog({ open, onOpenChange, unitId, event, onSaved }: { op
                 {type === "SCHEDULE" && (
                   <>
                     <Field title="Biểu thức Cron" htmlFor="cron-expression">
-                      <input id="cron-expression" type="text" placeholder="0 9 * * 1" className={cn(inputClass, "h-9 font-mono")} value={params.expression ?? ""} onChange={(e) => set("expression", e.target.value)} />
+                      <input id="cron-expression" type="text" placeholder="0 9 * * 1" className={cn(INPUT_FIELD, "h-9 font-mono")} value={params.expression ?? ""} onChange={(e) => set("expression", e.target.value)} />
                       <p className={hint}>Ví dụ: "0 9 * * 1" chạy mỗi thứ Hai lúc 9 giờ sáng</p>
                     </Field>
                     <Note>Trình tạo cron nâng cao với tùy chọn múi giờ sẽ có trong bản cập nhật tương lai.</Note>
@@ -99,7 +99,7 @@ export function EventDialog({ open, onOpenChange, unitId, event, onSaved }: { op
                 {type === "WEBHOOK" && (
                   <>
                     <Field title="ID Webhook" htmlFor="webhook-id">
-                      <input id="webhook-id" type="text" className={cn(inputClass, "h-9 font-mono")} value={params.path ?? ""} onChange={(e) => set("path", e.target.value)} />
+                      <input id="webhook-id" type="text" className={cn(INPUT_FIELD, "h-9 font-mono")} value={params.path ?? ""} onChange={(e) => set("path", e.target.value)} />
                       <p className={hint}>ID này sẽ được sử dụng để tạo URL webhook</p>
                     </Field>
                     <Note>Hiển thị URL webhook, quản lý token bảo mật và chọn phương thức HTTP sẽ có trong bản cập nhật tương lai.</Note>

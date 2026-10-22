@@ -4,11 +4,15 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { Add01Icon, Delete02Icon, MoreVerticalIcon, PencilEdit01Icon, Shield01Icon, UserMultipleIcon, ViewIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
+import { ConfirmDialog } from "@workspace/ui/components/confirm-dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
+import { EmptyState } from "@workspace/ui/components/empty-state"
+import { SearchBox } from "@workspace/ui/components/search-box"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { SMALL_BTN } from "@workspace/ui/lib/styles"
 import { cn } from "@workspace/ui/lib/utils"
-import { ConfirmDialog, EmptyState, LabelCombobox, SMALL_BTN, TeamFormDialog, useDeleteTeam, useTeams, type TeamSummary } from "@/features/teams"
-import { SearchBox, SectionHeader } from "./settings-ui"
+import { LabelCombobox, TeamFormDialog, useDeleteTeam, useTeams, type TeamSummary } from "@/features/teams"
+import { SectionHeader } from "./settings-ui"
 
 /** Same data, dialogs and rows as /team; a row opens /team/:teamId. */
 export function TeamsTab() {

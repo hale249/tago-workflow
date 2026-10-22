@@ -2,10 +2,11 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { Calendar02Icon, Clock01Icon, CpuIcon, DatabaseIcon, ServerStack01Icon } from "@hugeicons/core-free-icons"
 
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { TD, TH, TR } from "@workspace/ui/lib/styles"
+import { TYPE } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
 import { TableIcon, useRecordCounts, useTables } from "@/features/tables"
-import { TD, TH, TR } from "@/features/teams"
-import { SettingsCard, TYPE } from "./settings-ui"
+import { SettingsCard } from "./settings-ui"
 
 // Plan values of the workspace (the reference reads them from the subscription; static in this mock).
 const BASIC = [

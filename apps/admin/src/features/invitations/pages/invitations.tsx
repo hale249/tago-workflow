@@ -4,10 +4,10 @@ import { ArrowLeft01Icon, Mail01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { ToastView, useToast } from "@workspace/ui/components/toast"
 import { WORKSPACES } from "@/config/navigation"
 import { usePendingInvitations } from "../api/invitations.queries"
 import { InvitationCard } from "../components/invitation-card"
-import { ToastView, useToast } from "../components/toast"
 
 /** Lời mời: pending workspace invitations for the current user (reference /workspaces/:id/invitations). */
 export function InvitationsPage() {

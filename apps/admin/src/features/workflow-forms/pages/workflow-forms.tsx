@@ -7,6 +7,7 @@ import { Button } from "@workspace/ui/components/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
 import { Input } from "@workspace/ui/components/input"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { TYPE } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
 import { useDeleteForm, useForms } from "../api/forms.queries"
 import { CreateFormDialog } from "../components/create-form-dialog"
@@ -14,13 +15,6 @@ import { FORM_TYPES } from "../data/templates"
 import type { FormType } from "../types/form"
 
 const day = new Intl.DateTimeFormat("vi-VN")
-const H1_STYLE = {
-  fontSize: "var(--font-heading-h1-size)",
-  lineHeight: "var(--font-heading-h1-line-height)",
-  fontWeight: "var(--font-heading-h1-weight)",
-  letterSpacing: "var(--font-heading-h1-letter-spacing)",
-  fontFamily: "var(--font-heading-h1-family)",
-} as const
 
 export function WorkflowFormsPage() {
   const navigate = useNavigate()
@@ -36,7 +30,7 @@ export function WorkflowFormsPage() {
     <section className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-background p-[var(--space-300)]">
       <div className="flex flex-col items-stretch justify-start gap-[var(--space-200)]">
         <header className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="min-w-0"><h1 className="text-foreground" style={H1_STYLE}>Biểu mẫu</h1><p className="text-[13px] text-muted-foreground">Quản lý biểu mẫu workflow</p></div>
+          <div className="min-w-0"><h1 className="text-foreground" style={TYPE.h1}>Biểu mẫu</h1><p className="text-[13px] text-muted-foreground">Quản lý biểu mẫu workflow</p></div>
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative w-full sm:w-64">
               <HugeiconsIcon icon={Search01Icon} className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />

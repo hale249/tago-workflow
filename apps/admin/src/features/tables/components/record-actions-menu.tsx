@@ -5,12 +5,12 @@ import { Database01Icon, Delete02Icon, MoreVerticalIcon, PackageIcon, PencilIcon
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
+import { FormRow } from "@workspace/ui/components/form-row"
 import { cn } from "@workspace/ui/lib/utils"
 import { useWorkspaceUsers } from "../api/tables.queries"
 import type { ActiveTable, RecordData, TableAction } from "../types/table"
 import { emptyValue, validateRecord } from "../utils/fields"
 import { FieldInput } from "./field-input"
-import { FormRow } from "./form-controls"
 
 /** Collects a custom action's input fields. Execution is delegated to `onRun` (workflow backend later). */
 function ActionRunDialog({ action, onOpenChange, onRun }: { action: TableAction | null; onOpenChange: (o: boolean) => void; onRun: (a: TableAction, input: RecordData) => void }) {

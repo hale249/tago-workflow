@@ -8,12 +8,16 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
+import { FormRow } from "@workspace/ui/components/form-row"
+import { Input } from "@workspace/ui/components/input"
+import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
+import { Select } from "@workspace/ui/components/select"
+import { Switch } from "@workspace/ui/components/switch"
+import { Textarea } from "@workspace/ui/components/textarea"
+import { cn } from "@workspace/ui/lib/utils"
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
-import { Input } from "@workspace/ui/components/input"
-import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
-import { cn } from "@workspace/ui/lib/utils"
 import { ObjectiveIcon } from "@/components/icons"
 import { useTables, useWorkspaceTeams } from "../api/tables.queries"
 import type {
@@ -23,7 +27,6 @@ import { FIELD_GROUPS, FIELD_TYPES, fieldTypeLabel, isNumber, uid } from "../uti
 import { checkFormula, formulaFields } from "../utils/formula"
 import { FieldEditorDialog } from "./field-editor-dialog"
 import { FieldTypeIcon } from "./field-type-icon"
-import { FormRow, NativeSelect, Switch, Textarea } from "./form-controls"
 import { AddButton, BTN7, EmptyBox, InfoBox, Pair, SettingsCard, SettingsField, Stats, SubCard, Tag } from "./settings-card"
 import { patchConfig, type TabProps } from "./settings-types"
 
@@ -37,10 +40,10 @@ function FieldSelect({ fields, value, onChange, placeholder = "Không chọn", f
   const list = filter ? fields.filter(filter) : fields
   const text = (f: TableField) => (suffix === "none" ? f.label : `${f.label} (${suffix === "raw" ? f.type : fieldTypeLabel(f.type)})`)
   return (
-    <NativeSelect value={value ?? ""} disabled={disabled} onChange={(e) => onChange(e.target.value)} {...rest}>
+    <Select value={value ?? ""} disabled={disabled} onChange={(e) => onChange(e.target.value)} {...rest}>
       <option value="">{placeholder}</option>
       {list.map((f) => <option key={f.name} value={f.name}>{text(f)}</option>)}
-    </NativeSelect>
+    </Select>
   )
 }
 
@@ -164,10 +167,10 @@ function MappingRows({ targets, sources, value, onChange, sourceLabel, targetLab
           <div key={t.name} className="grid grid-cols-2 items-center border-t">
             <span className="px-3 py-2">{t.label}</span>
             <div className="px-2 py-1.5">
-              <NativeSelect value={cur} onChange={(e) => onChange([...value.filter((m) => m.target !== t.name), ...(e.target.value ? [{ source: e.target.value, target: t.name }] : [])])}>
+              <Select value={cur} onChange={(e) => onChange([...value.filter((m) => m.target !== t.name), ...(e.target.value ? [{ source: e.target.value, target: t.name }] : [])])}>
                 <option value="">-- Không ánh xạ --</option>
                 {options.map((x) => <option key={x.name} value={x.name}>{x.label}</option>)}
-              </NativeSelect>
+              </Select>
             </div>
           </div>
         )
@@ -545,9 +548,9 @@ export function PermissionsTab(p: TabProps) {
     <SettingsCard title="Cấu hình phân quyền" description="Quản lý phân quyền theo nhóm và vai trò cho các hành động" bodyClassName="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
         <label htmlFor="permission-team" className="text-sm leading-none font-medium">Chọn nhóm</label>
-        <NativeSelect id="permission-team" value={team?.id ?? ""} onChange={(e) => setTeamId(e.target.value)}>
+        <Select id="permission-team" value={team?.id ?? ""} onChange={(e) => setTeamId(e.target.value)}>
           {teams.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-        </NativeSelect>
+        </Select>
       </div>
       <div className="flex flex-col gap-2">
         <div className="rounded-lg border border-info/20 bg-info-subtle p-4">
@@ -575,9 +578,9 @@ export function PermissionsTab(p: TabProps) {
                         <p className="text-xs text-muted-foreground">{a.type}</p>
                       </div>
                       <div className="w-[300px] max-sm:w-full">
-                        <NativeSelect value={get(r.id, a.actionId)} onChange={(e) => set(r.id, a.actionId, e.target.value)} aria-label={`${r.name} – ${a.name}`}>
+                        <Select value={get(r.id, a.actionId)} onChange={(e) => set(r.id, a.actionId, e.target.value)} aria-label={`${r.name} – ${a.name}`}>
                           {scopesFor(a).map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-                        </NativeSelect>
+                        </Select>
                       </div>
                     </div>
                   ))}
@@ -649,10 +652,10 @@ function GanttDialog({ open, onOpenChange, value, fields, onSave }: { open: bool
       </SettingsField>
       {status && (
         <SettingsField label="Giá trị trạng thái hoàn thành" required error={errors.complete} hint="Giá trị được xem là hoàn thành để đánh dấu công việc đã xong trong biểu đồ Gantt">
-          <NativeSelect value={g.statusCompleteValue} onChange={(e) => setG({ ...g, statusCompleteValue: e.target.value })}>
+          <Select value={g.statusCompleteValue} onChange={(e) => setG({ ...g, statusCompleteValue: e.target.value })}>
             <option value="">Chọn giá trị trạng thái hoàn thành...</option>
             {status.options?.map((o) => <option key={o.value} value={o.value}>{o.text}</option>)}
-          </NativeSelect>
+          </Select>
         </SettingsField>
       )}
     </ConfigDialog>
@@ -751,7 +754,7 @@ function PivotDialog({ open, onOpenChange, value, fields, onSave }: { open: bool
           </SettingsField>
           {v.columnField && (
             <SettingsField className={field} label="Nhóm theo">
-              <NativeSelect value={v.groupBy} onChange={(e) => setV({ ...v, groupBy: e.target.value as PivotGroupBy })}>{GROUP_BY.map((g) => <option key={g.v} value={g.v}>{g.l}</option>)}</NativeSelect>
+              <Select value={v.groupBy} onChange={(e) => setV({ ...v, groupBy: e.target.value as PivotGroupBy })}>{GROUP_BY.map((g) => <option key={g.v} value={g.v}>{g.l}</option>)}</Select>
             </SettingsField>
           )}
         </div>
@@ -942,10 +945,10 @@ function ObjectiveDialog({ open, onOpenChange, value, table, onSave }: { open: b
                       <Input value={l.name} placeholder="Ví dụ: Key Results" onChange={(e) => setL(i, { name: e.target.value })} />
                     </SettingsField>
                     <SettingsField className={field} label="Bảng" required error={errors[`table.${l.id}`]}>
-                      <NativeSelect value={l.tableId} onChange={(e) => setL(i, { tableId: e.target.value, relationField: "", titleField: "", startField: "", endField: "", progressField: "", currentField: "", targetField: "", unitField: "", statusField: "", conditions: [] })}>
+                      <Select value={l.tableId} onChange={(e) => setL(i, { tableId: e.target.value, relationField: "", titleField: "", startField: "", endField: "", progressField: "", currentField: "", targetField: "", unitField: "", statusField: "", conditions: [] })}>
                         <option value="">Chọn bảng liên quan</option>
                         {tables.filter((x) => x.id !== table.id).map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
-                      </NativeSelect>
+                      </Select>
                     </SettingsField>
                     <SettingsField className={field} label="Quan hệ với Objective" required error={errors[`rel.${l.id}`]}>
                       <FieldSelect suffix="none" disabled={!t} fields={tf} filter={(f) => (f.type === "SELECT_ONE_RECORD" || f.type === "SELECT_LIST_RECORD") && f.referenceTableId === table.id} value={l.relationField} onChange={(val) => setL(i, { relationField: val })} />
@@ -1059,10 +1062,10 @@ function ConversionDialog({ open, onOpenChange, value, table, onSave }: { open: 
                       <Input value={col.label} placeholder="Nhập tên cột" onChange={(e) => setCol(i, { label: e.target.value })} />
                     </SettingsField>
                     <SettingsField label="Bảng nguồn" required error={errors[`table${i}`]} hint="Chọn Active Table để lấy dữ liệu tổng hợp cho cột này">
-                      <NativeSelect value={col.tableId} onChange={(e) => setCol(i, { tableId: e.target.value, filterMappings: [] })}>
+                      <Select value={col.tableId} onChange={(e) => setCol(i, { tableId: e.target.value, filterMappings: [] })}>
                         <option value="">Chọn bảng nguồn</option>
                         {tables.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
-                      </NativeSelect>
+                      </Select>
                     </SettingsField>
                   </div>
                   <Button type="button" size="icon-sm" variant="ghost" className="text-destructive hover:text-destructive" aria-label="Xóa cột" onClick={() => setV({ ...v, columns: v.columns.filter((_, j) => j !== i) })}><HugeiconsIcon icon={Delete02Icon} /></Button>
@@ -1071,10 +1074,10 @@ function ConversionDialog({ open, onOpenChange, value, table, onSave }: { open: 
                   <>
                     <SettingsField label="Chỉ số">
                       {t.config.recordList.totalSumFields.length ? (
-                        <NativeSelect value={col.formula} onChange={(e) => setCol(i, { formula: e.target.value })}>
+                        <Select value={col.formula} onChange={(e) => setCol(i, { formula: e.target.value })}>
                           {t.config.recordList.totalSumFields.map((s) => <option key={s.formula} value={s.formula}>{s.label} · {s.formula}</option>)}
                           {!t.config.recordList.totalSumFields.some((s) => s.formula === "COUNT(*)") && <option value="COUNT(*)">Đếm bản ghi</option>}
-                        </NativeSelect>
+                        </Select>
                       ) : (
                         <p className="text-xs text-muted-foreground">Bảng đích chưa có trường tổng hợp nào được cấu hình</p>
                       )}

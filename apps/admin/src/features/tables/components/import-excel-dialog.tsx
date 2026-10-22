@@ -5,6 +5,8 @@ import { AlertCircleIcon, ArrowLeft01Icon, Clock01Icon, Download01Icon, FileSpre
 
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
+import { Select } from "@workspace/ui/components/select"
+import { Switch } from "@workspace/ui/components/switch"
 import { cn } from "@workspace/ui/lib/utils"
 import { identifierFields, importSheet, recordHistory, type ImportResult } from "../api/excel-import.api"
 import { tableKeys } from "../api/tables.queries"
@@ -12,7 +14,6 @@ import { useImportHistoryStore, type ImportHistoryEntry } from "../store/import-
 import type { ActiveTable } from "../types/table"
 import { autoMatch, cellText, columnLetter, downloadErrorReport, downloadTemplate, ExcelImportError, readFirstSheet, XLSX_ACCEPT, type SheetRows } from "../utils/excel"
 import { formatDateValue } from "../utils/fields"
-import { NativeSelect, Switch } from "./form-controls"
 
 const BTN8 = "h-8 gap-1.5 px-2.5 has-[>svg]:px-2"
 const FOOTER_BTN = "h-8 gap-1.5 px-3 py-1.5 has-[>svg]:px-2.5"
@@ -209,12 +210,12 @@ export function ImportExcelDialog({ table, open, onOpenChange }: { table: Active
                             <td className="max-w-48 truncate px-3 py-1.5 font-medium" title={h}>{h || <span className="font-normal text-muted-foreground italic">(không có tiêu đề)</span>}</td>
                             <td className="max-w-48 truncate px-3 py-1.5 text-muted-foreground max-sm:hidden" title={example}>{example}</td>
                             <td className="px-3 py-1">
-                              <NativeSelect className="h-8 bg-background" value={mapping[i] ?? ""} onChange={(e) => setColumn(i, e.target.value)} aria-label={`Chọn trường cho cột ${columnLetter(i)}`}>
+                              <Select className="h-8 bg-background" value={mapping[i] ?? ""} onChange={(e) => setColumn(i, e.target.value)} aria-label={`Chọn trường cho cột ${columnLetter(i)}`}>
                                 <option value="">Bỏ cột</option>
                                 {fields.map((f) => (
                                   <option key={f.name} value={f.name} disabled={mapping.some((m, j) => j !== i && m === f.name)}>{f.label}</option>
                                 ))}
-                              </NativeSelect>
+                              </Select>
                             </td>
                             {idCandidates.length > 0 && (
                               <td className="px-3 py-1.5 text-center">

@@ -1,10 +1,10 @@
 import { useEffect, useState, type FormEvent } from "react"
-import { FormRow } from "@/components/form-row"
-import { Select } from "@/components/select"
 
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
+import { FormRow } from "@workspace/ui/components/form-row"
 import { Input } from "@workspace/ui/components/input"
+import { Select } from "@workspace/ui/components/select"
 import { useAddMember, useWorkspaceUsers } from "../api/teams.queries"
 import type { Team, TeamRole } from "../types/team"
 

@@ -5,12 +5,12 @@ import { Add01Icon, ArrowDown02Icon, ArrowLeft01Icon, ArrowUp02Icon, Copy01Icon,
 
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
+import { Select } from "@workspace/ui/components/select"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useDeleteForm, useForm, useUpdateForm } from "../api/forms.queries"
 import { FormFieldDialog } from "../components/form-field-dialog"
 import { FIELD_TYPES, FORM_TYPES } from "../data/templates"
 import type { FormConfig, FormField, WorkflowForm } from "../types/form"
-import { Select } from "@/components/select"
 
 const control = "w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-xs"
 

@@ -2,8 +2,10 @@ import { useEffect, useState, type FormEvent } from "react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
+import { DialogField } from "@workspace/ui/components/dialog-field"
 import { Input } from "@workspace/ui/components/input"
-import { DIALOG_CONTENT, DialogField, useCreateLabel, useUpdateLabel, type Label, type LabelType } from "@/features/teams"
+import { DIALOG_CONTENT } from "@workspace/ui/lib/styles"
+import { useCreateLabel, useUpdateLabel, type Label, type LabelType } from "@/features/teams"
 import { labelTypeName } from "../data/labels"
 
 /** "Tạo nhãn mới" / "Cập nhật nhãn": the type is the active tab, shown as a disabled input (as in the reference); only the name is editable. */

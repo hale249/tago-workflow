@@ -15,15 +15,15 @@ import {
 } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
+import { ConfirmDialog } from "@workspace/ui/components/confirm-dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
+import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
 import { formatStamp } from "@/lib/format"
 import { useComments, useCreateComment, useDeleteComment, useUpdateComment } from "../api/tables.queries"
 import { CURRENT_USER_ID } from "../data/seed"
 import type { WorkspaceUser } from "../types/table"
-import { ConfirmDialog } from "./confirm-dialog"
-import { Textarea } from "./form-controls"
 
 const EMOJIS = ["😀", "😂", "😍", "🥰", "😎", "🤔", "😢", "😡", "👍", "👎", "👏", "🙏", "🎉", "🔥", "❤️", "✅", "❌", "⭐", "💡", "📌"]
 

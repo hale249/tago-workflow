@@ -3,11 +3,11 @@ import { Add01Icon, Delete02Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
+import { TYPE } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
 import type { ItemsConfig, RecordData, RecordItem, WorkspaceUser } from "../types/table"
 import { emptyValue, formatNumber, isNumber, uid } from "../utils/fields"
 import { evaluateFormula } from "../utils/formula"
-import { BODY_DEFAULT_STYLE } from "../utils/typography"
 import { FieldInput } from "./field-input"
 import { FieldValue } from "./field-value"
 
@@ -86,7 +86,7 @@ export function ItemsEditor({ config, items, users, onChange, parent, pinnedSums
                       ) : (
                         <td key={f.name} className={cn("h-9 overflow-hidden border-r border-border/70 px-3 py-1 align-top whitespace-nowrap last:border-r-0", isNumber(f.type) && "text-right tabular-nums")}>
                           {(f.type === "NUMERIC" || f.type === "NUMERIC_SUMMARY") && it[f.name] != null && it[f.name] !== "" ? (
-                            <span className="text-foreground tabular-nums" style={BODY_DEFAULT_STYLE}>{formatNumber(Number(it[f.name]), 2, f.unit === "%" ? "%" : null)}</span>
+                            <span className="text-foreground tabular-nums" style={TYPE.body}>{formatNumber(Number(it[f.name]), 2, f.unit === "%" ? "%" : null)}</span>
                           ) : (
                             <FieldValue size="md" field={f} value={it[f.name]} users={users} />
                           )}

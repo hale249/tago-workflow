@@ -2,8 +2,8 @@ import { DarkModeIcon, LightModeIcon, MobileMenuIcon, SidebarExpandIcon, Sidebar
 import { HugeiconsIcon } from "@hugeicons/react"
 
 import { Button } from "@workspace/ui/components/button"
+import { Kbd } from "@workspace/ui/components/kbd"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip"
-import { Kbd } from "@/components/kbd"
 import { useTheme } from "@/components/theme/theme-provider"
 import { useUiStore } from "@/stores/ui.store"
 import { UserMenu } from "./user-menu"

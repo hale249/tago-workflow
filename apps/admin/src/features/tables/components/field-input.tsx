@@ -5,15 +5,16 @@ import { Add01Icon, ArrowDown01Icon, Calendar01Icon, Cancel01Icon } from "@hugei
 import { useRef, useState } from "react"
 
 import { Checkbox } from "@workspace/ui/components/checkbox"
+import { ComboSelect } from "@workspace/ui/components/combo-select"
 import { Input } from "@workspace/ui/components/input"
+import { Switch } from "@workspace/ui/components/switch"
+import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
 import { lookupLabel } from "../api/tables.api"
 import { recordsQuery } from "../api/tables.queries"
 import type { RecordData, RecordValue, TableField, WorkspaceUser } from "../types/table"
 import { computeSummaries, formatDateValue, formatNumber, TIME_PART_RANGE } from "../utils/fields"
 import { AttachmentInput } from "./attachment-field"
-import { ComboSelect } from "./combo-select"
-import { Switch, Textarea } from "./form-controls"
 import { FieldValue, OptionBadge, RecordChip, UserChip } from "./field-value"
 import { RichTextEditor } from "./rich-text-editor"
 

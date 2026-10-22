@@ -5,8 +5,8 @@ import { ArrowDown01Icon, Calendar01Icon, Cancel01Icon, Clock01Icon, Tick02Icon,
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
+import { SelectChevron } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
-import { SelectChevron } from "@/components/select"
 import type { DateRange, WorkspaceUser } from "../types/table"
 import { DATE_PRESETS, rangeLabel } from "../utils/filters"
 

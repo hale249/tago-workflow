@@ -9,11 +9,11 @@ import { Button } from "@workspace/ui/components/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
 import { Input } from "@workspace/ui/components/input"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { headingStyle } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
 import { useDeleteUnit, useUnits, workflowKeys } from "../api/workflow.queries"
 import { UnitDialog } from "../components/unit-dialog"
 import type { WorkflowUnit } from "../types/workflow"
-import { headingStyle } from "../utils/typography"
 
 const stamp = new Intl.DateTimeFormat("vi-VN", { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short", year: "numeric" })
 

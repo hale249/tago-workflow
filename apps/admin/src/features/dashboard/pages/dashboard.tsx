@@ -7,12 +7,11 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
 import { Button } from "@workspace/ui/components/button"
+import { TYPE } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
 import { usePendingInvitationCount } from "@/features/invitations"
 
 /** Reference type ramp, applied inline exactly like the reference markup. */
-const H1_STYLE = { fontSize: "var(--font-heading-h1-size)", lineHeight: "var(--font-heading-h1-line-height)", fontWeight: "var(--font-heading-h1-weight)", letterSpacing: "var(--font-heading-h1-letter-spacing)", fontFamily: "var(--font-heading-h1-family)" }
-const BODY_STYLE = { fontSize: "var(--font-body-default-size)", lineHeight: "var(--font-body-default-line-height)", fontWeight: "var(--font-weight-regular, 400)", fontFamily: "var(--font-body-default-family)", letterSpacing: "var(--font-body-default-letter-spacing)" }
 
 const day = new Intl.DateTimeFormat("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" })
 /** Reference workspaces (beqeek.com/workspaces): avatar gradients are BA cyan #22D3EE→#06B6D4, MA orange #FB923C→#F97316. */
@@ -48,8 +47,8 @@ export function DashboardPage() {
     <section className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-background p-[var(--space-400)]">
       <div className="flex flex-col items-stretch justify-start gap-[var(--space-500)]">
         <div className="flex flex-col items-stretch justify-start gap-[var(--space-050)]">
-          <h1 className="text-foreground" style={H1_STYLE}>Bảng điều khiển Workspace</h1>
-          <p className="text-muted-foreground" style={BODY_STYLE}>{WORKSPACES.length} workspace đang hoạt động</p>
+          <h1 className="text-foreground" style={TYPE.h1}>Bảng điều khiển Workspace</h1>
+          <p className="text-muted-foreground" style={TYPE.body}>{WORKSPACES.length} workspace đang hoạt động</p>
         </div>
         {pending > 0 && (
           <div className="flex flex-col gap-4 rounded-lg border border-dashed border-border/70 bg-muted/20 px-5 py-5 shadow-sm sm:flex-row sm:items-center">
@@ -126,7 +125,7 @@ export function NotificationsPage() {
       <div className="mx-auto flex h-full w-full max-w-2xl flex-col">
         <div className="flex items-center justify-between px-6 py-5">
           <div className="flex items-center gap-2">
-            <h1 className="text-foreground" style={H1_STYLE}>Thông báo</h1>
+            <h1 className="text-foreground" style={TYPE.h1}>Thông báo</h1>
           </div>
           {unread > 0 && (
             <Button size="sm" variant="outline" className="h-8 gap-1.5 text-xs" onClick={() => useNotices.setState((s) => ({ items: s.items.map((n) => ({ ...n, read: true })) }))}>

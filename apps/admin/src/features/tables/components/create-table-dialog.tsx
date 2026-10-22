@@ -6,15 +6,15 @@ import { ArrowDown01Icon, ArrowUp01Icon, Tick02Icon } from "@hugeicons/core-free
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
+import { Select, SelectChevron } from "@workspace/ui/components/select"
+import { Textarea } from "@workspace/ui/components/textarea"
+import { typeStyle } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
-import { SelectChevron } from "@/components/select"
 import { useCreateTable, useCreateWorkGroup, useWorkGroups } from "../api/tables.queries"
 import { TEMPLATES, buildTemplateConfig } from "../data/table-templates"
 import type { TableTemplate } from "../types/table"
 import { fieldTypeLabel } from "../utils/fields"
-import { typeStyle } from "../utils/typography"
 import { FieldTypeIcon } from "./field-type-icon"
-import { NativeSelect, Textarea } from "./form-controls"
 import { BTN7 } from "./settings-card"
 import { TableIcon } from "./table-icon"
 
@@ -155,11 +155,11 @@ export function CreateTableDialog({ open, onOpenChange, defaultGroupId }: { open
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className={LABEL} htmlFor="workGroupId">Nhóm công việc</label>
-                <NativeSelect id="workGroupId" value={groupId} onChange={(e) => setGroupId(e.target.value)}>
+                <Select id="workGroupId" value={groupId} onChange={(e) => setGroupId(e.target.value)}>
                   <option value="">Không (Chưa phân nhóm)</option>
                   {groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
                   <option value={NEW_GROUP}>+ Tạo nhóm mới…</option>
-                </NativeSelect>
+                </Select>
               </div>
               <div className="space-y-2">
                 <label className={LABEL} htmlFor="tableType">Loại module</label>

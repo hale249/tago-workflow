@@ -2,10 +2,12 @@ import { useEffect, useState, type FormEvent } from "react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
+import { DialogField } from "@workspace/ui/components/dialog-field"
 import { Input } from "@workspace/ui/components/input"
+import { Textarea } from "@workspace/ui/components/textarea"
+import { DIALOG_CONTENT } from "@workspace/ui/lib/styles"
 import type { LabelKind, TeamInput } from "../types/team"
 import { LabelCombobox } from "./label-combobox"
-import { DIALOG_CONTENT, DialogField, TEXTAREA } from "./team-ui"
 
 export type DetailsTexts = {
   title: string
@@ -58,7 +60,7 @@ export function DetailsFormDialog({ open, onOpenChange, kind, texts, initial, pe
             <Input autoFocus value={v.name} placeholder={texts.namePlaceholder} onChange={(e) => { setV({ ...v, name: e.target.value }); setErrors({ ...errors, name: undefined }) }} />
           </DialogField>
           <DialogField label="Mô tả (Tùy chọn)" error={errors.description}>
-            <textarea rows={4} value={v.description} placeholder={texts.descPlaceholder} className={TEXTAREA} onChange={(e) => { setV({ ...v, description: e.target.value }); setErrors({ ...errors, description: undefined }) }} />
+            <Textarea rows={4} value={v.description} placeholder={texts.descPlaceholder} onChange={(e) => { setV({ ...v, description: e.target.value }); setErrors({ ...errors, description: undefined }) }} />
           </DialogField>
           <DialogField label="Nhãn (Tùy chọn)">
             <LabelCombobox kind={kind} value={v.labelIds} onChange={(labelIds) => setV({ ...v, labelIds })} placeholder={texts.labelPlaceholder} />

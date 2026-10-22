@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query"
 
 import { Input } from "@workspace/ui/components/input"
+import { Select } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
 import { lookupLabel } from "../api/tables.api"
 import { recordsQuery } from "../api/tables.queries"
 import type { DateRange, TableField, WorkspaceUser } from "../types/table"
 import { formatTimePart, TIME_PART_RANGE } from "../utils/fields"
 import { DateRangeFilter } from "./created-filters"
-import { NativeSelect } from "./form-controls"
 
 type Props = { fields: TableField[]; values: Record<string, string>; users: WorkspaceUser[]; onChange: (field: string, value: string) => void }
 
@@ -16,12 +16,12 @@ const cls = (active: boolean) => cn("h-8 w-full bg-background px-2.5 text-sm sm:
 function RecordRefFilter({ field, value, onChange }: { field: TableField; value: string; onChange: (v: string) => void }) {
   const { data = [] } = useQuery({ ...recordsQuery(field.referenceTableId ?? ""), enabled: !!field.referenceTableId })
   return (
-    <NativeSelect className={cls(!!value)} value={value} onChange={(e) => onChange(e.target.value)} aria-label={field.label}>
+    <Select className={cls(!!value)} value={value} onChange={(e) => onChange(e.target.value)} aria-label={field.label}>
       <option value="">Tất cả {field.label}</option>
       {data.map((r) => (
         <option key={r.id} value={r.id}>{lookupLabel(r.tableId, r.id, field.referenceLabelField).primary}</option>
       ))}
-    </NativeSelect>
+    </Select>
   )
 }
 
@@ -33,7 +33,7 @@ function FilterControl({ field, value, users, onChange }: { field: TableField; v
     case "CHECKBOX_ONE":
     case "CHECKBOX_LIST":
       return (
-        <NativeSelect className={cls(!!value)} value={value} onChange={(e) => onChange(e.target.value)} aria-label={field.label}>
+        <Select className={cls(!!value)} value={value} onChange={(e) => onChange(e.target.value)} aria-label={field.label}>
           <option value="">{all}</option>
           {field.options?.map((o) => (
             <option key={o.value} value={o.value}>
@@ -43,16 +43,16 @@ function FilterControl({ field, value, users, onChange }: { field: TableField; v
               </span>
             </option>
           ))}
-        </NativeSelect>
+        </Select>
       )
     case "SELECT_ONE_WORKSPACE_USER":
     case "SELECT_LIST_WORKSPACE_USER":
       return (
-        <NativeSelect className={cls(!!value)} value={value} onChange={(e) => onChange(e.target.value)} aria-label={field.label}>
+        <Select className={cls(!!value)} value={value} onChange={(e) => onChange(e.target.value)} aria-label={field.label}>
           <option value="">{all}</option>
           {users.map((u) => <option key={u.id} value={u.id}>{u.fullName}</option>)}
           <option value="__empty__">(Chưa gán)</option>
-        </NativeSelect>
+        </Select>
       )
     case "SELECT_ONE_RECORD":
     case "SELECT_LIST_RECORD":
@@ -67,20 +67,20 @@ function FilterControl({ field, value, users, onChange }: { field: TableField; v
     case "SECOND": {
       const [min, max] = TIME_PART_RANGE[field.type]!
       return (
-        <NativeSelect className={cls(!!value)} value={value} onChange={(e) => onChange(e.target.value)} aria-label={field.label}>
+        <Select className={cls(!!value)} value={value} onChange={(e) => onChange(e.target.value)} aria-label={field.label}>
           <option value="">{all}</option>
           {Array.from({ length: max - min + 1 }, (_, i) => min + i).map((n) => <option key={n} value={String(n)}>{formatTimePart(field.type, n)}</option>)}
           <option value="__empty__">(Trống)</option>
-        </NativeSelect>
+        </Select>
       )
     }
     case "CHECKBOX_YES_NO":
       return (
-        <NativeSelect className={cls(!!value)} value={value} onChange={(e) => onChange(e.target.value)} aria-label={field.label}>
+        <Select className={cls(!!value)} value={value} onChange={(e) => onChange(e.target.value)} aria-label={field.label}>
           <option value="">{all}</option>
           <option value="true">Có</option>
           <option value="false">Không</option>
-        </NativeSelect>
+        </Select>
       )
     case "DATE":
     case "DATETIME": {

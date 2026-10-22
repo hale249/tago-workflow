@@ -4,7 +4,7 @@ import { ArrowDown01Icon, Cancel01Icon, Search01Icon } from "@hugeicons/core-fre
 
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
-import { SelectChevron } from "@/components/select"
+import { SelectChevron } from "@workspace/ui/components/select"
 
 export type ComboOption = {
   value: string

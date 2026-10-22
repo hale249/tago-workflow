@@ -4,12 +4,12 @@ import { ArrowLeft01Icon, FolderKanbanIcon, ServerStack01Icon, Shield01Icon, Tag
 import { WORKSPACES } from "@/config/navigation"
 
 import { Button } from "@workspace/ui/components/button"
+import { TYPE } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
 import { LabelsTab } from "../components/labels-tab"
 import { PermissionsTab } from "../components/permissions-tab"
 import { SystemInfoTab } from "../components/system-info-tab"
 import { TeamsTab } from "../components/teams-tab"
-import { TYPE } from "../components/settings-ui"
 import { WorkGroupsTab } from "../components/work-groups-tab"
 
 const TABS = [

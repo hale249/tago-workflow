@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
-import { Kbd } from "@/components/kbd"
+import { Kbd } from "@workspace/ui/components/kbd"
 
 const GROUPS: { title: string; items: [string[], string][] }[] = [
   { title: "Chung", items: [[["⌘", "B"], "Thu gọn / mở rộng sidebar"], [["/"], "Tìm kiếm trong không gian làm việc"], [["Esc"], "Đóng hộp thoại, ngăn xem nhanh"]] },

@@ -2,12 +2,12 @@ import { useEffect, useState } from "react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
+import { FormRow } from "@workspace/ui/components/form-row"
 import { ApiError, autoFillPatch } from "../api/tables.api"
 import { useCreateRecord, useUpdateRecord, useWorkspaceUsers } from "../api/tables.queries"
 import type { ActiveTable, RecordData, RecordItem, TableRecord } from "../types/table"
 import { emptyValue, validateRecord } from "../utils/fields"
 import { FieldInput } from "./field-input"
-import { FormRow } from "./form-controls"
 import { ItemsEditor } from "./items-editor"
 
 type Props = {

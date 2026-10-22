@@ -2,9 +2,10 @@ import { useEffect, useState, type FormEvent } from "react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
+import { DialogField } from "@workspace/ui/components/dialog-field"
 import { Input } from "@workspace/ui/components/input"
+import { DIALOG_CONTENT } from "@workspace/ui/lib/styles"
 import { useCreateWorkGroup, useUpdateWorkGroup, type WorkGroup } from "@/features/tables"
-import { DIALOG_CONTENT, DialogField } from "@/features/teams"
 
 const TEXTAREA = "flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground transition-all placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset dark:bg-input/30"
 

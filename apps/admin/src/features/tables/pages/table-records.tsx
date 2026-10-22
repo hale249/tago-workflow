@@ -4,17 +4,17 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { Add01Icon, ArrowDataTransferHorizontalIcon, ArrowLeft01Icon, Cancel01Icon, ChartGanttIcon, CheckmarkCircle02Icon, Delete02Icon, Download01Icon, FilterIcon, FlashIcon, KanbanIcon, ListViewIcon, Search01Icon, Settings02Icon, Target01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
+import { ConfirmDialog } from "@workspace/ui/components/confirm-dialog"
 import { Input } from "@workspace/ui/components/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
+import { Select } from "@workspace/ui/components/select"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { recordLabel } from "../api/tables.api"
 import { useDeleteRecords, useRecords, useTable, useWorkspaceUsers } from "../api/tables.queries"
 import { AdvancedFilterButton } from "../components/advanced-filter-dialog"
-import { ConfirmDialog } from "../components/confirm-dialog"
 import { CreatorFilter, DateRangeFilter } from "../components/created-filters"
 import { ImportExcelButton } from "../components/import-excel-dialog"
-import { NativeSelect } from "../components/form-controls"
 import { QuickFilters } from "../components/quick-filters"
 import { RecordQuickView } from "../components/record-quick-view"
 import { RecordsConversionView } from "../components/records-conversion-view"
@@ -190,9 +190,9 @@ export function TableRecordsPage() {
             {activeKind.id !== "list" && !(activeKind.id === "gantt" && activeKind.items.length < 2) && (
               <>
                 <span className="h-4 w-px shrink-0 bg-border max-sm:hidden" aria-hidden />
-                <NativeSelect className="h-8 w-auto max-w-[240px] border-transparent bg-transparent px-2.5 text-sm font-medium shadow-none hover:bg-accent/70 dark:bg-transparent" value={special?.id} onChange={(e) => view.setScreen(table.id, e.target.value)} aria-label={`Chọn màn hình ${activeKind.name}`}>
+                <Select className="h-8 w-auto max-w-[240px] border-transparent bg-transparent px-2.5 text-sm font-medium shadow-none hover:bg-accent/70 dark:bg-transparent" value={special?.id} onChange={(e) => view.setScreen(table.id, e.target.value)} aria-label={`Chọn màn hình ${activeKind.name}`}>
                   {activeKind.items.map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}
-                </NativeSelect>
+                </Select>
               </>
             )}
           </div>

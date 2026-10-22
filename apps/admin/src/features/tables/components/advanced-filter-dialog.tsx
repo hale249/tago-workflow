@@ -5,11 +5,11 @@ import { Add01Icon, Delete02Icon, FilterIcon } from "@hugeicons/core-free-icons"
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
 import { Input } from "@workspace/ui/components/input"
+import { Select } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
 import type { AdvancedCondition, TableField, WorkspaceUser } from "../types/table"
 import { isNumericValue } from "../utils/fields"
 import { OPERATORS, operatorsFor } from "../utils/filters"
-import { NativeSelect } from "./form-controls"
 
 const DESC = "Tạo bộ lọc nhanh cho các truy vấn thường dùng hiển thị ở đầu danh sách"
 
@@ -19,9 +19,9 @@ function ValueInput({ field, cond, users, onChange }: { field?: TableField; cond
   const multi = cond.op === "in" || cond.op === "notIn"
   const choices = field?.options?.map((o) => ({ v: o.value, l: o.text })) ?? (field?.type.includes("WORKSPACE_USER") ? users.map((u) => ({ v: u.id, l: u.fullName })) : null)
   if (field?.type === "CHECKBOX_YES_NO")
-    return <NativeSelect value={cond.value} onChange={(e) => onChange(e.target.value)}><option value="">—</option><option value="true">Có</option><option value="false">Không</option></NativeSelect>
+    return <Select value={cond.value} onChange={(e) => onChange(e.target.value)}><option value="">—</option><option value="true">Có</option><option value="false">Không</option></Select>
   if (choices && !multi)
-    return <NativeSelect value={cond.value} onChange={(e) => onChange(e.target.value)}><option value="">Chọn giá trị…</option>{choices.map((c) => <option key={c.v} value={c.v}>{c.l}</option>)}</NativeSelect>
+    return <Select value={cond.value} onChange={(e) => onChange(e.target.value)}><option value="">Chọn giá trị…</option>{choices.map((c) => <option key={c.v} value={c.v}>{c.l}</option>)}</Select>
   if (choices && multi) {
     const sel = cond.value.split(",").filter(Boolean)
     return (
@@ -82,13 +82,13 @@ export function AdvancedFilterButton({ fields, users, value, onApply }: Props) {
                     const ops = f ? operatorsFor(f) : OPERATORS.map((o) => o.op)
                     return (
                       <div key={i} className="grid gap-2 rounded-lg border bg-background p-3 sm:grid-cols-[1fr_1fr_1.3fr_auto]">
-                        <NativeSelect value={r.field} onChange={(e) => { const nf = fields.find((x) => x.name === e.target.value); set(i, { field: e.target.value, op: nf ? operatorsFor(nf)[0] : "eq", value: "" }) }}>
+                        <Select value={r.field} onChange={(e) => { const nf = fields.find((x) => x.name === e.target.value); set(i, { field: e.target.value, op: nf ? operatorsFor(nf)[0] : "eq", value: "" }) }}>
                           <option value="">Chọn trường...</option>
                           {fields.map((x) => <option key={x.name} value={x.name}>{x.label}</option>)}
-                        </NativeSelect>
-                        <NativeSelect value={r.op} disabled={!f} onChange={(e) => set(i, { op: e.target.value as AdvancedCondition["op"], value: "" })}>
+                        </Select>
+                        <Select value={r.op} disabled={!f} onChange={(e) => set(i, { op: e.target.value as AdvancedCondition["op"], value: "" })}>
                           {OPERATORS.filter((o) => ops.includes(o.op)).map((o) => <option key={o.op} value={o.op}>{o.label}</option>)}
-                        </NativeSelect>
+                        </Select>
                         <ValueInput field={f} cond={r} users={users} onChange={(value) => set(i, { value })} />
                         <Button size="icon-sm" variant="ghost" className="text-muted-foreground hover:text-destructive" aria-label="Xóa điều kiện" onClick={() => setRows(rows.filter((_, j) => j !== i))}><HugeiconsIcon icon={Delete02Icon} /></Button>
                       </div>

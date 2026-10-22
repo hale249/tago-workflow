@@ -5,12 +5,13 @@ import { FlashIcon, InformationCircleIcon } from "@hugeicons/core-free-icons"
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
 import { Input } from "@workspace/ui/components/input"
+import { Select } from "@workspace/ui/components/select"
+import { Switch } from "@workspace/ui/components/switch"
 import { useTables } from "../api/tables.queries"
 import type { ActiveTable, FieldType, TableField } from "../types/table"
 import { FIELD_TYPES, hasOptions, isComputed, isNumericValue, renderCodeTemplate, slugify, TIME_PART_RANGE } from "../utils/fields"
 import { checkFormula, formulaFields } from "../utils/formula"
 import { FieldTypePicker } from "./field-type-picker"
-import { NativeSelect, Switch } from "./form-controls"
 import { OptionListEditor } from "./option-list-editor"
 import { SettingsField as FormRow } from "./settings-card"
 
@@ -153,17 +154,17 @@ export function FieldEditorDialog({ open, onOpenChange, table, field, initialTyp
     if (!t) return <Input value={f.defaultValue ?? ""} placeholder="Ví dụ: 2025, pending, https://example.com" onChange={(e) => set({ defaultValue: e.target.value })} />
     if (t === "CHECKBOX_YES_NO")
       return (
-        <NativeSelect value={f.defaultValue ?? ""} onChange={(e) => set({ defaultValue: e.target.value })}>
+        <Select value={f.defaultValue ?? ""} onChange={(e) => set({ defaultValue: e.target.value })}>
           <option value="">Không</option>
           <option value="true">Có</option>
-        </NativeSelect>
+        </Select>
       )
     if (withOptions)
       return (
-        <NativeSelect value={f.defaultValue ?? ""} onChange={(e) => set({ defaultValue: e.target.value })}>
+        <Select value={f.defaultValue ?? ""} onChange={(e) => set({ defaultValue: e.target.value })}>
           <option value="">— Không —</option>
           {(f.options ?? []).map((o) => <option key={o.value} value={o.value}>{o.text}</option>)}
-        </NativeSelect>
+        </Select>
       )
     if (t === "TIME") return <Input type="time" value={f.defaultValue ?? ""} onChange={(e) => set({ defaultValue: e.target.value })} />
     if (isNumericValue(t)) {
@@ -239,10 +240,10 @@ export function FieldEditorDialog({ open, onOpenChange, table, field, initialTyp
 
             <FormRow label="Độ rộng cột" hint="Áp dụng cho List View dạng bảng. Chọn Tự động để Front-end tự căn theo nội dung.">
               <div className="grid gap-3 sm:grid-cols-[180px_minmax(0,1fr)]">
-                <NativeSelect value={f.columnWidth ? "custom" : "auto"} onChange={(e) => set({ columnWidth: e.target.value === "auto" ? null : f.columnWidth || 200 })}>
+                <Select value={f.columnWidth ? "custom" : "auto"} onChange={(e) => set({ columnWidth: e.target.value === "auto" ? null : f.columnWidth || 200 })}>
                   <option value="auto">Tự động</option>
                   <option value="custom">Cố định</option>
-                </NativeSelect>
+                </Select>
                 {f.columnWidth ? (
                   <Input type="number" min={80} max={600} value={f.columnWidth} placeholder="Ví dụ: 300" aria-label="Độ rộng cột (px)" onChange={(e) => set({ columnWidth: Number(e.target.value) || null })} />
                 ) : (
@@ -310,10 +311,10 @@ export function FieldEditorDialog({ open, onOpenChange, table, field, initialTyp
                   <FormRow label="Đơn vị tính"><Input value={f.unit ?? ""} placeholder="Ví dụ: kg, %, VNĐ" onChange={(e) => set({ unit: e.target.value || null })} /></FormRow>
                   {t !== "INTEGER" && (
                     <FormRow label="Số chữ số thập phân" hint="Số lượng số 0 hiển thị sau dấu phẩy">
-                      <NativeSelect value={f.decimalPlaces == null ? "" : String(f.decimalPlaces)} onChange={(e) => set({ decimalPlaces: numOrNull(e.target.value) })}>
+                      <Select value={f.decimalPlaces == null ? "" : String(f.decimalPlaces)} onChange={(e) => set({ decimalPlaces: numOrNull(e.target.value) })}>
                         <option value="">Auto</option>
                         {[0, 1, 2, 3, 4, 5, 6].map((n) => <option key={n} value={String(n)}>{n}</option>)}
-                      </NativeSelect>
+                      </Select>
                     </FormRow>
                   )}
                 </div>
@@ -383,25 +384,25 @@ export function FieldEditorDialog({ open, onOpenChange, table, field, initialTyp
                 )}
                 <div className="space-y-4">
                   <FormRow label="Bảng tham chiếu" required error={errors.referenceTableId}>
-                    <NativeSelect value={f.referenceTableId ?? ""} onChange={(e) => set({ referenceTableId: e.target.value, referenceLabelField: "", referenceField: "" })}>
+                    <Select value={f.referenceTableId ?? ""} onChange={(e) => set({ referenceTableId: e.target.value, referenceLabelField: "", referenceField: "" })}>
                       <option value="">Chọn một bảng...</option>
                       {tables.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
-                    </NativeSelect>
+                    </Select>
                   </FormRow>
                   {t === "FIRST_REFERENCE_RECORD" && (
                     <FormRow label="Trường tham chiếu" required error={errors.referenceField} hint={refTable && !backLinks.length ? "Không có trường tham chiếu nào trong bảng" : "Trường trong bảng tham chiếu trỏ về bảng này"}>
-                      <NativeSelect value={f.referenceField ?? ""} disabled={!backLinks.length} onChange={(e) => set({ referenceField: e.target.value })}>
+                      <Select value={f.referenceField ?? ""} disabled={!backLinks.length} onChange={(e) => set({ referenceField: e.target.value })}>
                         <option value="">Chọn trường tham chiếu...</option>
                         {backLinks.map((x) => <option key={x.name} value={x.name}>{x.label}</option>)}
-                      </NativeSelect>
+                      </Select>
                     </FormRow>
                   )}
                   {refTable && (
                     <FormRow label="Trường hiển thị" hint="Trường này sẽ được hiển thị làm nhãn cho các bản ghi được tham chiếu">
-                      <NativeSelect value={f.referenceLabelField ?? ""} onChange={(e) => set({ referenceLabelField: e.target.value })}>
+                      <Select value={f.referenceLabelField ?? ""} onChange={(e) => set({ referenceLabelField: e.target.value })}>
                         <option value="">Chọn trường hiển thị...</option>
                         {refTable.config.fields.map((x) => <option key={x.name} value={x.name}>{x.label}</option>)}
-                      </NativeSelect>
+                      </Select>
                     </FormRow>
                   )}
                 </div>
@@ -426,15 +427,15 @@ export function FieldEditorDialog({ open, onOpenChange, table, field, initialTyp
                   linkFields.length ? (
                     <div className="grid gap-4 sm:grid-cols-2">
                       <FormRow label="Trường liên kết" required error={errors.autoFillLink} hint="Trường tham chiếu một bản ghi của bảng này">
-                        <NativeSelect value={f.autoFill.linkField} onChange={(e) => set({ autoFill: { linkField: e.target.value, sourceField: "" } })}>
+                        <Select value={f.autoFill.linkField} onChange={(e) => set({ autoFill: { linkField: e.target.value, sourceField: "" } })}>
                           {linkFields.map((x) => <option key={x.name} value={x.name}>{x.label}</option>)}
-                        </NativeSelect>
+                        </Select>
                       </FormRow>
                       <FormRow label="Trường nguồn" required error={errors.autoFillSource} hint="Trường cùng kiểu trong bảng được liên kết">
-                        <NativeSelect value={f.autoFill.sourceField} disabled={!autoFillSources.length} onChange={(e) => set({ autoFill: { ...f.autoFill!, sourceField: e.target.value } })}>
+                        <Select value={f.autoFill.sourceField} disabled={!autoFillSources.length} onChange={(e) => set({ autoFill: { ...f.autoFill!, sourceField: e.target.value } })}>
                           <option value="">Chọn trường nguồn...</option>
                           {autoFillSources.map((x) => <option key={x.name} value={x.name}>{x.label}</option>)}
-                        </NativeSelect>
+                        </Select>
                       </FormRow>
                     </div>
                   ) : (

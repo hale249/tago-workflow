@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { FloppyDiskIcon, InformationCircleIcon, SecurityCheckIcon, Undo02Icon, UserMultipleIcon } from "@hugeicons/core-free-icons"
-import { Select } from "@/components/select"
 
 import { Button } from "@workspace/ui/components/button"
+import { EmptyState } from "@workspace/ui/components/empty-state"
+import { Select } from "@workspace/ui/components/select"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Switch } from "@workspace/ui/components/switch"
+import { TYPE } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
-import { EmptyState, useTeamRoles, useTeams, type TeamRole } from "@/features/teams"
+import { useTeamRoles, useTeams, type TeamRole } from "@/features/teams"
 import { useRolePermissions, useSaveRolePermissions } from "../api/permissions.queries"
 import { ACTION_COUNT, PERMISSION_RESOURCES, permissionKey } from "../data/permissions"
 import type { RolePermissions } from "../types/permission"
-import { TYPE } from "./settings-ui"
 
 // Icon + text sit in an inner flex (4px gap), so the button keeps its 10px padding like the reference.
 const BTN = "h-7 gap-1.5 px-2.5 shadow-xs [&_svg:not([class*='size-'])]:size-3.5"
@@ -108,10 +110,7 @@ function Matrix({ teamId, role }: { teamId: string; role: TeamRole }) {
                 <HugeiconsIcon icon={SecurityCheckIcon} className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                 <label htmlFor="grant-permission" className="min-w-0 cursor-pointer text-sm leading-5 font-medium">Có thể cấp quyền cho người khác</label>
               </div>
-              <button id="grant-permission" type="button" role="switch" aria-checked={draft.canGrant} onClick={() => setDraft({ ...draft, canGrant: !draft.canGrant })}
-                className={cn("inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none", draft.canGrant ? "bg-primary" : "bg-input")}>
-                <span className={cn("pointer-events-none block size-5 rounded-full bg-background shadow-lg ring-0 transition-transform", draft.canGrant ? "translate-x-5" : "translate-x-0")} />
-              </button>
+              <Switch id="grant-permission" size="lg" checked={draft.canGrant} onChange={(canGrant) => setDraft({ ...draft, canGrant })} />
             </div>
           </div>
         </div>

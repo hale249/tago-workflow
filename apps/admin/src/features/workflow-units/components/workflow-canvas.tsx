@@ -2,11 +2,11 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Add01Icon, Copy01Icon, Delete02Icon, LayoutGridIcon, Maximize01Icon, MinusSignIcon, PencilIcon, PlayIcon } from "@hugeicons/core-free-icons"
 
+import { bodyStyle } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
 import { GROUP_CHIP, GROUP_SUBTLE, NODE_TYPES, nodeType, OUTPUT_COLOR, START_EDGE, TRIGGERS } from "../data/node-types"
 import type { WorkflowEvent, WorkflowStep } from "../types/workflow"
 import { estimateNodeHeight } from "../utils/layout"
-import { bodyStyle } from "../utils/typography"
 
 export const NODE_W = 240
 const START = "start-node"

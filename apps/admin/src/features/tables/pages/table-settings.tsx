@@ -7,10 +7,15 @@ import {
 } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
+import { ConfirmDialog } from "@workspace/ui/components/confirm-dialog"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
+import { FormRow } from "@workspace/ui/components/form-row"
 import { Input } from "@workspace/ui/components/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
+import { Select } from "@workspace/ui/components/select"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Switch } from "@workspace/ui/components/switch"
+import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
 import { useDeleteTable, useTable, useTables, useUpdateTable, useWorkGroups } from "../api/tables.queries"
 import { ChipMultiSelect } from "../components/chip-multi-select"
@@ -18,11 +23,9 @@ import {
   ActionsIcon, type AppIcon, ConversionIcon, DangerIcon, DetailIcon, FieldsIcon, FiltersIcon, GanttIcon, KanbanIcon, ListLayoutIcon,
   ObjectiveIcon, PermissionsIcon, PivotIcon, SettingsNavIcon, TABLE_ICONS,
 } from "@/components/icons"
-import { ConfirmDialog } from "../components/confirm-dialog"
 import { FieldEditorDialog } from "../components/field-editor-dialog"
 import { FieldTypeIcon } from "../components/field-type-icon"
 import { OptionBadge } from "../components/field-value"
-import { FormRow, NativeSelect, Switch, Textarea } from "../components/form-controls"
 import { TableIcon } from "../components/table-icon"
 import { ActionsTab, ConversionTab, GanttTab, ItemsSection, ObjectiveTab, PermissionsTab, PivotTab } from "../components/settings-advanced-tabs"
 import { AddButton, BTN7, BtnContent, EmptyBox, H4, InfoBox, Pair, SettingsCard, SettingsField, SMALL, Stats, SubCard, Tag } from "../components/settings-card"
@@ -134,18 +137,18 @@ function GeneralTab({ table, draft, setDraft }: TabProps) {
         <p className="text-xs text-muted-foreground">Chọn biểu tượng và màu để nhận ra bảng nhanh hơn</p>
       </div>
       <SettingsField label="Nhóm công việc">
-        <NativeSelect value={draft.workGroupId} onChange={(e) => setDraft({ ...draft, workGroupId: e.target.value })}>
+        <Select value={draft.workGroupId} onChange={(e) => setDraft({ ...draft, workGroupId: e.target.value })}>
           {groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
-        </NativeSelect>
+        </Select>
       </SettingsField>
       <SettingsField label="Hướng sắp xếp mặc định" required hint="Thứ tự sắp xếp mặc định khi hiển thị bản ghi trong danh sách">
-        <NativeSelect value={draft.config.defaultSort} onChange={(e) => setConfig(draft, setDraft, { defaultSort: e.target.value as "asc" | "desc" })}>
+        <Select value={draft.config.defaultSort} onChange={(e) => setConfig(draft, setDraft, { defaultSort: e.target.value as "asc" | "desc" })}>
           <option value="desc">mới nhất</option>
           <option value="asc">cũ nhất</option>
-        </NativeSelect>
+        </Select>
       </SettingsField>
       <SettingsField label="Màn hình chính mặc định" hint="Màn hình mở ra khi vào bảng từ menu hoặc liên kết chưa chỉ định màn. Liên kết tới màn cụ thể hoặc bản ghi vẫn giữ nguyên.">
-        <NativeSelect
+        <Select
           value={draft.config.defaultScreen.screenId || "list"}
           onChange={(e) => {
             const id = e.target.value
@@ -164,7 +167,7 @@ function GeneralTab({ table, draft, setDraft }: TabProps) {
           {draft.config.pivotConfigs.map((k) => <option key={k.id} value={k.id}>Pivot · {k.name}</option>)}
           {draft.config.objectiveCards.map((k) => <option key={k.id} value={k.id}>Objective · {k.name}</option>)}
           {draft.config.conversions.map((k) => <option key={k.id} value={k.id}>Chuyển đổi · {k.name}</option>)}
-        </NativeSelect>
+        </Select>
       </SettingsField>
       <div className="space-y-3 rounded-lg border p-4">
         <div className="space-y-0.5">
@@ -187,10 +190,10 @@ function GeneralTab({ table, draft, setDraft }: TabProps) {
         <ChipMultiSelect placeholder="Chọn trường để tìm kiếm..." fields={draft.config.fields.filter((f) => SEARCHABLE_TYPES.includes(f.type))} value={draft.config.searchableFields ?? []} onChange={(searchableFields) => setConfig(draft, setDraft, { searchableFields })} />
       </SettingsField>
       <SettingsField label="Trường hiển thị chính khi tìm bản ghi" hint="Trường hiển thị nổi bật khi bảng khác tìm và chọn bản ghi từ bảng này. Để trống sẽ dùng nhãn tham chiếu mặc định.">
-        <NativeSelect value={draft.config.lookupPrimaryField ?? ""} onChange={(e) => setConfig(draft, setDraft, { lookupPrimaryField: e.target.value, lookupSecondaryFields: (draft.config.lookupSecondaryFields ?? []).filter((n) => n !== e.target.value) })}>
+        <Select value={draft.config.lookupPrimaryField ?? ""} onChange={(e) => setConfig(draft, setDraft, { lookupPrimaryField: e.target.value, lookupSecondaryFields: (draft.config.lookupSecondaryFields ?? []).filter((n) => n !== e.target.value) })}>
           <option value="">Mặc định (dùng trường nhãn tham chiếu)</option>
           {draft.config.fields.map((f) => <option key={f.name} value={f.name}>{f.label}</option>)}
-        </NativeSelect>
+        </Select>
       </SettingsField>
       <SettingsField label="Trường hiển thị phụ khi tìm bản ghi" hint="Các trường phụ hiển thị bên dưới trường chính giúp phân biệt bản ghi trùng tên. Không thể chọn trường đang là trường chính.">
         <ChipMultiSelect placeholder="Chọn các trường phụ..." fields={draft.config.fields.filter((f) => f.name !== draft.config.lookupPrimaryField)} value={draft.config.lookupSecondaryFields ?? []} onChange={(lookupSecondaryFields) => setConfig(draft, setDraft, { lookupSecondaryFields })} />
@@ -313,10 +316,10 @@ function TotalSumCard({ fields, value, onChange }: { fields: TableField[]; value
                 <div className="grid gap-4 border-t p-3 sm:grid-cols-2">
                   <FormRow label="Nhãn"><Input className="h-8" value={s.label} onChange={(e) => set(i, { label: e.target.value })} /></FormRow>
                   <FormRow label="Công thức">
-                    <NativeSelect value={s.formula} onChange={(e) => set(i, { formula: e.target.value })}>
+                    <Select value={s.formula} onChange={(e) => set(i, { formula: e.target.value })}>
                       <option value="COUNT(*)">{FN_LABEL.COUNT}</option>
                       {numeric.flatMap((f) => (["SUM", "AVG", "MIN", "MAX"] as const).map((fn) => <option key={fn + f.name} value={`${fn}(${f.name})`}>{FN_LABEL[fn]} · {f.label}</option>))}
-                    </NativeSelect>
+                    </Select>
                   </FormRow>
                 </div>
               )}
@@ -336,7 +339,7 @@ function ListTab({ draft, setDraft }: TabProps) {
     <div>
       <SettingsCard title="Cấu hình hiển thị danh sách" description="Cấu hình cách hiển thị bản ghi trong chế độ xem danh sách" bodyClassName="flex flex-col gap-3">
         <FormRow className="gap-1" label="Loại bố cục" hint="Chế độ xem bảng chuẩn với cột cho mỗi trường">
-          <NativeSelect value="generic-table" onChange={() => undefined}><option value="generic-table">Bảng chung</option></NativeSelect>
+          <Select value="generic-table" onChange={() => undefined}><option value="generic-table">Bảng chung</option></Select>
         </FormRow>
         <SubCard dense tag="Bảng chung" hint="Mỗi bản ghi là một hàng, mỗi trường là một cột">
           <FormRow className="gap-1" label="Trường hiển thị" hint="Các trường được chọn sẽ xuất hiện dưới dạng cột trong danh sách (thứ tự quan trọng)">
@@ -345,17 +348,17 @@ function ListTab({ draft, setDraft }: TabProps) {
         </SubCard>
         <SubCard dense tag="Sắp xếp" hint="Sắp xếp danh sách theo một trường (mới nhất theo mặc định khi để trống)">
           <FormRow className="gap-1" label="Trường sắp xếp">
-            <NativeSelect value={c.recordList.sortField ?? ""} onChange={(e) => setList({ sortField: e.target.value })}>
+            <Select value={c.recordList.sortField ?? ""} onChange={(e) => setList({ sortField: e.target.value })}>
               <option value="">Không sắp xếp (mặc định)</option>
               {c.fields.map((f) => <option key={f.name} value={f.name}>{f.label}</option>)}
-            </NativeSelect>
+            </Select>
           </FormRow>
           {c.recordList.sortField && (
             <FormRow className="gap-1" label="Thứ tự">
-              <NativeSelect value={c.recordList.sortOrder ?? "asc"} onChange={(e) => setList({ sortOrder: e.target.value as "asc" | "desc" })}>
+              <Select value={c.recordList.sortOrder ?? "asc"} onChange={(e) => setList({ sortOrder: e.target.value as "asc" | "desc" })}>
                 <option value="asc">Tăng dần</option>
                 <option value="desc">Giảm dần</option>
-              </NativeSelect>
+              </Select>
             </FormRow>
           )}
         </SubCard>
@@ -399,10 +402,10 @@ function FiltersTab({ draft, setDraft }: TabProps) {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <SettingsField label="Trường" hint="Chỉ hiển thị các trường đủ điều kiện (SELECT, CHECKBOX, REFERENCE)">
-                <NativeSelect value={pick} onChange={(e) => setPick(e.target.value)}>
+                <Select value={pick} onChange={(e) => setPick(e.target.value)}>
                   <option value="">Chọn trường...</option>
                   {available.map((f) => <option key={f.name} value={f.name}>{f.label} ({f.type})</option>)}
-                </NativeSelect>
+                </Select>
               </SettingsField>
             </div>
             <DialogFooter className="gap-2">
@@ -474,26 +477,26 @@ function RefTabRow({ table, value, open, onToggle, onChange, onRemove, dragProps
           <FormRow label="Tiêu đề Tab"><Input className="h-8" value={v.title} onChange={(e) => onChange({ ...v, title: e.target.value })} /></FormRow>
           <FormRow label="Mô tả phụ"><Input className="h-8" value={v.description ?? ""} placeholder="Nhập mô tả module" onChange={(e) => onChange({ ...v, description: e.target.value })} /></FormRow>
           <FormRow label="Bảng tham chiếu">
-            <NativeSelect value={v.refTableId} onChange={(e) => {
+            <Select value={v.refTableId} onChange={(e) => {
               const t = tables.find((x) => x.id === e.target.value)
               const link = t?.config.fields.find((f) => (f.type === "SELECT_ONE_RECORD" || f.type === "SELECT_LIST_RECORD") && f.referenceTableId === table.id)
               onChange({ ...v, refTableId: e.target.value, refField: link?.name ?? "", displayFields: t?.config.recordList.displayFields.slice(0, 4) ?? [] })
             }}>
               <option value="">Chọn một bảng…</option>
               {tables.filter((t) => t.id !== table.id).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-            </NativeSelect>
+            </Select>
           </FormRow>
           <FormRow label="Liên kết qua Trường (trong bảng tham chiếu)" required error={refTable && !links.length ? "Bảng được chọn không có trường nào tham chiếu đến bảng hiện tại." : undefined}>
-            <NativeSelect value={v.refField} disabled={!links.length} onChange={(e) => onChange({ ...v, refField: e.target.value })}>
+            <Select value={v.refField} disabled={!links.length} onChange={(e) => onChange({ ...v, refField: e.target.value })}>
               {!refTable && <option value="">Vui lòng chọn bảng trước</option>}
               {links.map((f) => <option key={f.name} value={f.name}>{f.label} ({f.name})</option>)}
-            </NativeSelect>
+            </Select>
           </FormRow>
           <FormRow label="Bố cục" hint={v.layout === "cards" ? "Mỗi bản ghi là một thẻ, các trường xếp dọc" : "Chế độ xem bảng chuẩn với cột cho mỗi trường"}>
-            <NativeSelect value={v.layout ?? "table"} onChange={(e) => onChange({ ...v, layout: e.target.value as RefRecordsConfig["layout"] })}>
+            <Select value={v.layout ?? "table"} onChange={(e) => onChange({ ...v, layout: e.target.value as RefRecordsConfig["layout"] })}>
               <option value="table">Bảng (Cổ điển)</option>
               <option value="cards">Danh sách thẻ</option>
-            </NativeSelect>
+            </Select>
           </FormRow>
           {refTable && (
             <SubCard tag={v.layout === "cards" ? "Danh sách thẻ" : "Bảng chung"} hint={v.layout === "cards" ? "Mỗi bản ghi là một thẻ" : "Mỗi bản ghi là một hàng, mỗi trường là một cột"}>
@@ -539,7 +542,7 @@ function DetailTab({ table, draft, setDraft }: TabProps) {
   return (
     <SettingsCard title="Cấu hình hiển thị chi tiết" description="Cấu hình cách hiển thị chi tiết từng bản ghi">
       <SettingsField label="Loại bố cục" hint={twoCol ? "Bố cục hai cột được tối ưu hóa cho màn hình rộng" : "Bố cục dọc phù hợp cho màn hình hẹp"}>
-        <NativeSelect value={d.layout ?? "head-detail"} onChange={(e) => {
+        <Select value={d.layout ?? "head-detail"} onChange={(e) => {
           const layout = e.target.value as "head-detail" | "two-column"
           // Seed the columns from the one-column list the first time two-column is picked.
           const all = d.rowTailFields.length ? d.rowTailFields : fields.map((f) => f.name) // [] = every field
@@ -550,19 +553,19 @@ function DetailTab({ table, draft, setDraft }: TabProps) {
         }}>
           <option value="head-detail">Chi tiết tiêu đề (Một cột)</option>
           <option value="two-column">Chi tiết hai cột</option>
-        </NativeSelect>
+        </Select>
       </SettingsField>
       <SettingsField label="Vị trí bình luận" hint={d.commentsPosition === "hidden" ? "Ẩn phần bình luận" : "Hiển thị bình luận trong cột riêng biệt bên phải"}>
-        <NativeSelect value={d.commentsPosition ?? "right-panel"} onChange={(e) => setD({ commentsPosition: e.target.value as "right-panel" | "hidden" })}>
+        <Select value={d.commentsPosition ?? "right-panel"} onChange={(e) => setD({ commentsPosition: e.target.value as "right-panel" | "hidden" })}>
           <option value="right-panel">Bảng điều khiển bên phải</option>
           <option value="hidden">Ẩn</option>
-        </NativeSelect>
+        </Select>
       </SettingsField>
       <SubCard tag="Phần tiêu đề" hint="Áp dụng cho cả hai bố cục">
         <SettingsField label="Trường tiêu đề" required hint="Trường chính hiển thị ở trên cùng (nổi bật, chữ lớn)">
-          <NativeSelect value={d.headTitleField} onChange={(e) => setD({ headTitleField: e.target.value })}>
+          <Select value={d.headTitleField} onChange={(e) => setD({ headTitleField: e.target.value })}>
             {fields.map((f) => <option key={f.name} value={f.name}>{f.label}</option>)}
-          </NativeSelect>
+          </Select>
         </SettingsField>
         <SettingsField label="Trường dòng phụ" hint="Trường hiển thị bên dưới tiêu đề trong phần đầu">
           <ChipMultiSelect placeholder="Chọn trường dòng phụ…" fields={fields.filter((f) => f.name !== d.headTitleField)} value={d.headSubLineFields} onChange={(headSubLineFields) => setD({ headSubLineFields })} />
@@ -656,14 +659,14 @@ function KanbanDialog({ open, onOpenChange, fields, value, onSave }: { open: boo
               <Textarea value={k.description ?? ""} placeholder="Mô tả ngắn gọn khung nhìn Kanban này..." onChange={(e) => setK({ ...k, description: e.target.value })} />
             </FormRow>
             <FormRow label="Trường trạng thái" required error={errors.statusField} hint="Các giá trị của trường này sẽ trở thành cột trong bảng Kanban. Chỉ cho phép trường lựa chọn đơn.">
-              <NativeSelect value={k.statusField} onChange={(e) => setK({ ...k, statusField: e.target.value })}>
+              <Select value={k.statusField} onChange={(e) => setK({ ...k, statusField: e.target.value })}>
                 {groupable.map((f) => <option key={f.name} value={f.name}>{f.label} ({f.type})</option>)}
-              </NativeSelect>
+              </Select>
             </FormRow>
             <FormRow label="Trường tiêu đề" required error={errors.headlineField} hint="Trường này sẽ được hiển thị nổi bật làm tiêu đề thẻ trong bảng Kanban">
-              <NativeSelect value={k.headlineField} onChange={(e) => setK({ ...k, headlineField: e.target.value })}>
+              <Select value={k.headlineField} onChange={(e) => setK({ ...k, headlineField: e.target.value })}>
                 {fields.map((f) => <option key={f.name} value={f.name}>{f.label}</option>)}
-              </NativeSelect>
+              </Select>
             </FormRow>
             <FormRow label="Trường hiển thị" hint="Các trường bổ sung hiển thị trên mỗi thẻ Kanban để tham khảo nhanh">
               <ChipMultiSelect placeholder="Chọn trường hiển thị trên thẻ..." fields={fields.filter((f) => f.name !== k.headlineField && f.name !== k.statusField)} value={k.displayFields} onChange={(displayFields) => setK({ ...k, displayFields })} />

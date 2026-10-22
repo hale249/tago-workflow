@@ -7,13 +7,13 @@ import { Add01Icon, ArrowDown01Icon, ArrowUp01Icon, ArrowUpDownIcon, LayoutGridI
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { TYPE } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
 import { WORKSPACES } from "@/config/navigation"
 import { tableKeys, useTables, useWorkGroups, useWorkspaceUsers } from "../api/tables.queries"
 import { CURRENT_USER_ID } from "../data/seed"
 import { CreateTableDialog } from "../components/create-table-dialog"
 import { TableIcon } from "../components/table-icon"
-import { H1_STYLE } from "../utils/typography"
 import type { ActiveTable, TableTemplate, WorkspaceUser } from "../types/table"
 
 type ViewMode = "list" | "table" | "grid"
@@ -101,7 +101,7 @@ export function TablesPage() {
     <section className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-6">
       <header className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
-          <h1 className="text-foreground" style={H1_STYLE}>Apps</h1>
+          <h1 className="text-foreground" style={TYPE.h1}>Apps</h1>
           <p className="text-[13px] text-muted-foreground">Workspace · {WORKSPACES[0]!.name}</p>
         </div>
         <div className="flex items-center gap-2">

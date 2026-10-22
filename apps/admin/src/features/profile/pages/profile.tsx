@@ -6,6 +6,7 @@ import { ArrowUpRight01Icon, Camera01Icon, CheckmarkCircle02Icon, ComputerIcon, 
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
+import { bodyStyle, headingStyle } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
 import { useTheme, type ThemePreference } from "@/components/theme/theme-provider"
 import { ShortcutsDialog } from "../components/shortcuts-dialog"
@@ -13,9 +14,6 @@ import { initialsOf, useProfile } from "../profile.store"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-/** Reference type ramp, applied inline exactly like the reference markup (heading h1/h2/h3, body default/small). */
-const heading = (n: 1 | 2 | 3) => ({ fontSize: `var(--font-heading-h${n}-size)`, lineHeight: `var(--font-heading-h${n}-line-height)`, fontWeight: `var(--font-heading-h${n}-weight)`, letterSpacing: `var(--font-heading-h${n}-letter-spacing)`, fontFamily: `var(--font-heading-h${n}-family)` })
-const body = (v: "default" | "small") => ({ fontSize: `var(--font-body-${v}-size)`, lineHeight: `var(--font-body-${v}-line-height)`, fontWeight: "var(--font-weight-regular, 400)", fontFamily: `var(--font-body-${v}-family)`, letterSpacing: `var(--font-body-${v}-letter-spacing)` })
 
 /** Reference card: title + 13px description header, px-5 content (shadcn Card with shadow-surface). */
 function Card({ title, description, children }: { title: string; description: string; children: ReactNode }) {
@@ -34,10 +32,10 @@ function Field({ id, label, required, hint, error, children }: { id: string; lab
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor={id} className="text-sm leading-none font-medium">
-        <span className="flex items-center gap-1"><span>{label}</span>{required && <span className="text-destructive" style={body("default")}>*</span>}</span>
+        <span className="flex items-center gap-1"><span>{label}</span>{required && <span className="text-destructive" style={bodyStyle("default")}>*</span>}</span>
       </label>
       {children}
-      {error ? <p className="text-destructive" style={body("small")}>{error}</p> : hint && <p className="text-muted-foreground" style={body("small")}>{hint}</p>}
+      {error ? <p className="text-destructive" style={bodyStyle("small")}>{error}</p> : hint && <p className="text-muted-foreground" style={bodyStyle("small")}>{hint}</p>}
     </div>
   )
 }
@@ -45,7 +43,7 @@ function Field({ id, label, required, hint, error, children }: { id: string; lab
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-6">
-      <h3 className="text-base font-medium text-foreground" style={heading(3)}>{title}</h3>
+      <h3 className="text-base font-medium text-foreground" style={headingStyle(3)}>{title}</h3>
       <div role="none" className="h-px w-full shrink-0 bg-border/80" />
       {children}
     </div>
@@ -159,7 +157,7 @@ function SettingsTab() {
             {themes.map(([id, label, Icon]) => (
               <Choice key={id} active={preference === id} onClick={() => setPreference(id)} className="flex flex-col items-center justify-between">
                 <HugeiconsIcon icon={Icon} className="mb-[var(--space-150)] size-6" strokeWidth={1.5} />
-                <span className="text-foreground" style={{ ...body("small"), fontWeight: "var(--font-weight-medium)" }}>{label}</span>
+                <span className="text-foreground" style={bodyStyle("small", "var(--font-weight-medium)")}>{label}</span>
               </Choice>
             ))}
           </div>
@@ -170,7 +168,7 @@ function SettingsTab() {
           {([["vi", "Tiếng Việt"], ["en", "English"]] as const).map(([id, label]) => (
             <Choice key={id} active={language === id} onClick={() => update({ language: id })} className="flex items-center gap-[var(--space-150)]">
               <HugeiconsIcon icon={GlobeIcon} className="size-5" strokeWidth={1.5} />
-              <span className="text-foreground" style={{ ...body("default"), fontWeight: "var(--font-weight-medium)" }}>{label}</span>
+              <span className="text-foreground" style={bodyStyle("default", "var(--font-weight-medium)")}>{label}</span>
             </Choice>
           ))}
         </div>
@@ -226,16 +224,16 @@ export function ProfilePage() {
               <span>/</span>
               <span aria-current="page" className="font-medium text-foreground">Hồ sơ</span>
             </nav>
-            <h1 className="text-foreground" style={heading(1)}>Hồ sơ người dùng</h1>
+            <h1 className="text-foreground" style={headingStyle(1)}>Hồ sơ người dùng</h1>
           </div>
 
           <section className="rounded-lg border border-border bg-card p-[var(--space-300)]">
             <div className="flex flex-nowrap items-center gap-[var(--space-250)]">
               <AvatarPicker />
               <div className="flex min-w-0 flex-col gap-[var(--space-050)]">
-                <h2 className="truncate text-foreground" style={heading(2)}>{profile.fullName}</h2>
-                <p className="truncate text-muted-foreground" style={body("default")}>{profile.email}</p>
-                <p className="text-muted-foreground" style={body("small")}>@{profile.username}</p>
+                <h2 className="truncate text-foreground" style={headingStyle(2)}>{profile.fullName}</h2>
+                <p className="truncate text-muted-foreground" style={bodyStyle("default")}>{profile.email}</p>
+                <p className="text-muted-foreground" style={bodyStyle("small")}>@{profile.username}</p>
               </div>
             </div>
           </section>

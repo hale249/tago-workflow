@@ -5,13 +5,15 @@ import { Add01Icon, Delete02Icon, MoreVerticalIcon, PencilEdit01Icon, Search01Ic
 import { WORKSPACES } from "@/config/navigation"
 
 import { Button } from "@workspace/ui/components/button"
+import { ConfirmDialog } from "@workspace/ui/components/confirm-dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
+import { EmptyState } from "@workspace/ui/components/empty-state"
 import { Input } from "@workspace/ui/components/input"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { SMALL_BTN } from "@workspace/ui/lib/styles"
 import { useDeleteTeam, useTeams } from "../api/teams.queries"
-import { ConfirmDialog } from "../components/confirm-dialog"
 import { TeamFormDialog } from "../components/team-form-dialog"
-import { Chip, EmptyState, SMALL_BTN } from "../components/team-ui"
+import { Chip } from "../components/team-ui"
 import type { TeamSummary } from "../types/team"
 
 export function TeamsPage() {

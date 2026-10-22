@@ -3,13 +3,15 @@ import { Link, useNavigate, useParams } from "react-router"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Add01Icon, ArrowLeft01Icon, Copy01Icon, Delete02Icon, File02Icon, Key01Icon, MoreVerticalIcon, PencilEdit01Icon, Search01Icon, Settings01Icon, Tick02Icon, ViewIcon, ViewOffIcon } from "@hugeicons/core-free-icons"
 import { CONNECTOR_ICONS, ConnectedIcon, ConnectorErrorIcon, DisconnectedIcon } from "@/components/icons"
-import { ComboSelect, useTables } from "@/features/tables"
+import { useTables } from "@/features/tables"
 
 import { Button } from "@workspace/ui/components/button"
+import { ComboSelect } from "@workspace/ui/components/combo-select"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
 import { Input } from "@workspace/ui/components/input"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { TYPE } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
 import { useConnector, useConnectors, useCreateConnector, useDeleteConnector, useUpdateConnector } from "../api/connectors.api"
 import { ConnectorInfoDialog } from "../components/connector-info-dialog"
@@ -18,20 +20,6 @@ import { MarkdownDoc } from "../components/markdown-doc"
 import { connectorDoc } from "../data/connector-docs"
 import { CONNECTOR_TYPES, connectorType, STATUS, type ConnectorStatus } from "../data/connector-types"
 
-const H1_STYLE = {
-  fontSize: "var(--font-heading-h1-size)",
-  lineHeight: "var(--font-heading-h1-line-height)",
-  fontWeight: "var(--font-heading-h1-weight)",
-  letterSpacing: "var(--font-heading-h1-letter-spacing)",
-  fontFamily: "var(--font-heading-h1-family)",
-} as const
-const SMALL_STYLE = {
-  fontSize: "var(--font-body-small-size)",
-  lineHeight: "var(--font-body-small-line-height)",
-  fontWeight: "var(--font-body-small-weight)",
-  fontFamily: "var(--font-body-small-family)",
-  letterSpacing: "var(--font-body-small-letter-spacing)",
-} as const
 /** Types the reference catalog shows without a logo image (a plain muted tile). */
 const LOGO_PLACEHOLDER = new Set(["EINVOICE_VNPT", "ACTIVE_TABLE", "AI_PROVIDER"])
 
@@ -72,7 +60,7 @@ export function ConnectorsPage() {
     <section className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-background p-[var(--space-300)]">
       <div className="flex flex-col items-stretch justify-start gap-[var(--space-200)]">
         <header className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="min-w-0"><h1 className="text-foreground" style={H1_STYLE}>Kết nối</h1><p className="text-[13px] text-muted-foreground">Quản lý kết nối với các dịch vụ bên ngoài</p></div>
+          <div className="min-w-0"><h1 className="text-foreground" style={TYPE.h1}>Kết nối</h1><p className="text-[13px] text-muted-foreground">Quản lý kết nối với các dịch vụ bên ngoài</p></div>
           <div className="flex flex-wrap items-center gap-2"><Button size="sm" className="h-7 gap-1.5 px-2.5 shadow-xs has-[>svg]:px-2" onClick={() => navigate("/workflow-connectors/select")}><HugeiconsIcon icon={Add01Icon} className="size-3.5" />Tạo mới</Button></div>
         </header>
         <div className="flex flex-col gap-2 border-b pb-2 sm:flex-row sm:items-center sm:justify-between">
@@ -156,7 +144,7 @@ export function ConnectorSelectPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <Button asChild size="icon-sm" variant="ghost" className="size-8 hover:bg-accent/50" aria-label="Quay lại"><Link to="/workflow-connectors"><HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" /></Link></Button>
-            <div className="flex-1"><h1 className="text-foreground" style={H1_STYLE}>Chọn loại Connector</h1><p className="text-muted-foreground" style={SMALL_STYLE}>Chọn dịch vụ bạn muốn kết nối</p></div>
+            <div className="flex-1"><h1 className="text-foreground" style={TYPE.h1}>Chọn loại Connector</h1><p className="text-muted-foreground" style={TYPE.small}>Chọn dịch vụ bạn muốn kết nối</p></div>
           </div>
           <div className="relative max-w-md">
             <HugeiconsIcon icon={Search01Icon} aria-hidden className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />

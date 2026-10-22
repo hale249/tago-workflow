@@ -7,25 +7,17 @@ import { WorkflowUnitIcon } from "@/components/icons"
 import { Button } from "@workspace/ui/components/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Switch } from "@workspace/ui/components/switch"
+import { bodyStyle, headingStyle } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
 import { useDeleteEvent, useDeleteUnit, useEvents, useSaveEvent, useUnit } from "../api/workflow.queries"
 import { EventDialog } from "../components/event-dialog"
 import { UnitDialog } from "../components/unit-dialog"
 import { TRIGGERS } from "../data/node-types"
 import type { WorkflowEvent } from "../types/workflow"
-import { bodyStyle, headingStyle } from "../utils/typography"
 
 const day = new Intl.DateTimeFormat("vi-VN")
 const small = bodyStyle("small")
-
-function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
-  return (
-    <button type="button" role="switch" aria-checked={on} aria-label={label} onClick={() => onChange(!on)}
-      className={cn("peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none", on ? "bg-primary" : "bg-input")}>
-      <span className={cn("pointer-events-none block size-5 rounded-full bg-background shadow-lg ring-0 transition-transform", on ? "translate-x-5" : "translate-x-0")} />
-    </button>
-  )
-}
 
 export function WorkflowUnitPage() {
   const { unitId = "" } = useParams()
@@ -106,7 +98,7 @@ export function WorkflowUnitPage() {
                           </div>
                         </td>
                         <td className="text-muted-foreground"><span className="text-sm font-medium">{T.label}</span></td>
-                        <td onClick={(ev) => ev.stopPropagation()}><Toggle on={e.active} label={e.active ? "Hoạt động" : "Tạm dừng"} onChange={(active) => saveEvent.mutate({ ...e, active })} /></td>
+                        <td onClick={(ev) => ev.stopPropagation()}><Switch size="lg" checked={e.active} label={e.active ? "Hoạt động" : "Tạm dừng"} onChange={(active) => saveEvent.mutate({ ...e, active })} /></td>
                         <td className="text-right" onClick={(ev) => ev.stopPropagation()}>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild><Button size="icon-sm" variant="ghost" aria-label="Open menu"><HugeiconsIcon icon={MoreHorizontalIcon} className="size-4" /></Button></DropdownMenuTrigger>

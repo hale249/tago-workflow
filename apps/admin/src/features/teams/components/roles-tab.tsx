@@ -3,14 +3,16 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { Add01Icon, Delete02Icon, PencilEdit01Icon, Shield01Icon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@workspace/ui/components/button"
+import { ConfirmDialog } from "@workspace/ui/components/confirm-dialog"
+import { EmptyState } from "@workspace/ui/components/empty-state"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { SMALL_BTN, TABLE_CARD, TD, TH, TR } from "@workspace/ui/lib/styles"
 import { cn } from "@workspace/ui/lib/utils"
 import { useDeleteRole, useLabels } from "../api/teams.queries"
 import type { TeamRole } from "../types/team"
-import { ConfirmDialog } from "./confirm-dialog"
 import { LabelCombobox } from "./label-combobox"
 import { RoleFormDialog } from "./role-form-dialog"
-import { EmptyState, LabelPill, SMALL_BTN, TABLE_CARD, TD, TH, TR } from "./team-ui"
+import { LabelPill } from "./team-ui"
 
 export function RolesTab({ teamId, roles, isLoading }: { teamId: string; roles: TeamRole[]; isLoading?: boolean }) {
   const { data: labels = [] } = useLabels("role")

@@ -4,12 +4,12 @@ import { Add01Icon, Cancel01Icon, PencilEdit01Icon, Tick02Icon } from "@hugeicon
 
 import { Button } from "@workspace/ui/components/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
+import { TYPE } from "@workspace/ui/lib/typography"
 import { cn } from "@workspace/ui/lib/utils"
 import { ApiError, autoFillPatch } from "../api/tables.api"
 import { useUpdateRecord } from "../api/tables.queries"
 import type { RecordValue, TableField, TableRecord, WorkspaceUser } from "../types/table"
 import { isBlank, isLongText } from "../utils/fields"
-import { BODY_SMALL_STYLE } from "../utils/typography"
 import { AttachmentInput } from "./attachment-field"
 import { FieldInput } from "./field-input"
 import { FieldValue, UserChip } from "./field-value"
@@ -39,7 +39,7 @@ function UserChips({ tableId, record, field, users, readOnly }: Props) {
             <span className="relative flex size-6 shrink-0 overflow-hidden rounded-full" title={u.fullName}>
               <span className="grid size-full place-items-center text-[10px] font-semibold text-white" style={{ backgroundColor: u.color }}>{initialsOf(u.fullName)}</span>
             </span>
-            <span className="text-foreground" style={BODY_SMALL_STYLE}>{u.fullName}</span>
+            <span className="text-foreground" style={TYPE.small}>{u.fullName}</span>
             {!readOnly && (
               <Button size="icon-xs" variant="ghost" aria-label={`Gỡ ${u.fullName}`} disabled={field.required && ids.length === 1} onClick={() => save(ids.filter((x) => x !== id))} className="size-5 opacity-60 hover:bg-accent/50 hover:opacity-100 disabled:opacity-60 dark:hover:bg-white/5">
                 <HugeiconsIcon icon={Cancel01Icon} className="size-4" />

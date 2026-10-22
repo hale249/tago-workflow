@@ -8,7 +8,6 @@ export { TablesNavTree } from "./components/tables-nav-tree"
 export { TablesQuickSearch } from "./components/tables-quick-search"
 export { tableKeys, tablesListQuery, useCreateWorkGroup, useRecordCounts, useTables, useWorkGroups, useWorkspaceUsers } from "./api/tables.queries"
 export type { ActiveTable, TableField, TableRecord } from "./types/table"
-export { ComboSelect, type ComboOption } from "./components/combo-select"
 export { recordsQuery } from "./api/tables.queries"
 // Work-group management + ordering (Cài đặt workspace → Nhóm công việc).
 export { useDeleteWorkGroup, useReorderTables, useReorderWorkGroups, useUpdateWorkGroup } from "./api/tables.queries"
