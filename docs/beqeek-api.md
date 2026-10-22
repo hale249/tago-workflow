@@ -1761,3 +1761,15 @@ Tạo/sửa/xoá dùng cùng mẫu path với động từ khác, ví dụ:
 - `/api/workspace/{workspaceId}/workflow/post|patch|delete/workflow_forms[/{id}]`
 - `/api/workspace/{workspaceId}/notification/patch/notifications/{id}/read`
 - `/api/workspace/{workspaceId}/notification/patch/notifications/read_all`
+
+## Cập nhật 2026-10-22
+
+Ghi lại lần 2 (chỉ đọc) trên bản mới của bản tham khảo — chi tiết request/response đã che: **`docs/beqeek-api-2026-10-22.md`** (37 đầu, 251 request từ 32 trang). Điểm mới so với bản 08/10:
+
+- **Social Chat theo kênh**: `POST /api/workspace/{workspaceId}/workflow/{ig_chat|wa_chat|zl_chat}/get/setting` (body `{}`) → `{ workspaceId, activeTableId, assignableUserIds[], messageTemplateGroups[], messageTemplates[], tags[], activeTable }`; `…/{ig_chat|wa_chat|zl_chat}/get/connectors` → danh sách kết nối của kênh (dùng cho ô "Chọn kết nối…").
+- **Ma trận phân quyền**: `POST …/workspace_permission/get/permissions/{teamRoleId}` body `{ constraints: { workspaceTeamId } }` → `{ workspaceTeamId, workspaceTeamRoleId, canGrantPermission, canAccessSystemInfo, canAccessSocial, canAccessSetting, settingStaticSubjectCodes[], … }`.
+- **Nhãn đầy đủ** (trang Cài đặt → Nhãn, Đội nhóm): `POST …/label/get/labels` (bản `get/p/labels` vẫn dùng ở Thông báo).
+- **Nhóm công việc đầy đủ** (Cài đặt → Nhóm công việc): `POST …/workflow/get/active_work_groups` (sidebar vẫn dùng `get/p/active_work_groups`).
+- **Realtime**: `POST …/websocket/subscribe` / `…/websocket/unsubscribe` khi vào/đổi workspace.
+- **Cấu hình bảng** (`…/get/active_tables/{tableId}` → `data.config`) có thêm khoá **`calendarConfigs`** (mảng cấu hình màn Lịch), cạnh `kanbanConfigs`, `ganttCharts`, `pivotConfigs`, `objectiveCardConfigs`, `conversionConfigs`.
+- Chi tiết bản ghi không có đầu "get một bản ghi": dùng `…/get/active_tables/{tableId}/records` với `{ limit: 1, offset: 0, filtering: { "id:eq": "<recordId>" } }`.

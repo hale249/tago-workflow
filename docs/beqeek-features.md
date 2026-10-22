@@ -202,3 +202,17 @@ Chụp (chỉ đọc) ~45 màn hình bản tham khảo ở 1440×900 và so từ
 - **Khung chung**: menu chọn workspace, menu tài khoản (ảnh đại diện mặc định dạng hình người), ô tìm kiếm sidebar (không tô sẵn kết quả đầu, dòng cao hơn), sidebar thu gọn, trạng thái đang mở của mục cha/con trên cây Apps, nút ☰ trên mobile; bảng màu chế độ tối lấy theo bản tham khảo.
 - **Mobile (375px)**: trang bản ghi chuyển sang dạng thẻ + nút "Bộ lọc" gộp + thanh Tổng hợp ghim đáy; nút đầu trang xếp thành hàng full-width.
 - **Chưa chụp được ở bản tham khảo**: bảng cấu hình node của trình dựng workflow và hộp thoại "Tạo Form" (không mở được trong trình duyệt headless) — giữ theo Tago.
+
+## 15. Bản cập nhật của bản tham khảo (kiểm tra 2026-10-22)
+
+Bản tham khảo đã ra phiên bản mới (bundle `index-zUGStMlC.js`, chuỗi giao diện tăng 3016 → 3082). So chỉ-đọc với bản chụp ngày 16/10; ảnh/HTML mới ở `.gstack/reference/beqeek/pages2/`, danh sách chuỗi thêm/bớt ở `.gstack/reference/beqeek/new/{added,removed}.tsv`.
+
+| Thay đổi bên tham khảo | Tago |
+|---|---|
+| **Màn Lịch** (Calendar): tab "Lịch" mới trong Cài đặt bảng (giữa Objective Card và Chuyển đổi), "Thêm màn Lịch" với Tên màn*, Mô tả, Trường ngày* (DATE/DATETIME), Thang thời gian mặc định (Tuần/Tháng/Quý/Cả năm), Tiêu đề chính*, Tiêu đề phụ (nhiều trường, theo thứ tự chọn), Trường trạng thái* (SELECT_ONE), Giá trị hoàn thành, Giá trị ngoại trừ (bị ẩn khỏi lịch, người xem bật lại được); màn xem "Lịch" trong trang bản ghi (Hôm nay, Kỳ trước/Kỳ sau, Hiển thị đã hoàn thành / trạng thái ngoại trừ). Cần ≥1 trường ngày + 1 SELECT_ONE. Chưa bảng nào bật nên chưa có ảnh màn xem. | ⬜ |
+| Bỏ nút **"Có mặt"** ở chi tiết bản ghi | ⬜ (Tago vẫn còn — cần gỡ, cả ở khung xem nhanh) |
+| Thêm thành viên: gõ tên đăng nhập đã có → dòng "Người dùng đã tồn tại - sẽ mời vào workspace" (ẩn mật khẩu/email); tên mới → "Người dùng mới - sẽ tạo tài khoản mới" | 🟡 (đã ẩn trường, thiếu dòng báo) |
+| Cảnh báo rời trang khi chưa lưu: "Thay đổi chưa lưu" / "Thay đổi sẽ bị mất. Tiếp tục?" / "Rời không lưu" / "Ở lại trang" | ⬜ |
+| Cấu hình node workflow: Google Calendar "Tạo liên kết Google Meet"; Messenger "Gửi tin nhắn với tag"; node Social "Gửi một tin nhắn văn bản vào hội thoại qua connector của kênh"; HTTP "Phương thức", "Điều kiện lỗi", "Nội dung dạng Base64"; Think Agent "Biểu thức dữ liệu đầu vào (.workflowData.chatMessages)"; bình luận "Nhập ID bình luận", "Nội dung bình luận (Tùy chọn)"; chọn người dùng trực tiếp hoặc bằng biểu thức biến | 🟡 (bảng node giống hệt; thiếu các trường cấu hình mới) |
+| Route `/search` (trang Tìm kiếm) — hiện vẫn trả 404; bỏ `/keyboard-shortcuts`; thêm `/prototype/calendar` (bản thử) | — (chưa cần làm) |
+| Không đổi: Bảng điều khiển, Thông báo, Apps, danh sách bản ghi, bộ lọc nâng cao, 13 tab cài đặt bảng cũ, Cloud Logic, Biểu mẫu, Kết nối, Hồ sơ, Social, Cài đặt workspace | ✅ |
